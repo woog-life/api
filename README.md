@@ -1,3 +1,3 @@
 # woog.life API
 
-The REST API for <woog.life>.
+The REST API at <https://api.woog.life>.
