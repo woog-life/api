@@ -6,6 +6,7 @@ import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/lake_repository.dart';
 import 'package:woog_api/model/lake_data.dart';
+import 'package:woog_api/src/cors.dart';
 import 'package:woog_api/src/json.dart';
 
 class WoogApi {
@@ -19,9 +20,11 @@ class WoogApi {
   }
 
   Future<void> launch() async {
-    final handler =
-        const Pipeline().addMiddleware(jsonHeaderMiddleware).addHandler(_app);
-    await io.serve(handler, '0.0.0.0', 8080);
+    final handler = const Pipeline()
+        .addMiddleware(jsonHeaderMiddleware)
+        .addMiddleware(corsMiddleware())
+        .addHandler(_app);
+    await io.serve(handler, InternetAddress.anyIPv4, 8080);
   }
 
   Future<Response> _getLakes(Request request) async {
