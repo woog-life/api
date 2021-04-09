@@ -11,4 +11,3 @@ build:
 
 push:
 	docker push wooglife/api
-

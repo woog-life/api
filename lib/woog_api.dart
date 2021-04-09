@@ -14,6 +14,8 @@ class WoogApi {
   final LakeRepository _repo;
 
   WoogApi() : _repo = LakeRepository.memoryRepo() {
+    _app.get('/', _getHealth);
+    _app.get('/health', _getHealth);
     _app.get('/lake', _getLakes);
     _app.get('/lake/<lakeId>', _getLake);
     _app.put('/lake/<lakeId>/temperature', _updateTemperature);
@@ -25,6 +27,10 @@ class WoogApi {
         .addMiddleware(corsMiddleware())
         .addHandler(_app);
     await io.serve(handler, InternetAddress.anyIPv4, 8080);
+  }
+
+  Response _getHealth(Request request) {
+    return Response(HttpStatus.ok);
   }
 
   Future<Response> _getLakes(Request request) async {
