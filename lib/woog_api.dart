@@ -21,7 +21,7 @@ class WoogApi {
   Future<void> launch() async {
     final handler =
         const Pipeline().addMiddleware(jsonHeaderMiddleware).addHandler(_app);
-    await io.serve(handler, 'localhost', 8080);
+    await io.serve(handler, '0.0.0.0', 8080);
   }
 
   Future<Response> _getLakes(Request request) async {
