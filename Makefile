@@ -1,7 +1,14 @@
-.PHONY: generate, watch
+.PHONY: generate, watch, build, push
 
 generate:
-	flutter pub run build_runner build --delete-conflicting-outputs
+	pub run build_runner build --delete-conflicting-outputs
 
 watch:
-	flutter pub run build_runner watch --delete-conflicting-outputs
+	pub run build_runner watch --delete-conflicting-outputs
+
+build:
+	docker build -t wooglife/api .
+
+push:
+	docker push wooglife/api
+
