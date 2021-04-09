@@ -14,7 +14,7 @@ class WoogApi {
 
   WoogApi() : _repo = LakeRepository.memoryRepo() {
     _app.get('/lake', _getLakes);
-    _app.get('/lake/<lakeId>', _getTemperature);
+    _app.get('/lake/<lakeId>', _getLake);
     _app.put('/lake/<lakeId>/temperature', _updateTemperature);
   }
 
@@ -38,7 +38,7 @@ class WoogApi {
     );
   }
 
-  Future<Response> _getTemperature(Request request, String lakeId) async {
+  Future<Response> _getLake(Request request, String lakeId) async {
     final lake = await _repo.getLake(lakeId);
 
     if (lake == null) {
