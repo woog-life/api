@@ -47,7 +47,8 @@ class WoogApi {
       final data = lake.data;
       return Response.ok(
         jsonEncode({
-          'lake': lakeId,
+          'id': lake.id,
+          'name': lake.name,
           'data': data == null
               ? null
               : {
