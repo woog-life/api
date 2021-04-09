@@ -33,6 +33,8 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v1
+      - name: Get dependencies
+        run: pub get
       - name: Run Analysis
         run: dart analyze
 
