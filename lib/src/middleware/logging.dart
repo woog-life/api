@@ -3,6 +3,7 @@ import 'package:shelf/shelf.dart';
 
 final _logger = Logger(
   printer: SimplePrinter(),
+  filter: ProductionFilter(),
 );
 
 Middleware logMiddleware() {
