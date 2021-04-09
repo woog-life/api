@@ -74,7 +74,7 @@ class WoogApi {
 
   Future<Response> _updateTemperature(Request request, String lakeId) async {
     final body = jsonDecode(await request.readAsString());
-    if (body! is Map) {
+    if (body is! Map) {
       return Response(HttpStatus.badRequest);
     }
     final timeString = body['time'];
