@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:logger/logger.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
@@ -8,6 +9,8 @@ import 'package:woog_api/lake_repository.dart';
 import 'package:woog_api/model/lake_data.dart';
 import 'package:woog_api/src/cors.dart';
 import 'package:woog_api/src/json.dart';
+
+final _logger = Logger();
 
 class WoogApi {
   final _app = Router();
@@ -25,7 +28,15 @@ class WoogApi {
     final handler = const Pipeline()
         .addMiddleware(jsonHeaderMiddleware)
         .addMiddleware(corsMiddleware())
-        .addHandler(_app);
+        .addMiddleware(logRequests(
+      logger: (String msg, bool isError) {
+        if (isError) {
+          _logger.e(msg);
+        } else {
+          _logger.i(msg);
+        }
+      },
+    )).addHandler(_app);
     await io.serve(handler, InternetAddress.anyIPv4, 8080);
   }
 
