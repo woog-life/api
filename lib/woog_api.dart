@@ -28,15 +28,17 @@ class WoogApi {
     final handler = const Pipeline()
         .addMiddleware(jsonHeaderMiddleware)
         .addMiddleware(corsMiddleware())
-        .addMiddleware(logRequests(
-      logger: (String msg, bool isError) {
-        if (isError) {
-          _logger.e(msg);
-        } else {
-          _logger.i(msg);
-        }
-      },
-    )).addHandler(_app);
+        .addMiddleware(
+      logRequests(
+        logger: (String msg, bool isError) {
+          if (isError) {
+            _logger.e(msg);
+          } else {
+            _logger.i(msg);
+          }
+        },
+      ),
+    ).addHandler(_app);
     await io.serve(handler, InternetAddress.anyIPv4, 8080);
   }
 
