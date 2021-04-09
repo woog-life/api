@@ -10,7 +10,9 @@ import 'package:woog_api/model/lake_data.dart';
 import 'package:woog_api/src/cors.dart';
 import 'package:woog_api/src/json.dart';
 
-final _logger = Logger();
+final _logger = Logger(
+  printer: SimplePrinter(),
+);
 
 class WoogApi {
   final _app = Router();
