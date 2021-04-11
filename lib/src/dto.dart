@@ -55,12 +55,12 @@ class LakeState {
     required this.data,
   });
 
-  factory LakeState.fromLake(Lake lake) {
+  factory LakeState.fromLake(Lake lake, {int? precision}) {
     final data = lake.data;
     return LakeState(
       id: lake.id,
       name: lake.name,
-      data: data == null ? null : LakeData.fromData(data),
+      data: data == null ? null : LakeData.fromData(data, precision: precision),
     );
   }
 
@@ -83,11 +83,11 @@ class LakeData {
     required this.preciseTemperature,
   });
 
-  factory LakeData.fromData(model.LakeData data) {
+  factory LakeData.fromData(model.LakeData data, {int? precision}) {
     return LakeData(
       time: data.time,
       temperature: data.temperature.round(),
-      preciseTemperature: data.temperature.toStringAsFixed(2),
+      preciseTemperature: data.temperature.toStringAsFixed(precision ?? 2),
     );
   }
 

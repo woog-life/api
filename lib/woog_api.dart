@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
@@ -56,11 +57,26 @@ class WoogApi {
   Future<Response> _getLake(Request request, String lakeId) async {
     final lake = await _repo.getLake(lakeId);
 
+    final precisionArgument = request.url.queryParameters['precision'];
+    final int? precision;
+    if (precisionArgument == null) {
+      precision = null;
+    } else {
+      try {
+        precision = min(5, max(1, int.parse(precisionArgument)));
+      } on FormatException {
+        return Response(HttpStatus.badRequest);
+      }
+    }
+
     if (lake == null) {
       return Response(HttpStatus.notFound);
     } else {
       return Response.ok(
-        jsonEncode(dto.LakeState.fromLake(lake).toJson()),
+        jsonEncode(dto.LakeState.fromLake(
+          lake,
+          precision: precision,
+        ).toJson()),
       );
     }
   }
