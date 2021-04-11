@@ -1,34 +1,41 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:logger/logger.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/lake_repository.dart';
 import 'package:woog_api/model/lake_data.dart';
+import 'package:woog_api/src/middleware/auth.dart';
 import 'package:woog_api/src/middleware/cors.dart';
 import 'package:woog_api/src/middleware/json.dart';
 import 'package:woog_api/src/middleware/logging.dart';
 
 class WoogApi {
-  final _app = Router();
   final LakeRepository _repo;
+  late final Handler handler;
 
   WoogApi() : _repo = LakeRepository.memoryRepo() {
-    _app.get('/', _getHealth);
-    _app.get('/health', _getHealth);
-    _app.get('/lake', _getLakes);
-    _app.get('/lake/<lakeId>', _getLake);
-    _app.put('/lake/<lakeId>/temperature', _updateTemperature);
-  }
+    final privateRouter = Router();
+    privateRouter.put('/lake/<lakeId>/temperature', _updateTemperature);
+    final privateHandler = const Pipeline()
+        .addMiddleware(authMiddleware())
+        .addHandler(privateRouter);
 
-  Future<void> launch() async {
-    final handler = const Pipeline()
+    final publicRouter = Router(notFoundHandler: privateHandler);
+    publicRouter.get('/', _getHealth);
+    publicRouter.get('/health', _getHealth);
+    publicRouter.get('/lake', _getLakes);
+    publicRouter.get('/lake/<lakeId>', _getLake);
+
+    handler = const Pipeline()
         .addMiddleware(jsonHeaderMiddleware)
         .addMiddleware(corsMiddleware())
         .addMiddleware(logMiddleware())
-        .addHandler(_app);
+        .addHandler(publicRouter);
+  }
+
+  Future<void> launch() async {
     await io.serve(handler, InternetAddress.anyIPv4, 8080);
   }
 
