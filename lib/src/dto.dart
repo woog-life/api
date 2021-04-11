@@ -75,13 +75,19 @@ class LakeState {
 class LakeData {
   final DateTime time;
   final int temperature;
+  final String preciseTemperature;
 
-  const LakeData({required this.time, required this.temperature});
+  const LakeData({
+    required this.time,
+    required this.temperature,
+    required this.preciseTemperature,
+  });
 
   factory LakeData.fromData(model.LakeData data) {
     return LakeData(
       time: data.time,
-      temperature: data.temperature,
+      temperature: data.temperature.round(),
+      preciseTemperature: data.temperature.toStringAsFixed(2),
     );
   }
 
@@ -107,7 +113,7 @@ class TemperatureUpdate {
   model.LakeData toData() {
     return model.LakeData(
       time: time,
-      temperature: temperature.round(),
+      temperature: temperature,
     );
   }
 }
