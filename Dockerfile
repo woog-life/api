@@ -2,7 +2,7 @@ FROM google/dart:2.12 AS builder
 
 WORKDIR /app
 
-COPY pubspec.* .
+COPY pubspec.* ./
 RUN pub get
 COPY bin bin/
 COPY lib lib/
