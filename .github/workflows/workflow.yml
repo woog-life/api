@@ -46,6 +46,7 @@ jobs:
 
   push_docker:
     runs-on: ubuntu-latest
+    if: success() && github.ref == 'refs/heads/main'
     needs:
       - check_format
       - lint
