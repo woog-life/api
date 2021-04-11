@@ -6,6 +6,7 @@ COPY pubspec.* .
 RUN pub get
 COPY bin bin/
 COPY lib lib/
+RUN pub run build_runner build --delete-conflicting-outputs
 RUN dart compile exe bin/main.dart -o app
 
 FROM debian:buster-slim

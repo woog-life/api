@@ -2,20 +2,53 @@ name: Workflow
 on: [push]
 
 jobs:
-  test:
-    name: Test
+  generate:
+    name: Code Generation
     runs-on: ubuntu-latest
     container: google/dart:2.12
     steps:
       - name: Check out repo
         uses: actions/checkout@v1
+      - name: Initialize Cache
+        uses: actions/cache@v2
+        with:
+          key: ${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ hashFiles('pubspec.lock') }}-
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+      - name: Get dependencies
+        run: pub get
+      - name: Run code generation
+        run: pub run build_runner build
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    container: google/dart:2.12
+    needs: generate
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v1
+      - name: Restore Cache
+        uses: actions/cache@v2
+        with:
+          key: ${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ hashFiles('pubspec.lock') }}-
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            test/**/*.g.dart
       - name: Run tests
-        run: dart test
+        run: dart test --no-pub
 
   check_format:
     name: Check Format
     runs-on: ubuntu-latest
     container: google/dart:2.12
+    needs: generate
     steps:
       - name: Check out repo
         uses: actions/checkout@v1
@@ -30,11 +63,20 @@ jobs:
     name: Lint
     runs-on: ubuntu-latest
     container: google/dart:2.12
+    needs: generate
     steps:
       - name: Check out repo
         uses: actions/checkout@v1
-      - name: Get dependencies
-        run: pub get
+      - name: Restore Cache
+        uses: actions/cache@v2
+        with:
+          key: ${{ hashFiles('pubspec.lock') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ hashFiles('pubspec.lock') }}-
+          path: |
+            .dart_tool/
+            lib/**/*.g.dart
+            test/**/*.g.dart
       - name: Run Analysis
         run: dart analyze
 

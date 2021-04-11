@@ -5,7 +5,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/lake_repository.dart';
-import 'package:woog_api/model/lake_data.dart';
+import 'package:woog_api/src/dto.dart' as dto;
 import 'package:woog_api/src/middleware/auth.dart';
 import 'package:woog_api/src/middleware/cors.dart';
 import 'package:woog_api/src/middleware/json.dart';
@@ -47,13 +47,9 @@ class WoogApi {
     final lakes = await _repo.getLakes();
 
     return Response.ok(
-      jsonEncode([
-        for (final lake in lakes)
-          {
-            'id': lake.id,
-            'name': lake.name,
-          },
-      ]),
+      jsonEncode(
+        dto.LakeInfoList.of(lakes).toJson(),
+      ),
     );
   }
 
@@ -63,43 +59,24 @@ class WoogApi {
     if (lake == null) {
       return Response(HttpStatus.notFound);
     } else {
-      final data = lake.data;
       return Response.ok(
-        jsonEncode({
-          'id': lake.id,
-          'name': lake.name,
-          'data': data == null
-              ? null
-              : {
-                  'time': data.time.toIso8601String(),
-                  'temperature': data.temperature,
-                }
-        }),
+        jsonEncode(dto.LakeState.fromLake(lake).toJson()),
       );
     }
   }
 
   Future<Response> _updateTemperature(Request request, String lakeId) async {
     final body = jsonDecode(await request.readAsString());
-    if (body is! Map) {
+    if (body is! Map<String, dynamic>) {
       return Response(HttpStatus.badRequest);
     }
-    final timeString = body['time'];
-    final temperature = body['temperature'];
-    if (timeString is String && temperature is double) {
-      final data = LakeData(
-        time: DateTime.parse(timeString),
-        temperature: temperature.round(),
-      );
 
-      try {
-        _repo.updateData(lakeId, data);
-        return Response(HttpStatus.noContent);
-      } on NotFoundException {
-        return Response(HttpStatus.notFound);
-      }
-    } else {
-      return Response(HttpStatus.badRequest);
+    final update = dto.TemperatureUpdate.fromJson(body);
+    try {
+      _repo.updateData(lakeId, update.toData());
+      return Response(HttpStatus.noContent);
+    } on NotFoundException {
+      return Response(HttpStatus.notFound);
     }
   }
 }
