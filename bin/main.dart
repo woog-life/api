@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:woog_api/src/logger.dart';
 import 'package:woog_api/src/version.dart';
 import 'package:woog_api/woog_api.dart';
