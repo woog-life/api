@@ -10,7 +10,7 @@ abstract class RepositoryMigrator {
 
 @injectable
 class Migrator {
-  final int newestVersion = 1;
+  final int newestVersion = 2;
 
   final SqlLakeRepositoryMigrator _lakeRepositoryMigrator;
 

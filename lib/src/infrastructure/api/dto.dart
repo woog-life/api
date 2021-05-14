@@ -1,7 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
-import 'package:woog_api/src/domain/model/lake_data.dart' as model;
 import 'package:woog_api/src/domain/model/lake.dart';
+import 'package:woog_api/src/domain/model/lake_data.dart' as model;
 
 part 'dto.g.dart';
 
@@ -118,4 +118,17 @@ class TemperatureUpdateDto {
       temperature: temperature,
     );
   }
+}
+
+@JsonSerializable()
+@immutable
+class ErrorMessageDto {
+  final String errorMessage;
+
+  const ErrorMessageDto(this.errorMessage);
+
+  factory ErrorMessageDto.fromJson(Map<String, dynamic> json) =>
+      _$ErrorMessageDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ErrorMessageDtoToJson(this);
 }

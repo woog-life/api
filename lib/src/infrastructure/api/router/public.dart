@@ -6,26 +6,31 @@ import 'package:injectable/injectable.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
+import 'package:woog_api/src/application/use_case/get_interpolated_data.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 
 part 'public.g.dart';
 
 @injectable
 class PublicApi {
+  final GetInterpolatedData _getInterpolatedData;
   final LakeRepository _repo;
 
   Router get router => _$PublicApiRouter(this);
 
-  PublicApi(this._repo);
+  PublicApi(
+    this._repo,
+    this._getInterpolatedData,
+  );
 
   @Route.get('/')
   @Route.get('/health')
-  Response _getHealth(Request request) {
+  Response getHealth(Request request) {
     return Response(HttpStatus.ok);
   }
 
   @Route.get('/lake')
-  Future<Response> _getLakes(Request request) async {
+  Future<Response> getLakes(Request request) async {
     final lakes = await _repo.getLakes();
 
     return Response.ok(
@@ -35,20 +40,24 @@ class PublicApi {
     );
   }
 
+  int? _getPrecision(Request request) {
+    final precisionArgument = request.url.queryParameters['precision'];
+    if (precisionArgument == null) {
+      return null;
+    } else {
+      return min(5, max(1, int.parse(precisionArgument)));
+    }
+  }
+
   @Route.get('/lake/<lakeId>')
-  Future<Response> _getLake(Request request, String lakeId) async {
+  Future<Response> getLake(Request request, String lakeId) async {
     final lake = await _repo.getLake(lakeId);
 
-    final precisionArgument = request.url.queryParameters['precision'];
     final int? precision;
-    if (precisionArgument == null) {
-      precision = null;
-    } else {
-      try {
-        precision = min(5, max(1, int.parse(precisionArgument)));
-      } on FormatException {
-        return Response(HttpStatus.badRequest);
-      }
+    try {
+      precision = _getPrecision(request);
+    } on FormatException {
+      return Response(HttpStatus.badRequest);
     }
 
     if (lake == null) {
@@ -61,5 +70,40 @@ class PublicApi {
         ).toJson()),
       );
     }
+  }
+
+  @Route.get('/lake/<lakeId>/history/<timestamp>')
+  Future<Response> getInterpolatedData(
+    Request request,
+    String lakeId,
+    String timestamp,
+  ) async {
+    final time = DateTime.tryParse(timestamp);
+    if (time == null) {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(ErrorMessageDto('invalid timestamp: $timestamp')),
+      );
+    }
+
+    final int? precision;
+    try {
+      precision = _getPrecision(request);
+    } on FormatException {
+      return Response(HttpStatus.badRequest);
+    }
+
+    final data = await _getInterpolatedData(lakeId, time);
+
+    if (data == null) {
+      return Response.notFound(const ErrorMessageDto('No lake data found'));
+    }
+
+    return Response.ok(
+      jsonEncode(LakeDataDto.fromData(
+        data,
+        precision: precision,
+      )),
+    );
   }
 }

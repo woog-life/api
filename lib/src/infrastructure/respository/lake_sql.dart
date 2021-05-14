@@ -30,6 +30,16 @@ class SqlLakeRepository implements LakeRepository {
     );
   }
 
+  LakeData _dataFromColumns(Map<String, dynamic> columns) {
+    final temperature = columns[columnDataTemperature];
+    final timestamp = columns[columnDataTime];
+
+    return LakeData(
+      time: DateTime.fromMillisecondsSinceEpoch(timestamp as int),
+      temperature: temperature as double,
+    );
+  }
+
   @override
   Future<Set<Lake>> getLakes() async {
     final result = await _database.query(lakeTableName);
@@ -89,6 +99,32 @@ class SqlLakeRepository implements LakeRepository {
       conflictAlgorithm: ConflictAlgorithm.ignore,
     );
   }
+
+  @override
+  Future<NearDataDto> getNearestData(String lakeId, DateTime time) async {
+    final lowerResult = await _database.query(dataTableName,
+        columns: [
+          'max($columnDataTime) as $columnDataTime',
+          columnDataTemperature,
+        ],
+        where: '$columnDataId = ? AND $columnDataTime <= ?',
+        whereArgs: [lakeId, time.millisecondsSinceEpoch]);
+
+    final higherResult = await _database.query(dataTableName,
+        columns: [
+          'min($columnDataTime) as $columnDataTime',
+          columnDataTemperature,
+        ],
+        where: '$columnDataId = ? AND $columnDataTime >= ?',
+        whereArgs: [lakeId, time.millisecondsSinceEpoch]);
+
+    final lower =
+        lowerResult.isEmpty ? null : _dataFromColumns(lowerResult.single);
+    final higher =
+        higherResult.isEmpty ? null : _dataFromColumns(higherResult.single);
+
+    return NearDataDto(before: lower, after: higher);
+  }
 }
 
 @injectable
@@ -121,8 +157,21 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
         columnLakeName: bigWoog.name,
       },
     );
+
+    await upgrade(batch, 1, 2);
   }
 
   @override
-  Future<void> upgrade(Batch batch, int oldVersion, int newVersion) async {}
+  Future<void> upgrade(Batch batch, int oldVersion, int newVersion) async {
+    if (oldVersion < 2 && newVersion >= 2) {
+      batch.execute(
+        '''
+        CREATE INDEX idx_timestamp ON $dataTableName (
+          $columnDataId,
+          $columnDataTime
+        ) 
+        ''',
+      );
+    }
+  }
 }
