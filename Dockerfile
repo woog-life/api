@@ -10,6 +10,7 @@ RUN pub run build_runner build --delete-conflicting-outputs
 RUN dart compile exe bin/main.dart -o app
 
 FROM debian:buster-slim
+RUN apt-get update && apt-get install sqlite3 libsqlite3-dev -y && apt-get clean
 WORKDIR /app
 COPY --from=builder /app/app .
 EXPOSE 8080

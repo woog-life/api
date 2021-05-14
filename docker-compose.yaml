@@ -1,0 +1,13 @@
+version: "3.8"
+volumes:
+  data:
+
+services:
+  api:
+    volumes:
+      - data:/data
+    image: wooglife-api
+    build:
+      dockerfile: Dockerfile
+    environment:
+      DATABASES_PATH: /data
