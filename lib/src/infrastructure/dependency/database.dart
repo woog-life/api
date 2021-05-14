@@ -13,8 +13,10 @@ abstract class DatabaseModule {
     Config config,
     Migrator migrator,
   ) async {
+    sqfliteFfiInit();
+    databaseFactoryFfi.setDatabasesPath(config.databasesPath);
     return databaseFactoryFfi.openDatabase(
-      config.databasePath,
+      'woog.db',
       options: OpenDatabaseOptions(
         version: migrator.newestVersion,
         onCreate: migrator.onCreate,

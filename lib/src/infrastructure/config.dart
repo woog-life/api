@@ -6,7 +6,7 @@ import 'package:injectable/injectable.dart';
 @injectable
 class Config {
   final String apiKey;
-  final String databasePath;
+  final String databasesPath;
   final String sentryDsn;
 
   factory Config() {
@@ -16,9 +16,9 @@ class Config {
         name: 'API_KEY',
         defaultValue: 'default-api-key',
       ).resolve(environment),
-      databasePath: _Variable(
-        name: 'DATABASE_PATH',
-        defaultValue: 'woog.db',
+      databasesPath: _Variable(
+        name: 'DATABASES_PATH',
+        defaultValue: '.',
       ).resolve(environment),
       sentryDsn: _Variable(
         name: 'SENTRY_DSN',
@@ -29,7 +29,7 @@ class Config {
 
   Config._({
     required this.apiKey,
-    required this.databasePath,
+    required this.databasesPath,
     required this.sentryDsn,
   });
 }

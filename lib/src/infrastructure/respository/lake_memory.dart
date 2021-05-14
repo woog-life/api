@@ -4,6 +4,7 @@ import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/domain/model/lake.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 
+@test
 @Injectable(as: LakeRepository)
 class MemoryLakeRepository implements LakeRepository {
   final Map<String, Lake> _lakes;

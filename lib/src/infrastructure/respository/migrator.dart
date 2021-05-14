@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:sqflite_common/sqlite_api.dart';
+import 'package:woog_api/src/infrastructure/respository/lake_sql.dart';
 
 abstract class RepositoryMigrator {
   Future<void> create(Batch batch);
@@ -11,10 +12,15 @@ abstract class RepositoryMigrator {
 class Migrator {
   final int newestVersion = 1;
 
-  Migrator();
+  final SqlLakeRepositoryMigrator _lakeRepositoryMigrator;
+
+  Migrator(
+    this._lakeRepositoryMigrator,
+  );
 
   Future<void> onCreate(Database database, int version) async {
     final batch = database.batch();
+    _lakeRepositoryMigrator.create(batch);
     await batch.commit();
   }
 
@@ -24,6 +30,7 @@ class Migrator {
     int newVersion,
   ) async {
     final batch = database.batch();
+    _lakeRepositoryMigrator.upgrade(batch, oldVersion, newVersion);
     await batch.commit();
   }
 }
