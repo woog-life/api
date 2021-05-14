@@ -1,11 +1,14 @@
-import 'package:woog_api/lake_repository.dart';
-import 'package:woog_api/model/lake.dart';
-import 'package:woog_api/model/lake_data.dart';
+import 'package:injectable/injectable.dart';
+import 'package:woog_api/src/application/repository/exception.dart';
+import 'package:woog_api/src/application/repository/lake.dart';
+import 'package:woog_api/src/domain/model/lake.dart';
+import 'package:woog_api/src/domain/model/lake_data.dart';
 
+@Injectable(as: LakeRepository)
 class MemoryLakeRepository implements LakeRepository {
   final Map<String, Lake> _lakes;
 
-  MemoryLakeRepository.initial() : _lakes = {bigWoog.id: bigWoog};
+  MemoryLakeRepository() : _lakes = {bigWoog.id: bigWoog};
 
   @override
   Future<Lake?> getLake(String lakeId) {

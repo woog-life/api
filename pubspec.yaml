@@ -13,6 +13,10 @@ dependencies:
   # Logging
   logger: ^1.0.0
 
+  # Dependency injection
+  get_it: ^7.0.0
+  injectable: ^1.0.0
+
   # Web server
   shelf: ^1.1.0
 
@@ -30,6 +34,8 @@ dev_dependencies:
   build_runner: ^2.0.0
 
   json_serializable: ^4.1.0
+
+  injectable_generator: ^1.0.0
 
   # Access to info from pubspec
   build_version: ^2.0.0

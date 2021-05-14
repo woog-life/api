@@ -2,13 +2,15 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:injectable/injectable.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
-import 'package:woog_api/lake_repository.dart';
-import 'package:woog_api/src/dto.dart' as dto;
+import 'package:woog_api/src/application/repository/lake.dart';
+import 'package:woog_api/src/infrastructure/api/dto.dart';
 
 part 'public.g.dart';
 
+@injectable
 class PublicApi {
   final LakeRepository _repo;
 
@@ -28,7 +30,7 @@ class PublicApi {
 
     return Response.ok(
       jsonEncode(
-        dto.LakeInfoList.of(lakes).toJson(),
+        LakeInfoListDto.of(lakes).toJson(),
       ),
     );
   }
@@ -53,7 +55,7 @@ class PublicApi {
       return Response(HttpStatus.notFound);
     } else {
       return Response.ok(
-        jsonEncode(dto.LakeState.fromLake(
+        jsonEncode(LakeStateDto.fromLake(
           lake,
           precision: precision,
         ).toJson()),
