@@ -38,9 +38,8 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: data
-          env:
-            - name: DATABASE_PATH
-              value: /data/woog.db
           envFrom:
+            - configMapRef:
+                name: backend-config
             - secretRef:
                 name: apikey

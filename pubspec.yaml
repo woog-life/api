@@ -10,6 +10,9 @@ dependencies:
   # Static analysis
   meta: ^1.3.0
 
+  # Alerting
+  sentry: ^5.0.0
+
   # Logging
   logger: ^1.0.0
 

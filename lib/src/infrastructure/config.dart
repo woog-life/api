@@ -1,30 +1,36 @@
 import 'dart:io';
 
 import 'package:injectable/injectable.dart';
-import 'package:logger/logger.dart';
 
+@singleton
 @injectable
 class Config {
   final String apiKey;
   final String databasePath;
+  final String sentryDsn;
 
-  factory Config(Logger logger) {
+  factory Config() {
     final environment = Platform.environment;
     return Config._(
       apiKey: _Variable(
         name: 'API_KEY',
         defaultValue: 'default-api-key',
-      ).resolve(logger, environment),
+      ).resolve(environment),
       databasePath: _Variable(
         name: 'DATABASE_PATH',
         defaultValue: 'woog.db',
-      ).resolve(logger, environment),
+      ).resolve(environment),
+      sentryDsn: _Variable(
+        name: 'SENTRY_DSN',
+        defaultValue: '',
+      ).resolve(environment),
     );
   }
 
   Config._({
     required this.apiKey,
     required this.databasePath,
+    required this.sentryDsn,
   });
 }
 
@@ -37,10 +43,10 @@ class _Variable {
     required this.defaultValue,
   });
 
-  String resolve(Logger logger, Map<String, String> environment) {
+  String resolve(Map<String, String> environment) {
     final value = environment[name];
     if (value == null) {
-      logger.w('$name environment variable not set');
+      stderr.writeln('$name environment variable not set');
       return defaultValue;
     } else if (value.isEmpty) {
       throw StateError('Empty $name set');

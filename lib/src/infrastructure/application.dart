@@ -7,9 +7,9 @@ class Application {
   final GetIt _getIt;
   final Logger logger;
 
-  factory Application() {
+  static Future<Application> create() async {
     final getIt = GetIt.asNewInstance();
-    configureDependencies(getIt);
+    await configureDependencies(getIt);
     return Application._(getIt);
   }
 
@@ -17,8 +17,12 @@ class Application {
     this._getIt,
   ) : logger = _getIt<Logger>();
 
-  Future<void> launch() async {
+  Future<void> _launchApi() async {
     final api = _getIt<WoogApi>();
     await api.launch();
+  }
+
+  Future<void> launch() async {
+    await _launchApi();
   }
 }

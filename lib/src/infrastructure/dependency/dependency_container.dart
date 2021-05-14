@@ -3,4 +3,4 @@ import 'package:injectable/injectable.dart';
 import 'package:woog_api/src/infrastructure/dependency/dependency_container.config.dart';
 
 @InjectableInit()
-void configureDependencies(GetIt getIt) => $initGetIt(getIt);
+Future<void> configureDependencies(GetIt getIt) => $initGetIt(getIt);
