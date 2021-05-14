@@ -10,4 +10,3 @@ class LakeData {
     required this.temperature,
   });
 }
-

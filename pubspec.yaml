@@ -1,6 +1,6 @@
 name: woog_api
 description: The REST API for the Woog temperature.
-version: 0.2.0
+version: 0.3.0
 homepage: https://github.com/woog-life/api
 
 environment:
@@ -33,3 +33,5 @@ dev_dependencies:
 
   # Access to info from pubspec
   build_version: ^2.0.0
+
+  shelf_router_generator: ^1.0.0
