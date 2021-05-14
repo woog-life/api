@@ -26,6 +26,13 @@ spec:
         - name: backend
           image: ghcr.io/woog-life/api
           imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 2m
+              memory: 32Mi
+            limits:
+              cpu: 20m
+              memory: 64Mi
           ports:
             - containerPort: 8080
           volumeMounts:
