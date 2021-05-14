@@ -26,6 +26,10 @@ dependencies:
   # JSON serialization
   json_annotation: ^4.0.0
 
+  # Database
+  sqflite_common: ^2.0.0
+  sqflite_common_ffi: ^2.0.0
+
 
 dev_dependencies:
   test: ^1.14.4

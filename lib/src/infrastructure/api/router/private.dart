@@ -13,14 +13,18 @@ part 'private.g.dart';
 
 @injectable
 class PrivateApi {
+  final AuthMiddleware _authMiddleware;
   final LakeRepository _repo;
 
   Router get _router => _$PrivateApiRouter(this);
 
   Handler get handler =>
-      const Pipeline().addMiddleware(authMiddleware()).addHandler(_router);
+      const Pipeline().addMiddleware(_authMiddleware).addHandler(_router);
 
-  PrivateApi(this._repo);
+  PrivateApi(
+    this._authMiddleware,
+    this._repo,
+  );
 
   @Route.put('/lake/<lakeId>/temperature')
   Future<Response> _updateTemperature(Request request, String lakeId) async {
