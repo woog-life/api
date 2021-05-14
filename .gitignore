@@ -19,4 +19,5 @@ doc/api/
 
 # Generated files
 lib/**/*.g.dart
+lib/**/*.config.dart
 lib/src/version.dart
