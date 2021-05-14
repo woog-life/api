@@ -16,12 +16,22 @@ spec:
       labels:
         app: backend
     spec:
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: backend-data
       containers:
         - name: backend
           image: ghcr.io/woog-life/api
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
+          volumeMounts:
+            - mountPath: /data
+              name: data
+          env:
+            - name: DATABASE_PATH
+              value: /data/woog.db
           envFrom:
             - secretRef:
                 name: apikey
