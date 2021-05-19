@@ -6,7 +6,6 @@ import 'package:injectable/injectable.dart';
 @injectable
 class Config {
   final String apiKey;
-  final String databasesPath;
   final String sentryDsn;
   final String databaseName;
   final String databaseHost;
@@ -19,10 +18,6 @@ class Config {
       apiKey: _Variable(
         name: 'API_KEY',
         defaultValue: 'default-api-key',
-      ).resolve(environment),
-      databasesPath: _Variable(
-        name: 'DATABASES_PATH',
-        defaultValue: '.',
       ).resolve(environment),
       sentryDsn: _Variable(
         name: 'SENTRY_DSN',
@@ -49,7 +44,6 @@ class Config {
 
   Config._({
     required this.apiKey,
-    required this.databasesPath,
     required this.sentryDsn,
     required this.databaseHost,
     required this.databaseName,

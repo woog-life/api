@@ -10,8 +10,6 @@ services:
     image: wooglife-api
     build:
       context: .
-    environment:
-      DATABASES_PATH: /data
   db:
     volumes:
       - pg_data:/data
