@@ -115,6 +115,7 @@ class SqlLakeRepository implements LakeRepository {
       ''',
       substitutionValues: {
         'lakeId': lakeId,
+        // TODO: not sure if toUtc is necessary
         'time': data.time.toUtc(),
         'temperature': data.temperature,
       },
