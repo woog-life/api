@@ -1,0 +1,58 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backend-postgres-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-postgres-config
+data:
+  POSTGRES_DB: woog
+  POSTGRES_HOSTNAME: backend-postgres
+  POSTGRES_USER: woog
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-postgres
+  labels:
+    app: backend-postgres
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: backend-postgres
+  template:
+    metadata:
+      labels:
+        app: backend-postgres
+    spec:
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: backend-postgres-data
+      containers:
+        - name: backend-postgres
+          image: postgres:13-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - mountPath: /data
+              name: data
+          envFrom:
+            - secretRef:
+                name: woog-secrets
+            - configMapRef:
+                name: backend-postgres-config
