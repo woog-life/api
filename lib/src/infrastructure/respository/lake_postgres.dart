@@ -115,7 +115,7 @@ class SqlLakeRepository implements LakeRepository {
       ''',
       substitutionValues: {
         'lakeId': lakeId,
-        'time': data.time.toIso8601String(),
+        'time': data.time.toUtc(),
         'temperature': data.temperature,
       },
     );
