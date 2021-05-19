@@ -42,4 +42,4 @@ spec:
             - configMapRef:
                 name: backend-config
             - secretRef:
-                name: apikey
+                name: woog-secrets
