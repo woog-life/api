@@ -1,6 +1,7 @@
 version: "3.8"
 volumes:
   data:
+  pg_data:
 
 services:
   api:
@@ -8,6 +9,14 @@ services:
       - data:/data
     image: wooglife-api
     build:
-      dockerfile: Dockerfile
+      context: .
     environment:
       DATABASES_PATH: /data
+  db:
+    volumes:
+      - pg_data:/data
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_PASSWORD: pw
+    ports:
+      - 5432:5432

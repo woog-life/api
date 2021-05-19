@@ -1,6 +1,6 @@
 name: woog_api
 description: The REST API for the Woog temperature.
-version: 0.3.0
+version: 0.4.0
 homepage: https://github.com/woog-life/api
 
 environment:
@@ -30,8 +30,7 @@ dependencies:
   json_annotation: ^4.0.0
 
   # Database
-  sqflite_common: ^2.0.0
-  sqflite_common_ffi: ^2.0.0
+  postgres: ^2.0.0
 
 
 dev_dependencies:

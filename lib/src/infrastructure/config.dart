@@ -8,6 +8,11 @@ class Config {
   final String apiKey;
   final String databasesPath;
   final String sentryDsn;
+  final String databaseName;
+  final String databasePort;
+  final String databaseHost;
+  final String databaseUser;
+  final String databasePassword;
 
   factory Config() {
     final environment = Platform.environment;
@@ -24,6 +29,26 @@ class Config {
         name: 'SENTRY_DSN',
         defaultValue: '',
       ).resolve(environment),
+      databaseName: _Variable(
+        name: 'DATABASE_NAME',
+        defaultValue: 'postgres',
+      ).resolve(environment),
+      databasePort: _Variable(
+        name: 'DATABASE_PORT',
+        defaultValue: '5432',
+      ).resolve(environment),
+      databaseHost: _Variable(
+        name: 'DATABASE_HOST',
+        defaultValue: 'localhost',
+      ).resolve(environment),
+      databaseUser: _Variable(
+        name: 'DATABASE_USER',
+        defaultValue: 'postgres',
+      ).resolve(environment),
+      databasePassword: _Variable(
+        name: 'DATABASE_PASSWORD',
+        defaultValue: 'pw',
+      ).resolve(environment),
     );
   }
 
@@ -31,6 +56,11 @@ class Config {
     required this.apiKey,
     required this.databasesPath,
     required this.sentryDsn,
+    required this.databaseHost,
+    required this.databaseName,
+    required this.databasePort,
+    required this.databaseUser,
+    required this.databasePassword,
   });
 }
 
