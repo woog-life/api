@@ -9,12 +9,13 @@ class GetInterpolatedData {
   GetInterpolatedData(this._repo);
 
   Future<LakeData?> call(String lakeId, DateTime time) async {
-    final nearestData = await _repo.getNearestData(lakeId, time);
+    final targetTime = time.toUtc();
+    final nearestData = await _repo.getNearestData(lakeId, targetTime);
     final before = nearestData.before;
     final after = nearestData.after;
 
     if (before != null && after != null) {
-      return _interpolate(before: before, after: after, target: time);
+      return _interpolate(before: before, after: after, target: targetTime);
     } else if (before != null && after == null) {
       return before;
     } else if (before == null && after != null) {
