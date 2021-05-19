@@ -109,7 +109,7 @@ class SqlLakeRepository implements LakeRepository {
       VALUES (
          @lakeId,
          @time,
-         @temperature,
+         @temperature
       )
       ON CONFLICT DO NOTHING
       ''',
