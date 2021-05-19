@@ -9,7 +9,6 @@ class Config {
   final String databasesPath;
   final String sentryDsn;
   final String databaseName;
-  final String databasePort;
   final String databaseHost;
   final String databaseUser;
   final String databasePassword;
@@ -30,23 +29,19 @@ class Config {
         defaultValue: '',
       ).resolve(environment),
       databaseName: _Variable(
-        name: 'DATABASE_NAME',
+        name: 'POSTGRES_DB',
         defaultValue: 'postgres',
       ).resolve(environment),
-      databasePort: _Variable(
-        name: 'DATABASE_PORT',
-        defaultValue: '5432',
-      ).resolve(environment),
       databaseHost: _Variable(
-        name: 'DATABASE_HOST',
+        name: 'POSTGRES_HOSTNAME',
         defaultValue: 'localhost',
       ).resolve(environment),
       databaseUser: _Variable(
-        name: 'DATABASE_USER',
+        name: 'POSTGRES_USER',
         defaultValue: 'postgres',
       ).resolve(environment),
       databasePassword: _Variable(
-        name: 'DATABASE_PASSWORD',
+        name: 'POSTGRES_PASSWORD',
         defaultValue: 'pw',
       ).resolve(environment),
     );
@@ -58,7 +53,6 @@ class Config {
     required this.sentryDsn,
     required this.databaseHost,
     required this.databaseName,
-    required this.databasePort,
     required this.databaseUser,
     required this.databasePassword,
   });

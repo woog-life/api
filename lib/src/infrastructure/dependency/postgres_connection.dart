@@ -13,7 +13,7 @@ abstract class PostgresConnectionModule {
     logger.i('Initializing database');
     final connection = PostgreSQLConnection(
       config.databaseHost,
-      int.parse(config.databasePort),
+      5432,
       config.databaseName,
       username: config.databaseUser,
       password: config.databasePassword,
