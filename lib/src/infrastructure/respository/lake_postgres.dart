@@ -36,7 +36,7 @@ class SqlLakeRepository implements LakeRepository {
     final timestamp = row[columnDataTime];
 
     return LakeData(
-      time: DateTime.parse(timestamp as String),
+      time: timestamp as DateTime,
       temperature: temperature as double,
     );
   }
@@ -75,13 +75,13 @@ class SqlLakeRepository implements LakeRepository {
       final name = lakeRow[columnLakeName]! as String;
 
       final dataRow = row[dataTableName]!;
-      final time = dataRow[columnDataTime] as String?;
+      final time = dataRow[columnDataTime] as DateTime?;
       final value = dataRow[columnDataTemperature] as double?;
 
       final LakeData? data;
       if (time != null && value != null) {
         data = LakeData(
-          time: DateTime.parse(time),
+          time: time,
           temperature: value,
         );
       } else {
