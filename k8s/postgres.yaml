@@ -47,7 +47,8 @@ spec:
           image: postgres:13-alpine
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8080
+            - containerPort: 5432
+              protocol: TCP
           volumeMounts:
             - mountPath: /data
               name: data
@@ -56,3 +57,16 @@ spec:
                 name: woog-secrets
             - configMapRef:
                 name: backend-postgres-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-postgres
+spec:
+  ports:
+    - name: psql
+      port: 5432
+      protocol: TCP
+      targetPort: 5432
+  selector:
+    app: backend-postgres
