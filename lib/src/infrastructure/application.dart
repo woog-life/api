@@ -1,12 +1,15 @@
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:woog_api/src/infrastructure/api/woog_api.dart';
+import 'package:woog_api/src/infrastructure/config.dart';
 import 'package:woog_api/src/infrastructure/dependency/dependency_container.dart';
 import 'package:woog_api/src/infrastructure/respository/migrator.dart';
 
 class Application {
   final GetIt _getIt;
   final Logger logger;
+
+  Config get config => _getIt<Config>();
 
   static Future<Application> create() async {
     final getIt = GetIt.asNewInstance();

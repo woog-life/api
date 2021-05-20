@@ -12,6 +12,9 @@ RUN dart compile exe bin/main.dart -o app
 
 FROM scratch
 
+ARG build
+ENV BUILD_SHA=$build
+
 #RUN apt-get update && apt-get install sqlite3 libsqlite3-dev -y && apt-get clean
 COPY --from=builder /runtime/ /
 COPY --from=builder /app/app /app/

@@ -2,7 +2,6 @@ import 'package:injectable/injectable.dart';
 import 'package:sentry/sentry.dart';
 import 'package:woog_api/src/infrastructure/config.dart';
 import 'package:woog_api/src/infrastructure/sentry/sentry_state.dart';
-import 'package:woog_api/src/version.dart';
 
 @module
 abstract class SentryModule {
@@ -16,7 +15,7 @@ abstract class SentryModule {
       await Sentry.init(
         (options) {
           options.dsn = dsn;
-          options.release = packageVersion;
+          options.release = '${config.version}+${config.build}';
         },
       );
       return SentryState(isEnabled: true);

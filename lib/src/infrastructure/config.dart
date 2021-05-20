@@ -1,12 +1,18 @@
 import 'dart:io';
 
 import 'package:injectable/injectable.dart';
+import 'package:woog_api/src/version.dart';
 
 @singleton
 @injectable
 class Config {
+  final String version;
+  final String build;
+
   final String apiKey;
+
   final String sentryDsn;
+
   final String databaseName;
   final String databaseHost;
   final String databaseUser;
@@ -15,6 +21,11 @@ class Config {
   factory Config() {
     final environment = Platform.environment;
     return Config._(
+      version: packageVersion,
+      build: _Variable(
+        name: 'BUILD_SHA',
+        defaultValue: 'dev',
+      ).resolve(environment),
       apiKey: _Variable(
         name: 'API_KEY',
         defaultValue: 'default-api-key',
@@ -43,6 +54,8 @@ class Config {
   }
 
   Config._({
+    required this.version,
+    required this.build,
     required this.apiKey,
     required this.sentryDsn,
     required this.databaseHost,
@@ -63,11 +76,9 @@ class _Variable {
 
   String resolve(Map<String, String> environment) {
     final value = environment[name];
-    if (value == null) {
-      stderr.writeln('$name environment variable not set');
+    if (value == null || value.isEmpty) {
+      stderr.writeln('$name environment variable not set or empty');
       return defaultValue;
-    } else if (value.isEmpty) {
-      throw StateError('Empty $name set');
     } else {
       return value;
     }
