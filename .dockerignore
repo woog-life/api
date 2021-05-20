@@ -6,6 +6,7 @@ build/
 .github/
 .gitignore
 .packages
-k8s/
+templates/
+values.yaml
 test/
 .idea/
