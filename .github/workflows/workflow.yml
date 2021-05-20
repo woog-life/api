@@ -73,5 +73,5 @@ jobs:
         run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
       - uses: WyriHaximus/github-action-helm3@v2
         with:
-          exec: helm upgrade config . --install --atomic --namespace=wooglife
+          exec: helm upgrade config . --install --atomic
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'

@@ -2,6 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  namespace: wooglife
   name: backend-postgres-data
 spec:
   accessModes:
@@ -13,6 +14,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: wooglife
   name: backend-postgres-config
 data:
   POSTGRES_DB: woog
@@ -22,6 +24,7 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: wooglife
   name: backend-postgres
   labels:
     app: backend-postgres
@@ -61,6 +64,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: wooglife
   name: backend-postgres
 spec:
   ports:
