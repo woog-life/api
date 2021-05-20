@@ -1,15 +1,16 @@
 version: "3.8"
 volumes:
-  data:
   pg_data:
 
 services:
   api:
-    volumes:
-      - data:/data
     image: wooglife-api
     build:
       context: .
+    environment:
+      POSTGRES_HOSTNAME: db
+    ports:
+    - 8080:8080
   db:
     volumes:
       - pg_data:/data
