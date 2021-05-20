@@ -60,6 +60,17 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build the tagged Docker image
-        run: docker build -t ghcr.io/woog-life/api:latest .
+        run: docker build -t ghcr.io/woog-life/api:${GITHUB_SHA} .
       - name: Push the tagged Docker image
-        run: docker push ghcr.io/woog-life/api:latest
+        run: docker push ghcr.io/woog-life/api:${GITHUB_SHA}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: push_docker
+    steps:
+      - name: Substitute environment variables in values.yaml
+        run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
+      - uses: WyriHaximus/github-action-helm3@v2
+        with:
+          exec: helm upgrade config . --install --wait --atomic --namespace=wooglife
+          kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'

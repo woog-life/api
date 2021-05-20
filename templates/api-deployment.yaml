@@ -23,8 +23,8 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ghcr.io/woog-life/api
-          imagePullPolicy: Always
+          image: {{ .Values.api.image }}
+          imagePullPolicy: IfNotPresent
           resources:
             requests:
               cpu: 2m
