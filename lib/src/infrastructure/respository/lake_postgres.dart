@@ -126,7 +126,7 @@ class SqlLakeRepository implements LakeRepository {
   Future<NearDataDto> getNearestData(String lakeId, DateTime time) async {
     final connection = await _connection;
     final lowerResult = await connection.mappedResultsQuery(
-        '''
+      '''
         SELECT $columnDataTime, $columnDataTemperature
         FROM $dataTableName
         WHERE $columnDataId = @lakeId AND $columnDataTime <= @time
@@ -140,7 +140,7 @@ class SqlLakeRepository implements LakeRepository {
     );
 
     final higherResult = await connection.mappedResultsQuery(
-        '''
+      '''
         SELECT $columnDataTime, $columnDataTemperature
         FROM $dataTableName
         WHERE $columnDataId = @lakeId AND $columnDataTime >= @time    
