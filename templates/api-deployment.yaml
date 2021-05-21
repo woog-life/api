@@ -33,6 +33,10 @@ spec:
             limits:
               cpu: 20m
               memory: 64Mi
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /health
           ports:
             - containerPort: 8080
           envFrom:
