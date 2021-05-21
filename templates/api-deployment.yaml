@@ -7,7 +7,7 @@ metadata:
   labels:
     app: backend
 spec:
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 1
   strategy:
     type: RollingUpdate
@@ -28,10 +28,10 @@ spec:
           imagePullPolicy: IfNotPresent
           resources:
             requests:
-              cpu: 2m
+              cpu: 5m
               memory: 32Mi
             limits:
-              cpu: 20m
+              cpu: 15m
               memory: 64Mi
           readinessProbe:
             httpGet:
