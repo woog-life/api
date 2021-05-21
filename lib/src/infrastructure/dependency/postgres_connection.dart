@@ -10,7 +10,7 @@ abstract class PostgresConnectionModule {
     Logger logger,
     Config config,
   ) async {
-    logger.i('Initializing database');
+    logger.d('Connecting to database server');
     final connection = PostgreSQLConnection(
       config.databaseHost,
       5432,
