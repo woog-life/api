@@ -50,6 +50,13 @@ class Migrator {
         }
       });
     } else {
+      await _upgrade(connection);
+    }
+  }
+
+  Future<void> _upgrade(PostgreSQLConnection connection) async {
+    final lock = await _Lock.obtain(_logger, connection);
+    try {
       final row = await connection.query(
         '''
         SELECT value FROM $tableName
@@ -71,6 +78,8 @@ class Migrator {
       } else {
         _logger.i('Database schema is up-to-date');
       }
+    } finally {
+      lock.unlock();
     }
   }
 
@@ -114,12 +123,65 @@ class Migrator {
       ''',
     );
     if (table.isNotEmpty) {
-      await connection.execute('''
+      await connection.execute(
+        '''
         DROP TABLE $oldTableName;
-        ''');
+        ''',
+      );
       return true;
     } else {
       return false;
+    }
+  }
+}
+
+class _Lock {
+  static const _key = 'lock';
+
+  final PostgreSQLConnection _connection;
+  bool _isLocked;
+
+  _Lock._locked(this._connection) : _isLocked = true;
+
+  static Future<_Lock> obtain(
+    Logger logger,
+    PostgreSQLConnection connection,
+  ) async {
+    while (true) {
+      logger.d('Trying to obtain migration lock');
+      try {
+        await connection.execute(
+          '''
+          INSERT INTO $tableName (key, value)
+          VALUES (@key, @value);
+          ''',
+          substitutionValues: {'key': _key, 'value': 1},
+        );
+        return _Lock._locked(connection);
+      } on PostgreSQLException catch (e) {
+        if (e.code == '23505') {
+          logger.i('Waiting for lock to be released');
+          await Future.delayed(const Duration(seconds: 5));
+        } else {
+          logger.e('Could not obtain lock', e);
+          rethrow;
+        }
+      }
+    }
+  }
+
+  Future<void> unlock() async {
+    if (_isLocked) {
+      await _connection.execute(
+        '''
+        DELETE FROM $tableName
+        WHERE key = @key;
+        ''',
+        substitutionValues: {'key': _key},
+      );
+      _isLocked = false;
+    } else {
+      throw StateError('Not in locked state');
     }
   }
 }
