@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
+import 'package:woog_api/src/domain/error/time.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 
 @injectable
@@ -9,13 +10,16 @@ class GetInterpolatedData {
   GetInterpolatedData(this._repo);
 
   Future<LakeData?> call(String lakeId, DateTime time) async {
-    final targetTime = time.toUtc();
-    final nearestData = await _repo.getNearestData(lakeId, targetTime);
+    if(!time.isUtc) {
+      throw NonUtcTimeError(time);
+    }
+
+    final nearestData = await _repo.getNearestData(lakeId, time);
     final before = nearestData.before;
     final after = nearestData.after;
 
     if (before != null && after != null) {
-      return _interpolate(before: before, after: after, target: targetTime);
+      return _interpolate(before: before, after: after, target: time);
     } else if (before != null && after == null) {
       return before;
     } else if (before == null && after != null) {

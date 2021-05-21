@@ -5,8 +5,8 @@ import 'package:injectable/injectable.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/src/application/use_case/update_temperature.dart';
-import 'package:woog_api/src/domain/error/future_time.dart';
 import 'package:woog_api/src/domain/error/lake_not_found.dart';
+import 'package:woog_api/src/domain/error/time.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/auth.dart';
 
@@ -45,7 +45,7 @@ class PrivateApi {
           ErrorMessageDto(e.toString()),
         ),
       );
-    } on FutureTimeError catch (e) {
+    } on TimeError catch (e) {
       return Response(
         HttpStatus.badRequest,
         body: jsonEncode(

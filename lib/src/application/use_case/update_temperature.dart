@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
 import 'package:woog_api/src/application/repository/exception.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
-import 'package:woog_api/src/domain/error/future_time.dart';
 import 'package:woog_api/src/domain/error/lake_not_found.dart';
+import 'package:woog_api/src/domain/error/time.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 
 @injectable
@@ -12,6 +12,10 @@ class UpdateTemperature {
   UpdateTemperature(this._repo);
 
   Future<void> call(String lakeId, DateTime time, double temperature) async {
+    if (!time.isUtc) {
+      throw NonUtcTimeError(time);
+    }
+
     if (time.isAfter(DateTime.now())) {
       throw FutureTimeError(time);
     }
