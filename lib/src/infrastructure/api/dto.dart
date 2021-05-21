@@ -111,13 +111,6 @@ class TemperatureUpdateDto {
       _$TemperatureUpdateDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$TemperatureUpdateDtoToJson(this);
-
-  model.LakeData toData() {
-    return model.LakeData(
-      time: time,
-      temperature: temperature,
-    );
-  }
 }
 
 @JsonSerializable()
