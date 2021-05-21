@@ -10,7 +10,7 @@ class GetInterpolatedData {
   GetInterpolatedData(this._repo);
 
   Future<LakeData?> call(String lakeId, DateTime time) async {
-    if(!time.isUtc) {
+    if (!time.isUtc) {
       throw NonUtcTimeError(time);
     }
 
