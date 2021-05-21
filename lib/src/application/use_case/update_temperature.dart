@@ -16,7 +16,8 @@ class UpdateTemperature {
       throw NonUtcTimeError(time);
     }
 
-    if (time.isAfter(DateTime.now())) {
+    final aMinuteFromNow = DateTime.now().add(const Duration(minutes: 1));
+    if (time.isAfter(aMinuteFromNow)) {
       throw FutureTimeError(time);
     }
 
