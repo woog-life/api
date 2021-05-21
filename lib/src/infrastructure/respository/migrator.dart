@@ -14,12 +14,13 @@ abstract class RepositoryMigrator {
   );
 }
 
-const tableName = 'migrator';
-const id = 1;
+const tableName = 'migrator2';
+const oldTableName = 'migrator';
+const keyVersion = 'version';
 
 @injectable
 class Migrator {
-  final int newestVersion = 1;
+  final int newestVersion = 2;
 
   final Logger _logger;
   final GetIt _getIt;
@@ -33,6 +34,7 @@ class Migrator {
 
   Future<void> migrate() async {
     final connection = await _getIt.getAsync<PostgreSQLConnection>();
+    final isLegacy = await _dropOldTable(connection);
     final table = await connection.query(
       '''
       SELECT * FROM information_schema.tables
@@ -43,19 +45,21 @@ class Migrator {
       _logger.i('Running initial migration');
       await connection.transaction((connection) async {
         await _createVersionTable(connection);
-        await _lakeRepositoryMigrator.create(connection);
+        if (!isLegacy) {
+          await _lakeRepositoryMigrator.create(connection);
+        }
       });
     } else {
       final row = await connection.query(
         '''
-        SELECT version FROM $tableName
-        WHERE id = @id
+        SELECT value FROM $tableName
+        WHERE key = @key
         ''',
-        substitutionValues: {'id': id},
+        substitutionValues: {'key': keyVersion},
       );
       final version = row.single.single as int;
       if (version < newestVersion) {
-        _logger.i('Migrating from $version to $newestVersion');
+        _logger.i('Migrating database from version $version to $newestVersion');
         await connection.transaction((connection) async {
           await _setVersion(connection, newestVersion);
           await _lakeRepositoryMigrator.upgrade(
@@ -76,12 +80,14 @@ class Migrator {
   ) async {
     await connection.execute(
       '''
-      INSERT INTO $tableName (id, version)
-      VALUES (@id, @version)
+      INSERT INTO $tableName (key, value)
+      VALUES (@key, @value)
+      ON CONFLICT (key)
+      DO UPDATE SET value = @value;
       ''',
       substitutionValues: {
-        'id': id,
-        'version': version,
+        'key': keyVersion,
+        'value': version,
       },
     );
   }
@@ -92,11 +98,28 @@ class Migrator {
     await connection.execute(
       '''
       CREATE TABLE $tableName (
-        id INTEGER PRIMARY KEY,
-        version INTEGER NOT NULL
+        key varchar(64) PRIMARY KEY,
+        value INTEGER NOT NULL
       );
       ''',
     );
-    await _setVersion(connection, 1);
+    await _setVersion(connection, 2);
+  }
+
+  Future<bool> _dropOldTable(PostgreSQLExecutionContext connection) async {
+    final table = await connection.query(
+      '''
+      SELECT * FROM information_schema.tables
+      WHERE table_name = '$oldTableName';
+      ''',
+    );
+    if (table.isNotEmpty) {
+      await connection.execute('''
+        DROP TABLE $oldTableName;
+        ''');
+      return true;
+    } else {
+      return false;
+    }
   }
 }
