@@ -4,11 +4,11 @@ import 'package:woog_api/src/domain/model/lake.dart';
 
 @injectable
 class GetLake {
-final  LakeRepository _repo;
+  final LakeRepository _repo;
 
   GetLake(this._repo);
 
-  Future<Lake?> call(String lakeId) async{
+  Future<Lake?> call(String lakeId) async {
     return _repo.getLake(lakeId);
   }
 }
