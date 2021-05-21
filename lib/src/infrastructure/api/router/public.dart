@@ -5,21 +5,24 @@ import 'dart:math';
 import 'package:injectable/injectable.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
-import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/application/use_case/get_interpolated_data.dart';
+import 'package:woog_api/src/application/use_case/get_lake.dart';
+import 'package:woog_api/src/application/use_case/get_lakes.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 
 part 'public.g.dart';
 
 @injectable
 class PublicApi {
+  final GetLakes _getLakes;
+  final GetLake _getLake;
   final GetInterpolatedData _getInterpolatedData;
-  final LakeRepository _repo;
 
   Router get router => _$PublicApiRouter(this);
 
   PublicApi(
-    this._repo,
+    this._getLakes,
+    this._getLake,
     this._getInterpolatedData,
   );
 
@@ -31,7 +34,7 @@ class PublicApi {
 
   @Route.get('/lake')
   Future<Response> getLakes(Request request) async {
-    final lakes = await _repo.getLakes();
+    final lakes = await _getLakes();
 
     return Response.ok(
       jsonEncode(
@@ -51,7 +54,7 @@ class PublicApi {
 
   @Route.get('/lake/<lakeId>')
   Future<Response> getLake(Request request, String lakeId) async {
-    final lake = await _repo.getLake(lakeId);
+    final lake = await _getLake(lakeId);
 
     final int? precision;
     try {
