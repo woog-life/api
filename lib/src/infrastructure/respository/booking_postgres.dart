@@ -141,8 +141,17 @@ class SqlBookingRepositoryMigrator implements RepositoryMigrator {
     int oldVersion,
     int newVersion,
   ) async {
-    if (newVersion == 3) {
+    if (oldVersion < 3 && newVersion >= 3) {
       await create(transaction);
     }
+    if (oldVersion < 4 && newVersion >= 4) {
+      await _dropData(transaction);
+    }
+  }
+
+  Future<void> _dropData(
+    PostgreSQLExecutionContext transaction,
+  ) async {
+    await transaction.execute('DELETE FROM $tableName');
   }
 }
