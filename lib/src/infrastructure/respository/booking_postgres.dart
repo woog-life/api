@@ -144,7 +144,7 @@ class SqlBookingRepositoryMigrator implements RepositoryMigrator {
     if (oldVersion < 3 && newVersion >= 3) {
       await create(transaction);
     }
-    if (oldVersion < 4 && newVersion >= 4) {
+    if (oldVersion < 5 && newVersion >= 4) {
       await _dropData(transaction);
     }
   }
