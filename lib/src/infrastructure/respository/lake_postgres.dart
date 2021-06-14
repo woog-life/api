@@ -194,22 +194,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
         ) 
         ''',
     );
-    await batch.execute(
-      '''
-      INSERT INTO $lakeTableName (
-        $columnLakeId,
-        $columnLakeName
-      )
-      VALUES (
-        @id,
-        @name
-      )
-      ''',
-      substitutionValues: {
-        'id': bigWoog.id,
-        'name': bigWoog.name,
-      },
-    );
+    await _insertLake(batch, bigWoog);
   }
 
   @override
@@ -222,8 +207,19 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
       await create(transaction);
     }
     if (oldVersion < 3 && newVersion >= 3) {
-      await transaction.execute(
-        '''
+      await _insertLake(transaction, muehlchen);
+    }
+    if (oldVersion < 6 && newVersion >= 6) {
+      await _insertLake(transaction, alster);
+    }
+  }
+
+  Future<void> _insertLake(
+    PostgreSQLExecutionContext transaction,
+    Lake lake,
+  ) async {
+    await transaction.execute(
+      '''
         INSERT INTO $lakeTableName (
           $columnLakeId,
           $columnLakeName
@@ -233,11 +229,10 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
           @name
         )
         ''',
-        substitutionValues: {
-          'id': muehlchen.id,
-          'name': muehlchen.name,
-        },
-      );
-    }
+      substitutionValues: {
+        'id': muehlchen.id,
+        'name': muehlchen.name,
+      },
+    );
   }
 }
