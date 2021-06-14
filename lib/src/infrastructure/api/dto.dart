@@ -115,6 +115,87 @@ class TemperatureUpdateDto {
 
 @JsonSerializable()
 @immutable
+class EventDto {
+  final String variation;
+  final String bookingLink;
+  final DateTime beginTime;
+  final DateTime endTime;
+  final DateTime saleStartTime;
+
+  const EventDto({
+    required this.variation,
+    required this.bookingLink,
+    required this.beginTime,
+    required this.endTime,
+    required this.saleStartTime,
+  });
+
+  factory EventDto.fromJson(Map<String, dynamic> json) =>
+      _$EventDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$EventDtoToJson(this);
+}
+
+@JsonSerializable()
+@immutable
+class EventsDto {
+  final List<EventDto> events;
+
+  const EventsDto(this.events);
+
+  factory EventsDto.fromJson(Map<String, dynamic> json) =>
+      _$EventsDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$EventsDtoToJson(this);
+}
+
+@JsonSerializable()
+@immutable
+class EventUpdateDto {
+  @JsonKey(name: 'booking_link')
+  final String bookingLink;
+  @JsonKey(name: 'begin_time')
+  final DateTime beginTime;
+  @JsonKey(name: 'end_time')
+  final DateTime endTime;
+  @JsonKey(name: 'sale_start')
+  final DateTime saleStartTime;
+  @JsonKey(name: 'is_available')
+  final bool isAvailable;
+
+  const EventUpdateDto({
+    required this.bookingLink,
+    required this.beginTime,
+    required this.endTime,
+    required this.saleStartTime,
+    required this.isAvailable,
+  });
+
+  factory EventUpdateDto.fromJson(Map<String, dynamic> json) =>
+      _$EventUpdateDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$EventUpdateDtoToJson(this);
+}
+
+@JsonSerializable()
+@immutable
+class EventsUpdateDto {
+  final String variation;
+  final List<EventUpdateDto> events;
+
+  const EventsUpdateDto({
+    required this.variation,
+    required this.events,
+  });
+
+  factory EventsUpdateDto.fromJson(Map<String, dynamic> json) =>
+      _$EventsUpdateDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$EventsUpdateDtoToJson(this);
+}
+
+@JsonSerializable()
+@immutable
 class ErrorMessageDto {
   final String errorMessage;
 

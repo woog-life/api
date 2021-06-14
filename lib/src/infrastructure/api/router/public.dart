@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:injectable/injectable.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
+import 'package:woog_api/src/application/use_case/get_events.dart';
 import 'package:woog_api/src/application/use_case/get_interpolated_data.dart';
 import 'package:woog_api/src/application/use_case/get_lake.dart';
 import 'package:woog_api/src/application/use_case/get_lakes.dart';
@@ -17,6 +18,7 @@ class PublicApi {
   final GetLakes _getLakes;
   final GetLake _getLake;
   final GetInterpolatedData _getInterpolatedData;
+  final GetEvents _getEvents;
 
   Router get router => _$PublicApiRouter(this);
 
@@ -24,6 +26,7 @@ class PublicApi {
     this._getLakes,
     this._getLake,
     this._getInterpolatedData,
+    this._getEvents,
   );
 
   @Route.get('/')
@@ -106,6 +109,26 @@ class PublicApi {
       jsonEncode(LakeDataDto.fromData(
         data,
         precision: precision,
+      )),
+    );
+  }
+
+  @Route.get('/lake/<lakeId>/booking')
+  Future<Response> _getBooking(Request request, String lakeId) async {
+    final events = await _getEvents(lakeId);
+
+    return Response.ok(
+      jsonEncode(EventsDto(
+        [
+          for (final event in events)
+            EventDto(
+              variation: event.variation,
+              bookingLink: event.bookingLink,
+              beginTime: event.beginTime,
+              endTime: event.endTime,
+              saleStartTime: event.saleStartTime,
+            )
+        ],
       )),
     );
   }

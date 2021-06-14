@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:injectable/injectable.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
+import 'package:woog_api/src/application/use_case/update_events.dart';
 import 'package:woog_api/src/application/use_case/update_temperature.dart';
 import 'package:woog_api/src/domain/error/lake_not_found.dart';
 import 'package:woog_api/src/domain/error/time.dart';
@@ -16,6 +17,7 @@ part 'private.g.dart';
 class PrivateApi {
   final AuthMiddleware _authMiddleware;
   final UpdateTemperature _updateTemperature;
+  final UpdateEvents _updateEvents;
 
   Router get _router => _$PrivateApiRouter(this);
 
@@ -25,6 +27,7 @@ class PrivateApi {
   PrivateApi(
     this._authMiddleware,
     this._updateTemperature,
+    this._updateEvents,
   );
 
   @Route.put('/lake/<lakeId>/temperature')
@@ -50,6 +53,41 @@ class PrivateApi {
         HttpStatus.badRequest,
         body: jsonEncode(
           ErrorMessageDto(e.toString()).toJson(),
+        ),
+      );
+    }
+  }
+
+  @Route.put('/lake/<lakeId>/booking')
+  Future<Response> _putBooking(Request request, String lakeId) async {
+    final body = jsonDecode(await request.readAsString());
+    if (body is! Map<String, dynamic>) {
+      return Response(HttpStatus.badRequest);
+    }
+
+    final update = EventsUpdateDto.fromJson(body);
+    try {
+      await _updateEvents(
+        lakeId,
+        update.variation,
+        update.events
+            .map(
+              (e) => UpdateEvent(
+                bookingLink: e.bookingLink,
+                beginTime: e.beginTime,
+                endTime: e.endTime,
+                saleStartTime: e.saleStartTime,
+                isAvailable: e.isAvailable,
+              ),
+            )
+            .toList(growable: false),
+      );
+      return Response(HttpStatus.noContent);
+    } on LakeNotFoundError catch (e) {
+      return Response(
+        HttpStatus.notFound,
+        body: jsonEncode(
+          ErrorMessageDto(e.toString()),
         ),
       );
     }
