@@ -217,5 +217,27 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
     PostgreSQLExecutionContext transaction,
     int oldVersion,
     int newVersion,
-  ) async {}
+  ) async {
+    if (oldVersion < 2 && newVersion >= 2) {
+      await create(transaction);
+    }
+    if (oldVersion < 3 && newVersion >= 3) {
+      await transaction.execute(
+        '''
+        INSERT INTO $lakeTableName (
+          $columnLakeId,
+          $columnLakeName
+        )
+        VALUES (
+          @id,
+          @name
+        )
+        ''',
+        substitutionValues: {
+          'id': muehlchen.id,
+          'name': muehlchen.name,
+        },
+      );
+    }
+  }
 }

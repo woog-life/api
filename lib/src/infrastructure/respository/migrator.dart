@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:postgres/postgres.dart';
+import 'package:woog_api/src/infrastructure/respository/booking_postgres.dart';
 import 'package:woog_api/src/infrastructure/respository/lake_postgres.dart';
 
 abstract class RepositoryMigrator {
@@ -20,16 +21,18 @@ const keyVersion = 'version';
 
 @injectable
 class Migrator {
-  final int newestVersion = 2;
+  final int newestVersion = 3;
 
   final Logger _logger;
   final GetIt _getIt;
   final SqlLakeRepositoryMigrator _lakeRepositoryMigrator;
+  final SqlBookingRepositoryMigrator _bookingRepositoryMigrator;
 
   Migrator(
     this._logger,
     this._getIt,
     this._lakeRepositoryMigrator,
+    this._bookingRepositoryMigrator,
   );
 
   Future<void> migrate() async {
@@ -70,6 +73,11 @@ class Migrator {
         await connection.transaction((connection) async {
           await _setVersion(connection, newestVersion);
           await _lakeRepositoryMigrator.upgrade(
+            connection,
+            version,
+            newestVersion,
+          );
+          await _bookingRepositoryMigrator.upgrade(
             connection,
             version,
             newestVersion,

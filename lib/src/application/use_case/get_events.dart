@@ -1,19 +1,17 @@
 import 'package:injectable/injectable.dart';
+import 'package:woog_api/src/application/repository/booking.dart';
 import 'package:woog_api/src/domain/model/event.dart';
 
 @injectable
 class GetEvents {
+  final BookingRepository _repo;
+
+  GetEvents(this._repo);
+
   Future<List<Event>> call(String lakeId) async {
-    // TODO: implement
-    return [
-      Event(
-        variation: 'Badestelle Familienbad',
-        bookingLink: 'https://ztix.de/hp/events/3834/info',
-        beginTime: DateTime.now().toUtc(),
-        endTime: DateTime.now().toUtc().add(const Duration(hours: 5)),
-        saleStartTime: DateTime.now().toUtc(),
-        isAvailable: true,
-      )
-    ];
+    final now = DateTime.now();
+
+    final events = await _repo.getAvailableEvents(lakeId, now);
+    return events;
   }
 }
