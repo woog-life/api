@@ -230,8 +230,8 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
         )
         ''',
       substitutionValues: {
-        'id': muehlchen.id,
-        'name': muehlchen.name,
+        'id': lake.id,
+        'name': lake.name,
       },
     );
   }
