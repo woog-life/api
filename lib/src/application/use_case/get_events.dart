@@ -7,10 +7,10 @@ class GetEvents {
     // TODO: implement
     return [
       Event(
-        variation: "Badestelle Familienbad",
-        bookingLink: "https://ztix.de/hp/events/3834/info",
+        variation: 'Badestelle Familienbad',
+        bookingLink: 'https://ztix.de/hp/events/3834/info',
         beginTime: DateTime.now().toUtc(),
-        endTime: DateTime.now().toUtc().add(Duration(hours: 5)),
+        endTime: DateTime.now().toUtc().add(const Duration(hours: 5)),
         saleStartTime: DateTime.now().toUtc(),
         isAvailable: true,
       )
