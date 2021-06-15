@@ -34,3 +34,8 @@ final alster = Lake(
   id: '55e5f52a-2de8-458a-828f-3c043ef458d9',
   name: 'Alster in Hamburg',
 );
+
+final cuxhaven = Lake(
+  id: 'd074654c-dedd-46c3-8042-af55c93c910e',
+  name: 'Nordsee bei Cuxhaven',
+);

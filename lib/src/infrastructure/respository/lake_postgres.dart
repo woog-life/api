@@ -212,6 +212,9 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
     if (oldVersion < 6 && newVersion >= 6) {
       await _insertLake(transaction, alster);
     }
+    if (oldVersion < 7 && newVersion >= 7) {
+      await _insertLake(transaction, cuxhaven);
+    }
   }
 
   Future<void> _insertLake(
