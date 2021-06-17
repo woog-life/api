@@ -21,3 +21,9 @@
 .idea/
 *.tmproj
 .vscode/
+
+# Enormous Swagger files
+swagger-ui/
+
+# Dart
+.dart_tool/
