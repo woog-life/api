@@ -4,7 +4,6 @@ import 'package:logger/logger.dart';
 import 'package:postgres/postgres.dart';
 import 'package:woog_api/src/infrastructure/respository/booking_postgres.dart';
 import 'package:woog_api/src/infrastructure/respository/lake_postgres.dart';
-import 'package:woog_api/src/infrastructure/respository/postres.dart';
 
 abstract class RepositoryMigrator {
   Future<void> upgrade(
@@ -34,21 +33,20 @@ class Migrator {
   );
 
   Future<void> migrate() async {
-    await _getIt.useConnection((connection) async {
-      final table = await connection.query(
-        '''
+    final connection = await _getIt.getAsync<PostgreSQLConnection>();
+    final table = await connection.query(
+      '''
       SELECT * FROM information_schema.tables
       WHERE table_name = '$tableName';
       ''',
-      );
-      if (table.isEmpty) {
-        _logger.i('Creating version table');
-        await connection.transaction((connection) async {
-          await _createVersionTable(connection);
-        });
-      }
-      await _upgrade(connection);
-    });
+    );
+    if (table.isEmpty) {
+      _logger.i('Creating version table');
+      await connection.transaction((connection) async {
+        await _createVersionTable(connection);
+      });
+    }
+    await _upgrade(connection);
   }
 
   Future<void> _upgrade(PostgreSQLConnection connection) async {

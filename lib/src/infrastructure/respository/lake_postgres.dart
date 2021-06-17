@@ -5,7 +5,6 @@ import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/domain/model/lake.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 import 'package:woog_api/src/infrastructure/respository/migrator.dart';
-import 'package:woog_api/src/infrastructure/respository/postres.dart';
 
 const lakeTableName = 'lake';
 const columnLakeId = 'id';
@@ -20,6 +19,8 @@ const columnDataTemperature = 'temperature';
 @Injectable(as: LakeRepository)
 class SqlLakeRepository implements LakeRepository {
   final GetIt _getIt;
+
+  Future<PostgreSQLConnection> get _connection => _getIt.getAsync();
 
   SqlLakeRepository(this._getIt);
 
@@ -44,19 +45,18 @@ class SqlLakeRepository implements LakeRepository {
 
   @override
   Future<Set<Lake>> getLakes() async {
-    return _getIt.useConnection((connection) async {
-      final result = await connection.mappedResultsQuery(
-        'SELECT * FROM $lakeTableName',
-      );
-      return result.map((e) => e[lakeTableName]!).map(_lakeFromColumns).toSet();
-    });
+    final connection = await _connection;
+    final result = await connection.mappedResultsQuery(
+      'SELECT * FROM $lakeTableName',
+    );
+    return result.map((e) => e[lakeTableName]!).map(_lakeFromColumns).toSet();
   }
 
   @override
   Future<Lake?> getLake(String lakeId) async {
-    return _getIt.useConnection((connection) async {
-      final lakeRows = await connection.mappedResultsQuery(
-        '''
+    final connection = await _connection;
+    final lakeRows = await connection.mappedResultsQuery(
+      '''
       SELECT * FROM $lakeTableName
       LEFT JOIN $dataTableName
       ON $lakeTableName.$columnLakeId = $dataTableName.$columnDataId
@@ -64,46 +64,45 @@ class SqlLakeRepository implements LakeRepository {
       ORDER BY $columnDataTime DESC
       LIMIT 1
       ''',
-        substitutionValues: {
-          'lakeId': lakeId,
-        },
-      );
-      if (lakeRows.isEmpty) {
-        return null;
-      } else {
-        final row = lakeRows.first;
-        final lakeRow = row[lakeTableName]!;
-        final id = lakeRow[columnLakeId]! as String;
-        final name = lakeRow[columnLakeName]! as String;
+      substitutionValues: {
+        'lakeId': lakeId,
+      },
+    );
+    if (lakeRows.isEmpty) {
+      return null;
+    } else {
+      final row = lakeRows.first;
+      final lakeRow = row[lakeTableName]!;
+      final id = lakeRow[columnLakeId]! as String;
+      final name = lakeRow[columnLakeName]! as String;
 
-        final dataRow = row[dataTableName]!;
-        final time = dataRow[columnDataTime] as DateTime?;
-        final value = dataRow[columnDataTemperature] as double?;
+      final dataRow = row[dataTableName]!;
+      final time = dataRow[columnDataTime] as DateTime?;
+      final value = dataRow[columnDataTemperature] as double?;
 
-        final LakeData? data;
-        if (time != null && value != null) {
-          data = LakeData(
-            time: time,
-            temperature: value,
-          );
-        } else {
-          data = null;
-        }
-
-        return Lake(
-          id: id,
-          name: name,
-          data: data,
+      final LakeData? data;
+      if (time != null && value != null) {
+        data = LakeData(
+          time: time,
+          temperature: value,
         );
+      } else {
+        data = null;
       }
-    });
+
+      return Lake(
+        id: id,
+        name: name,
+        data: data,
+      );
+    }
   }
 
   @override
   Future<void> updateData(String lakeId, LakeData data) async {
-    return _getIt.useConnection((connection) async {
-      await connection.execute(
-        '''
+    final connection = await _connection;
+    await connection.execute(
+      '''
       INSERT INTO $dataTableName (
         $columnDataId,
         $columnDataTime,
@@ -116,55 +115,53 @@ class SqlLakeRepository implements LakeRepository {
       )
       ON CONFLICT DO NOTHING
       ''',
-        substitutionValues: {
-          'lakeId': lakeId,
-          'time': data.time,
-          'temperature': data.temperature,
-        },
-      );
-    });
+      substitutionValues: {
+        'lakeId': lakeId,
+        'time': data.time,
+        'temperature': data.temperature,
+      },
+    );
   }
 
   @override
   Future<NearDataDto> getNearestData(String lakeId, DateTime time) async {
-    return await _getIt.useConnection((connection) async {
-      final lowerResult = await connection.mappedResultsQuery(
-        '''
+    final connection = await _connection;
+    final lowerResult = await connection.mappedResultsQuery(
+      '''
         SELECT $columnDataTime, $columnDataTemperature
         FROM $dataTableName
         WHERE $columnDataId = @lakeId AND $columnDataTime <= @time
         ORDER BY $columnDataTime DESC
         LIMIT 1
         ''',
-        substitutionValues: {
-          'lakeId': lakeId,
-          'time': time,
-        },
-      );
+      substitutionValues: {
+        'lakeId': lakeId,
+        'time': time,
+      },
+    );
 
-      final higherResult = await connection.mappedResultsQuery(
-        '''
+    final higherResult = await connection.mappedResultsQuery(
+      '''
         SELECT $columnDataTime, $columnDataTemperature
         FROM $dataTableName
         WHERE $columnDataId = @lakeId AND $columnDataTime >= @time    
         ORDER BY $columnDataTime ASC
         LIMIT 1
         ''',
-        substitutionValues: {
-          'lakeId': lakeId,
-          'time': time,
-        },
-      );
+      substitutionValues: {
+        'lakeId': lakeId,
+        'time': time,
+      },
+    );
 
-      final lower = lowerResult.isEmpty
-          ? null
-          : _dataFromColumns(lowerResult.single[dataTableName]!);
-      final higher = higherResult.isEmpty
-          ? null
-          : _dataFromColumns(higherResult.single[dataTableName]!);
+    final lower = lowerResult.isEmpty
+        ? null
+        : _dataFromColumns(lowerResult.single[dataTableName]!);
+    final higher = higherResult.isEmpty
+        ? null
+        : _dataFromColumns(higherResult.single[dataTableName]!);
 
-      return NearDataDto(before: lower, after: higher);
-    });
+    return NearDataDto(before: lower, after: higher);
   }
 }
 
