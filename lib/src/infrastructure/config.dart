@@ -18,6 +18,8 @@ class Config {
   final String databaseUser;
   final String databasePassword;
 
+  final String docsPath;
+
   factory Config() {
     final environment = Platform.environment;
     return Config._(
@@ -50,6 +52,10 @@ class Config {
         name: 'POSTGRES_PASSWORD',
         defaultValue: 'pw',
       ).resolve(environment),
+      docsPath: _Variable(
+        name: 'DOCS_PATH',
+        defaultValue: '',
+      ).resolve(environment),
     );
   }
 
@@ -62,6 +68,7 @@ class Config {
     required this.databaseName,
     required this.databaseUser,
     required this.databasePassword,
+    required this.docsPath,
   });
 }
 

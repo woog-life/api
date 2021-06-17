@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -10,6 +11,8 @@ import 'package:woog_api/src/application/use_case/get_interpolated_data.dart';
 import 'package:woog_api/src/application/use_case/get_lake.dart';
 import 'package:woog_api/src/application/use_case/get_lakes.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
+import 'package:woog_api/src/infrastructure/api/middleware/json.dart';
+import 'package:woog_api/src/infrastructure/api/middleware/trailing_slash.dart';
 
 part 'public.g.dart';
 
@@ -20,14 +23,23 @@ class PublicApi {
   final GetInterpolatedData _getInterpolatedData;
   final GetEvents _getEvents;
 
-  Router get router => _$PublicApiRouter(this);
+  Router get _router => _$PublicApiRouter(this);
+
+  late final Handler _handler;
 
   PublicApi(
     this._getLakes,
     this._getLake,
     this._getInterpolatedData,
     this._getEvents,
-  );
+  ) {
+    _handler = const Pipeline()
+        .addMiddleware(trailingSlashRedirect())
+        .addMiddleware(jsonHeaderMiddleware)
+        .addHandler(_router);
+  }
+
+  FutureOr<Response> call(Request request) => _handler(request);
 
   @Route.get('/')
   @Route.get('/health')

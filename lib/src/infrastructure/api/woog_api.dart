@@ -7,10 +7,8 @@ import 'package:shelf/shelf_io.dart' as io;
 import 'package:woog_api/src/infrastructure/api/dispatcher.dart';
 import 'package:woog_api/src/infrastructure/api/http_constants.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/cors.dart';
-import 'package:woog_api/src/infrastructure/api/middleware/json.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/logging.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/sentry.dart';
-import 'package:woog_api/src/infrastructure/api/middleware/trailing_slash.dart';
 
 @injectable
 class WoogApi {
@@ -28,8 +26,6 @@ class WoogApi {
         .addMiddleware(_sentryMiddleware)
         .addMiddleware(_loggingMiddleware)
         .addMiddleware(corsMiddleware())
-        .addMiddleware(trailingSlashRedirect())
-        .addMiddleware(jsonHeaderMiddleware)
         .addHandler(_dispatcher);
   }
 

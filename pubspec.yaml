@@ -26,6 +26,9 @@ dependencies:
   # Routing
   shelf_router: ^1.0.0
 
+  # Static file serving
+  shelf_static: ^1.0.0
+
   # JSON serialization
   json_annotation: ^4.0.0
 

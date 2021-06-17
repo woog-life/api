@@ -1,3 +1,8 @@
+FROM openjdk:11-jdk as smithy
+WORKDIR /apidocs
+RUN wget https://github.com/woog-life/apispec/archive/refs/heads/main.zip && unzip main.zip && mv apispec-main/* .
+RUN ./gradlew build
+
 FROM dart:2.13 AS builder
 
 WORKDIR /app
@@ -12,12 +17,15 @@ RUN dart compile exe bin/main.dart -o app
 
 FROM scratch
 
-ARG build
-ENV BUILD_SHA=$build
+COPY swagger-ui/ /docs
+COPY --from=smithy /apidocs/build/smithyprojections/woog-api-spec/source/openapi/Wooglife.openapi.json /docs/openapi.json
 
-#RUN apt-get update && apt-get install sqlite3 libsqlite3-dev -y && apt-get clean
 COPY --from=builder /runtime/ /
 COPY --from=builder /app/app /app/
+
+ARG build
+ENV BUILD_SHA=$build
+ENV DOCS_PATH="/docs"
 
 EXPOSE 8080
 CMD [ "/app/app" ]

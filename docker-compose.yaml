@@ -17,5 +17,6 @@ services:
     image: postgres:13-alpine
     environment:
       POSTGRES_PASSWORD: pw
+      PGDATA: /data
     ports:
       - 5432:5432

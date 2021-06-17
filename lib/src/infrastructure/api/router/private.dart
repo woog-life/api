@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -10,6 +11,8 @@ import 'package:woog_api/src/domain/error/lake_not_found.dart';
 import 'package:woog_api/src/domain/error/time.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/auth.dart';
+import 'package:woog_api/src/infrastructure/api/middleware/json.dart';
+import 'package:woog_api/src/infrastructure/api/middleware/trailing_slash.dart';
 
 part 'private.g.dart';
 
@@ -21,14 +24,21 @@ class PrivateApi {
 
   Router get _router => _$PrivateApiRouter(this);
 
-  Handler get handler =>
-      const Pipeline().addMiddleware(_authMiddleware).addHandler(_router);
+  late final Handler _handler;
 
   PrivateApi(
     this._authMiddleware,
     this._updateTemperature,
     this._updateEvents,
-  );
+  ) {
+    _handler = const Pipeline()
+        .addMiddleware(trailingSlashRedirect())
+        .addMiddleware(jsonHeaderMiddleware)
+        .addMiddleware(_authMiddleware)
+        .addHandler(_router);
+  }
+
+  FutureOr<Response> call(Request request) => _handler(request);
 
   @Route.put('/lake/<lakeId>/temperature')
   Future<Response> _putTemperature(Request request, String lakeId) async {
