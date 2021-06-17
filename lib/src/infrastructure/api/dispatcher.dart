@@ -34,6 +34,8 @@ class Dispatcher {
       throw ArgumentError.value(method, 'method', 'Invalid HTTP method');
     } else if (method == HttpMethod.get && _hasBasePath(request, 'docs')) {
       return _staticServer(request.change(path: 'docs'));
+    } else if (method == HttpMethod.get && request.url.hasEmptyPath) {
+      return Response.movedPermanently('/docs');
     } else if (method.isSafe) {
       return _publicApi(request);
     } else {
