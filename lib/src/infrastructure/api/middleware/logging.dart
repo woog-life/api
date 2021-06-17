@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:shelf/shelf.dart';
@@ -21,6 +23,14 @@ class LoggingMiddleware {
   LoggingMiddleware(Logger logger) : _delegate = _createDelegate(logger);
 
   Handler call(Handler innerHandler) {
-    return _delegate(innerHandler);
+    FutureOr<Response> _filteredDelegate(Request request) {
+      if (request.url.path == 'health') {
+        return innerHandler(request);
+      } else {
+        return _delegate(innerHandler)(request);
+      }
+    }
+
+    return _filteredDelegate;
   }
 }
