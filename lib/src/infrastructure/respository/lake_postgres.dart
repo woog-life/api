@@ -207,20 +207,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
       ''',
     );
     for (final lake in _lakes.sublist(0, 6)) {
-      await transaction.execute(
-        '''
-          UPDATE $tableName
-          SET 
-            $columnSupportsTemperature = @supportsTemperature,
-            $columnSupportsBooking = @supportsBooking
-          WHERE $columnId = @lakeId
-        ''',
-        substitutionValues: {
-          'lakeId': lake.id,
-          'supportsTemperature': lake.features.contains(Feature.temperature),
-          'supportsBooking': lake.features.contains(Feature.booking),
-        },
-      );
+      await _setFeatures(transaction, lake.id, lake.features);
     }
     await transaction.execute(
       '''
@@ -228,6 +215,27 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
         ALTER COLUMN $columnSupportsTemperature SET NOT NULL,
         ALTER COLUMN $columnSupportsBooking SET NOT NULL;
       ''',
+    );
+  }
+
+  Future<void> _setFeatures(
+    PostgreSQLExecutionContext transaction,
+    String lakeId,
+    Set<Feature> features,
+  ) async {
+    await transaction.execute(
+      '''
+        UPDATE $tableName
+        SET 
+          $columnSupportsTemperature = @supportsTemperature,
+          $columnSupportsBooking = @supportsBooking
+        WHERE $columnId = @lakeId
+      ''',
+      substitutionValues: {
+        'lakeId': lakeId,
+        'supportsTemperature': features.contains(Feature.temperature),
+        'supportsBooking': features.contains(Feature.booking),
+      },
     );
   }
 }
