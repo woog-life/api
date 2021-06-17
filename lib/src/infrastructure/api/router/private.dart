@@ -100,6 +100,13 @@ class PrivateApi {
           ErrorMessageDto(e.toString()),
         ),
       );
+    }on TimeError catch (e) {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto(e.toString()).toJson(),
+        ),
+      );
     }
   }
 }

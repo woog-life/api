@@ -2,6 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 import 'package:woog_api/src/application/repository/booking.dart';
+import 'package:woog_api/src/domain/error/time.dart';
 import 'package:woog_api/src/domain/model/event.dart';
 
 @immutable
@@ -34,17 +35,30 @@ class UpdateEvents {
     List<UpdateEvent> events,
   ) async {
     _logger.d('Received ${events.length} events for lake $lakeId ($variation)');
-    final modelEvents = [
-      for (final event in events)
-        Event(
-          variation: variation,
-          bookingLink: event.bookingLink,
-          beginTime: event.beginTime,
-          endTime: event.endTime,
-          saleStartTime: event.saleStartTime,
-          isAvailable: event.isAvailable,
-        )
-    ];
+    final modelEvents = <Event>[];
+
+    for (final updateEvent in events) {
+      for (final time in [
+        updateEvent.beginTime,
+        updateEvent.endTime,
+        updateEvent.saleStartTime,
+      ]) {
+        if (!time.isUtc) {
+          throw NonUtcTimeError(time);
+        }
+      }
+
+      final event = Event(
+        variation: variation,
+        bookingLink: updateEvent.bookingLink,
+        beginTime: updateEvent.beginTime,
+        endTime: updateEvent.endTime,
+        saleStartTime: updateEvent.saleStartTime,
+        isAvailable: updateEvent.isAvailable,
+      );
+      modelEvents.add(event);
+    }
+
     await _repo.updateEvents(lakeId, modelEvents);
   }
 }
