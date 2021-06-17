@@ -134,6 +134,13 @@ class PublicApi {
   Future<Response> getTemperature(Request request, String lakeId) async {
     final temperature = await _getTemperature(lakeId);
 
+    final int? precision;
+    try {
+      precision = _getPrecision(request);
+    } on FormatException {
+      return Response(HttpStatus.badRequest);
+    }
+
     if (temperature == null) {
       return Response.notFound(
         jsonEncode(
@@ -144,7 +151,10 @@ class PublicApi {
 
     return Response.ok(
       jsonEncode(
-        LakeDataDto.fromData(temperature),
+        LakeDataDto.fromData(
+          temperature,
+          precision: precision,
+        ),
       ),
     );
   }
