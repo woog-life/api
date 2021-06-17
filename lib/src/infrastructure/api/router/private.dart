@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:injectable/injectable.dart';
+import 'package:logger/logger.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/src/application/use_case/update_events.dart';
@@ -18,6 +19,7 @@ part 'private.g.dart';
 
 @injectable
 class PrivateApi {
+  final Logger _logger;
   final AuthMiddleware _authMiddleware;
   final UpdateTemperature _updateTemperature;
   final UpdateEvents _updateEvents;
@@ -27,6 +29,7 @@ class PrivateApi {
   late final Handler _handler;
 
   PrivateApi(
+    this._logger,
     this._authMiddleware,
     this._updateTemperature,
     this._updateEvents,
@@ -80,6 +83,7 @@ class PrivateApi {
     if (events.isEmpty) {
       update = EventsUpdateDto.fromJson(body);
     } else if ((events.first as Map).containsKey('is_available')) {
+      _logger.w('Received legacy booking update');
       update = LegacyEventsUpdateDto.fromJson(body);
     } else {
       update = EventsUpdateDto.fromJson(body);
