@@ -9,6 +9,10 @@ metadata:
 spec:
   revisionHistoryLimit: 1
   replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: backend
