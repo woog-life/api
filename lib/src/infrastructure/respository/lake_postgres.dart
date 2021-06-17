@@ -82,7 +82,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
     Lake(
       id: '25aa2968-e34e-4f86-87cc-56b16b5aff36',
       name: 'Arheilger Mühlchen',
-      features: {Feature.temperature, Feature.booking},
+      features: {Feature.booking},
     ),
     Lake(
       id: '55e5f52a-2de8-458a-828f-3c043ef458d9',
@@ -144,6 +144,9 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
     }
     if (oldVersion < 10 && newVersion >= 10) {
       await _addFeatures(transaction);
+    }
+    if (oldVersion < 11 && newVersion >= 11) {
+      await _setFeatures(transaction, _lakes[1]);
     }
   }
 
@@ -207,7 +210,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
       ''',
     );
     for (final lake in _lakes.sublist(0, 6)) {
-      await _setFeatures(transaction, lake.id, lake.features);
+      await _setFeatures(transaction, lake);
     }
     await transaction.execute(
       '''
@@ -220,8 +223,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
 
   Future<void> _setFeatures(
     PostgreSQLExecutionContext transaction,
-    String lakeId,
-    Set<Feature> features,
+    Lake lake,
   ) async {
     await transaction.execute(
       '''
@@ -232,9 +234,9 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
         WHERE $columnId = @lakeId
       ''',
       substitutionValues: {
-        'lakeId': lakeId,
-        'supportsTemperature': features.contains(Feature.temperature),
-        'supportsBooking': features.contains(Feature.booking),
+        'lakeId': lake.id,
+        'supportsTemperature': lake.features.contains(Feature.temperature),
+        'supportsBooking': lake.features.contains(Feature.booking),
       },
     );
   }
