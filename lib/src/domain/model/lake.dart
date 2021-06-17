@@ -19,23 +19,3 @@ class Lake {
     _data = data;
   }
 }
-
-final bigWoog = Lake(
-  id: '69c8438b-5aef-442f-a70d-e0d783ea2b38',
-  name: 'Großer Woog',
-);
-
-final muehlchen = Lake(
-  id: '25aa2968-e34e-4f86-87cc-56b16b5aff36',
-  name: 'Arheilger Mühlchen',
-);
-
-final alster = Lake(
-  id: '55e5f52a-2de8-458a-828f-3c043ef458d9',
-  name: 'Alster in Hamburg',
-);
-
-final cuxhaven = Lake(
-  id: 'd074654c-dedd-46c3-8042-af55c93c910e',
-  name: 'Nordsee bei Cuxhaven',
-);

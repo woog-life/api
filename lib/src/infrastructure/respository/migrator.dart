@@ -14,7 +14,6 @@ abstract class RepositoryMigrator {
 }
 
 const tableName = 'migrator2';
-const oldTableName = 'migrator';
 const keyVersion = 'version';
 
 @injectable

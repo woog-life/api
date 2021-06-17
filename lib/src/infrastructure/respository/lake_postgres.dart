@@ -167,6 +167,25 @@ class SqlLakeRepository implements LakeRepository {
 
 @injectable
 class SqlLakeRepositoryMigrator implements RepositoryMigrator {
+  static final _lakes = [
+    Lake(
+      id: '69c8438b-5aef-442f-a70d-e0d783ea2b38',
+      name: 'Großer Woog',
+    ),
+    Lake(
+      id: '25aa2968-e34e-4f86-87cc-56b16b5aff36',
+      name: 'Arheilger Mühlchen',
+    ),
+    Lake(
+      id: '55e5f52a-2de8-458a-828f-3c043ef458d9',
+      name: 'Alster in Hamburg',
+    ),
+    Lake(
+      id: 'd074654c-dedd-46c3-8042-af55c93c910e',
+      name: 'Nordsee bei Cuxhaven',
+    ),
+  ];
+
   Future<void> _create(PostgreSQLExecutionContext batch) async {
     await batch.execute(
       '''
@@ -195,7 +214,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
         ) 
         ''',
     );
-    await _insertLake(batch, bigWoog);
+    await _insertLake(batch, _lakes[0]);
   }
 
   @override
@@ -208,13 +227,13 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
       await _create(transaction);
     }
     if (oldVersion < 3 && newVersion >= 3) {
-      await _insertLake(transaction, muehlchen);
+      await _insertLake(transaction, _lakes[1]);
     }
     if (oldVersion < 6 && newVersion >= 6) {
-      await _insertLake(transaction, alster);
+      await _insertLake(transaction, _lakes[2]);
     }
     if (oldVersion < 7 && newVersion >= 7) {
-      await _insertLake(transaction, cuxhaven);
+      await _insertLake(transaction, _lakes[3]);
     }
   }
 
@@ -232,7 +251,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
           @id,
           @name
         )
-        ''',
+      ''',
       substitutionValues: {
         'id': lake.id,
         'name': lake.name,
