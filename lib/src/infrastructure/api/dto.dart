@@ -181,15 +181,10 @@ class EventsDto {
 @JsonSerializable()
 @immutable
 class EventUpdateDto {
-  @JsonKey(name: 'booking_link')
   final String bookingLink;
-  @JsonKey(name: 'begin_time')
   final DateTime beginTime;
-  @JsonKey(name: 'end_time')
   final DateTime endTime;
-  @JsonKey(name: 'sale_start')
   final DateTime saleStartTime;
-  @JsonKey(name: 'is_available')
   final bool isAvailable;
 
   const EventUpdateDto({
@@ -234,4 +229,58 @@ class ErrorMessageDto {
       _$ErrorMessageDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$ErrorMessageDtoToJson(this);
+}
+
+@JsonSerializable()
+@immutable
+class LegacyEventUpdateDto implements EventUpdateDto {
+  @override
+  @JsonKey(name: 'booking_link')
+  final String bookingLink;
+  @override
+  @JsonKey(name: 'begin_time')
+  final DateTime beginTime;
+  @override
+  @JsonKey(name: 'end_time')
+  final DateTime endTime;
+  @override
+  @JsonKey(name: 'sale_start')
+  final DateTime saleStartTime;
+  @override
+  @JsonKey(name: 'is_available')
+  final bool isAvailable;
+
+  const LegacyEventUpdateDto({
+    required this.bookingLink,
+    required this.beginTime,
+    required this.endTime,
+    required this.saleStartTime,
+    required this.isAvailable,
+  });
+
+  factory LegacyEventUpdateDto.fromJson(Map<String, dynamic> json) =>
+      _$LegacyEventUpdateDtoFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$LegacyEventUpdateDtoToJson(this);
+}
+
+@JsonSerializable()
+@immutable
+class LegacyEventsUpdateDto implements EventsUpdateDto {
+  @override
+  final String variation;
+  @override
+  final List<LegacyEventUpdateDto> events;
+
+  const LegacyEventsUpdateDto({
+    required this.variation,
+    required this.events,
+  });
+
+  factory LegacyEventsUpdateDto.fromJson(Map<String, dynamic> json) =>
+      _$LegacyEventsUpdateDtoFromJson(json);
+
+  @override
+  Map<String, dynamic> toJson() => _$LegacyEventsUpdateDtoToJson(this);
 }

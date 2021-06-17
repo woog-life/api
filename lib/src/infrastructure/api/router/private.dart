@@ -75,7 +75,16 @@ class PrivateApi {
       return Response(HttpStatus.badRequest);
     }
 
-    final update = EventsUpdateDto.fromJson(body);
+    final EventsUpdateDto update;
+    final List events = body['events'] as List;
+    if (events.isEmpty) {
+      update = EventsUpdateDto.fromJson(body);
+    } else if ((events.first as Map).containsKey('is_available')) {
+      update = LegacyEventsUpdateDto.fromJson(body);
+    } else {
+      update = EventsUpdateDto.fromJson(body);
+    }
+
     try {
       await _updateEvents(
         lakeId,
