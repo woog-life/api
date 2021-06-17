@@ -110,8 +110,7 @@ class SqlBookingRepository implements BookingRepository {
 
 @injectable
 class SqlBookingRepositoryMigrator implements RepositoryMigrator {
-  @override
-  Future<void> create(PostgreSQLExecutionContext batch) async {
+  Future<void> _create(PostgreSQLExecutionContext batch) async {
     await batch.execute(
       '''
       CREATE TABLE $tableName (
@@ -144,7 +143,7 @@ class SqlBookingRepositoryMigrator implements RepositoryMigrator {
     int newVersion,
   ) async {
     if (oldVersion < 3 && newVersion >= 3) {
-      await create(transaction);
+      await _create(transaction);
     }
     if (oldVersion < 5 && newVersion >= 4) {
       await _dropData(transaction);

@@ -6,8 +6,6 @@ import 'package:woog_api/src/infrastructure/respository/booking_postgres.dart';
 import 'package:woog_api/src/infrastructure/respository/lake_postgres.dart';
 
 abstract class RepositoryMigrator {
-  Future<void> create(PostgreSQLExecutionContext transaction);
-
   Future<void> upgrade(
     PostgreSQLExecutionContext transaction,
     int oldVersion,
@@ -37,7 +35,6 @@ class Migrator {
 
   Future<void> migrate() async {
     final connection = await _getIt.getAsync<PostgreSQLConnection>();
-    final isLegacy = await _dropOldTable(connection);
     final table = await connection.query(
       '''
       SELECT * FROM information_schema.tables
@@ -45,16 +42,12 @@ class Migrator {
       ''',
     );
     if (table.isEmpty) {
-      _logger.i('Running initial migration');
+      _logger.i('Creating version table');
       await connection.transaction((connection) async {
         await _createVersionTable(connection);
-        if (!isLegacy) {
-          await _lakeRepositoryMigrator.create(connection);
-        }
       });
-    } else {
-      await _upgrade(connection);
     }
+    await _upgrade(connection);
   }
 
   Future<void> _upgrade(PostgreSQLConnection connection) async {
@@ -120,26 +113,7 @@ class Migrator {
       );
       ''',
     );
-    await _setVersion(connection, 2);
-  }
-
-  Future<bool> _dropOldTable(PostgreSQLExecutionContext connection) async {
-    final table = await connection.query(
-      '''
-      SELECT * FROM information_schema.tables
-      WHERE table_name = '$oldTableName';
-      ''',
-    );
-    if (table.isNotEmpty) {
-      await connection.execute(
-        '''
-        DROP TABLE $oldTableName;
-        ''',
-      );
-      return true;
-    } else {
-      return false;
-    }
+    await _setVersion(connection, 1);
   }
 }
 

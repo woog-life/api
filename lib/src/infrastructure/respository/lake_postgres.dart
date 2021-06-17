@@ -167,8 +167,7 @@ class SqlLakeRepository implements LakeRepository {
 
 @injectable
 class SqlLakeRepositoryMigrator implements RepositoryMigrator {
-  @override
-  Future<void> create(PostgreSQLExecutionContext batch) async {
+  Future<void> _create(PostgreSQLExecutionContext batch) async {
     await batch.execute(
       '''
       CREATE TABLE $lakeTableName (
@@ -206,7 +205,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
     int newVersion,
   ) async {
     if (oldVersion < 2 && newVersion >= 2) {
-      await create(transaction);
+      await _create(transaction);
     }
     if (oldVersion < 3 && newVersion >= 3) {
       await _insertLake(transaction, muehlchen);
