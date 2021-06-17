@@ -18,9 +18,11 @@ const columnDataTemperature = 'temperature';
 @prod
 @Injectable(as: LakeRepository)
 class SqlLakeRepository implements LakeRepository {
-  final Future<PostgreSQLConnection> _connection;
+  final GetIt _getIt;
 
-  SqlLakeRepository(GetIt getIt) : _connection = getIt.getAsync();
+  Future<PostgreSQLConnection> get _connection => _getIt.getAsync();
+
+  SqlLakeRepository(this._getIt);
 
   Lake _lakeFromColumns(Map<String, dynamic> row) {
     final id = row[columnLakeId];

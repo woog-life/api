@@ -18,9 +18,11 @@ const columnAvailable = 'available';
 
 @Injectable(as: BookingRepository)
 class SqlBookingRepository implements BookingRepository {
-  final Future<PostgreSQLConnection> _connection;
+  final GetIt _getIt;
 
-  SqlBookingRepository(GetIt getIt) : _connection = getIt.getAsync();
+  Future<PostgreSQLConnection> get _connection => _getIt.getAsync();
+
+  SqlBookingRepository(this._getIt);
 
   Event _eventFromRow(Map<String, dynamic> row) {
     final variation = row[columnVariation];
