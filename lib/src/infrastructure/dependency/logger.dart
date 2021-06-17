@@ -11,6 +11,7 @@ abstract class LoggerModule {
       return SentryLogger(
         printer: SimplePrinter(),
         filter: ProductionFilter(),
+        level: Level.debug,
       );
     } else {
       return Logger(
