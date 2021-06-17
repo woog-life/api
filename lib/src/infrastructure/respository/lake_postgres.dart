@@ -184,6 +184,10 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
       id: 'd074654c-dedd-46c3-8042-af55c93c910e',
       name: 'Nordsee bei Cuxhaven',
     ),
+    Lake(
+      id: 'bedbdac7-7d61-48d5-b1bd-0de5be25e953',
+      name: 'Potsdam',
+    ),
   ];
 
   Future<void> _create(PostgreSQLExecutionContext batch) async {
