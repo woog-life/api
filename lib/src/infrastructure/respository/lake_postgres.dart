@@ -184,6 +184,10 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
       id: 'd074654c-dedd-46c3-8042-af55c93c910e',
       name: 'Nordsee bei Cuxhaven',
     ),
+    Lake(
+      id: 'bedbdac7-7d61-48d5-b1bd-0de5be25e953',
+      name: 'Potsdamer Havel',
+    ),
   ];
 
   Future<void> _create(PostgreSQLExecutionContext batch) async {
@@ -234,6 +238,9 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
     }
     if (oldVersion < 7 && newVersion >= 7) {
       await _insertLake(transaction, _lakes[3]);
+    }
+    if (oldVersion < 8 && newVersion >= 8) {
+      await _insertLake(transaction, _lakes[4]);
     }
   }
 

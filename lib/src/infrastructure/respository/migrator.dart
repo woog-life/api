@@ -18,7 +18,7 @@ const keyVersion = 'version';
 
 @injectable
 class Migrator {
-  final int newestVersion = 7;
+  final int newestVersion = 8;
 
   final Logger _logger;
   final GetIt _getIt;
