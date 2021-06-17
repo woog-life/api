@@ -130,6 +130,25 @@ class PublicApi {
     );
   }
 
+  @Route.get('/lake/<lakeId>/temperature')
+  Future<Response> getTemperature(Request request, String lakeId) async {
+    final temperature = await _getTemperature(lakeId);
+
+    if (temperature == null) {
+      return Response.notFound(
+        jsonEncode(
+          ErrorMessageDto('No temperature for lake $lakeId'),
+        ),
+      );
+    }
+
+    return Response.ok(
+      jsonEncode(
+        LakeDataDto.fromData(temperature),
+      ),
+    );
+  }
+
   @Route.get('/lake/<lakeId>/booking')
   Future<Response> _getBooking(Request request, String lakeId) async {
     final events = await _getEvents(lakeId);
