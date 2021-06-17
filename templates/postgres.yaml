@@ -20,6 +20,7 @@ data:
   POSTGRES_DB: woog
   POSTGRES_HOSTNAME: backend-postgres
   POSTGRES_USER: woog
+  PGDATA: /data
 ---
 apiVersion: apps/v1
 kind: Deployment
