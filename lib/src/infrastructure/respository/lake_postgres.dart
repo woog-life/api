@@ -186,7 +186,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
     ),
     Lake(
       id: 'bedbdac7-7d61-48d5-b1bd-0de5be25e953',
-      name: 'Potsdam',
+      name: 'Potsdamer Havel',
     ),
   ];
 
