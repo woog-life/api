@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:postgres/postgres.dart';
+import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/booking.dart';
 import 'package:woog_api/src/domain/model/event.dart';
 import 'package:woog_api/src/infrastructure/respository/lake_postgres.dart'
@@ -43,7 +44,7 @@ class SqlBookingRepository implements BookingRepository {
 
   @override
   Future<List<Event>> getAvailableEvents(
-    String lakeId,
+    Uuid lakeId,
     DateTime endsAfter,
   ) {
     return _getIt.useConnection((connection) async {
@@ -56,7 +57,7 @@ class SqlBookingRepository implements BookingRepository {
         ORDER BY $columnBeginTime
       ''',
         substitutionValues: {
-          'lakeId': lakeId,
+          'lakeId': lakeId.toString(),
           'endTime': endsAfter,
         },
       );
@@ -67,7 +68,7 @@ class SqlBookingRepository implements BookingRepository {
 
   @override
   Future<void> updateEvents(
-    String lakeId,
+    Uuid lakeId,
     List<Event> events,
   ) {
     return _getIt.useConnection((connection) async {
@@ -95,7 +96,7 @@ class SqlBookingRepository implements BookingRepository {
         DO UPDATE SET $columnAvailable = @available;
         ''',
           substitutionValues: {
-            'lakeId': lakeId,
+            'lakeId': lakeId.toString(),
             'variation': event.variation,
             'bookingLink': event.bookingLink,
             'available': event.isAvailable,

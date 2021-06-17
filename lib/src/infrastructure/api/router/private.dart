@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
+import 'package:sane_uuid/uuid.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/src/application/use_case/update_events.dart';
@@ -51,9 +52,21 @@ class PrivateApi {
       return Response(HttpStatus.badRequest);
     }
 
+    final Uuid lakeUuid;
+    try {
+      lakeUuid = Uuid.fromString(lakeId);
+    } on FormatException {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto('Invalid UUID: $lakeId'),
+        ),
+      );
+    }
+
     final update = TemperatureUpdateDto.fromJson(body);
     try {
-      await _updateTemperature(lakeId, update.time, update.temperature);
+      await _updateTemperature(lakeUuid, update.time, update.temperature);
       return Response(HttpStatus.noContent);
     } on LakeNotFoundError catch (e) {
       return Response(
@@ -86,6 +99,18 @@ class PrivateApi {
       return Response(HttpStatus.badRequest);
     }
 
+    final Uuid lakeUuid;
+    try {
+      lakeUuid = Uuid.fromString(lakeId);
+    } on FormatException {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto('Invalid UUID: $lakeId'),
+        ),
+      );
+    }
+
     final EventsUpdateDto update;
     final List events = body['events'] as List;
     if (events.isEmpty) {
@@ -99,7 +124,7 @@ class PrivateApi {
 
     try {
       await _updateEvents(
-        lakeId,
+        lakeUuid,
         update.variation,
         update.events
             .map(

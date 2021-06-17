@@ -21,7 +21,7 @@ class LakeInfoDto {
 
   factory LakeInfoDto.fromLake(Lake lake) {
     return LakeInfoDto(
-      id: lake.id,
+      id: lake.id.toString(),
       name: lake.name,
       features: lake.features.map((f) => f.matchDto()).toList(growable: false),
     );
@@ -87,7 +87,7 @@ class LakeStateDto {
     int? precision,
   }) {
     return LakeStateDto(
-      id: lake.id,
+      id: lake.id.toString(),
       name: lake.name,
       data: data == null
           ? null

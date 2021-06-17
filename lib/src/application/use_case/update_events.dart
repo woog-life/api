@@ -1,6 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
+import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/booking.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/domain/error/lake_not_found.dart';
@@ -39,7 +40,7 @@ class UpdateEvents {
   );
 
   Future<void> call(
-    String lakeId,
+    Uuid lakeId,
     String variation,
     List<UpdateEvent> events,
   ) async {

@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/domain/model/lake.dart';
 
@@ -8,7 +9,7 @@ class GetLake {
 
   GetLake(this._repo);
 
-  Future<Lake?> call(String lakeId) async {
+  Future<Lake?> call(Uuid lakeId) async {
     return _repo.getLake(lakeId);
   }
 }

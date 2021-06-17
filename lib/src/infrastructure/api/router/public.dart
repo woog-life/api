@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:injectable/injectable.dart';
+import 'package:sane_uuid/uuid.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/src/application/use_case/get_events.dart';
@@ -72,8 +73,20 @@ class PublicApi {
 
   @Route.get('/lake/<lakeId>')
   Future<Response> getLake(Request request, String lakeId) async {
-    final lake = await _getLake(lakeId);
-    final lakeData = await _getTemperature(lakeId);
+    final Uuid lakeUuid;
+    try {
+      lakeUuid = Uuid.fromString(lakeId);
+    } on FormatException {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto('Invalid UUID: $lakeId'),
+        ),
+      );
+    }
+
+    final lake = await _getLake(lakeUuid);
+    final lakeData = await _getTemperature(lakeUuid);
 
     final int? precision;
     try {
@@ -101,6 +114,18 @@ class PublicApi {
     String lakeId,
     String timestamp,
   ) async {
+    final Uuid lakeUuid;
+    try {
+      lakeUuid = Uuid.fromString(lakeId);
+    } on FormatException {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto('Invalid UUID: $lakeId'),
+        ),
+      );
+    }
+
     final time = DateTime.tryParse(timestamp);
     if (time == null) {
       return Response(
@@ -116,7 +141,7 @@ class PublicApi {
       return Response(HttpStatus.badRequest);
     }
 
-    final data = await _getInterpolatedData(lakeId, time);
+    final data = await _getInterpolatedData(lakeUuid, time);
 
     if (data == null) {
       return Response.notFound(const ErrorMessageDto('No lake data found'));
@@ -132,7 +157,19 @@ class PublicApi {
 
   @Route.get('/lake/<lakeId>/temperature')
   Future<Response> getTemperature(Request request, String lakeId) async {
-    final temperature = await _getTemperature(lakeId);
+    final Uuid lakeUuid;
+    try {
+      lakeUuid = Uuid.fromString(lakeId);
+    } on FormatException {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto('Invalid UUID: $lakeId'),
+        ),
+      );
+    }
+
+    final temperature = await _getTemperature(lakeUuid);
 
     final int? precision;
     try {
@@ -144,7 +181,7 @@ class PublicApi {
     if (temperature == null) {
       return Response.notFound(
         jsonEncode(
-          ErrorMessageDto('No temperature for lake $lakeId'),
+          ErrorMessageDto('No temperature for lake $lakeUuid'),
         ),
       );
     }
@@ -161,7 +198,19 @@ class PublicApi {
 
   @Route.get('/lake/<lakeId>/booking')
   Future<Response> _getBooking(Request request, String lakeId) async {
-    final events = await _getEvents(lakeId);
+    final Uuid lakeUuid;
+    try {
+      lakeUuid = Uuid.fromString(lakeId);
+    } on FormatException {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto('Invalid UUID: $lakeId'),
+        ),
+      );
+    }
+
+    final events = await _getEvents(lakeUuid);
 
     return Response.ok(
       jsonEncode(EventsDto(

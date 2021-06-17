@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:postgres/postgres.dart';
+import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/domain/model/lake.dart';
 import 'package:woog_api/src/infrastructure/respository/migrator.dart';
@@ -32,7 +33,7 @@ class SqlLakeRepository implements LakeRepository {
     }
 
     return Lake(
-      id: id as String,
+      id: Uuid.fromString(id as String),
       name: name as String,
       features: features,
     );
@@ -49,7 +50,7 @@ class SqlLakeRepository implements LakeRepository {
   }
 
   @override
-  Future<Lake?> getLake(String lakeId) async {
+  Future<Lake?> getLake(Uuid lakeId) async {
     return _getIt.useConnection((connection) async {
       final lakeRows = await connection.mappedResultsQuery(
         '''
@@ -57,7 +58,7 @@ class SqlLakeRepository implements LakeRepository {
         WHERE $columnId = @lakeId
         ''',
         substitutionValues: {
-          'lakeId': lakeId,
+          'lakeId': lakeId.toString(),
         },
       );
       if (lakeRows.isEmpty) {
@@ -73,36 +74,36 @@ class SqlLakeRepository implements LakeRepository {
 
 @injectable
 class SqlLakeRepositoryMigrator implements RepositoryMigrator {
-  static const _lakes = [
+  static final _lakes = [
     Lake(
-      id: '69c8438b-5aef-442f-a70d-e0d783ea2b38',
+      id: Uuid.fromString('69c8438b-5aef-442f-a70d-e0d783ea2b38'),
       name: 'Großer Woog',
-      features: {Feature.temperature, Feature.booking},
+      features: const {Feature.temperature, Feature.booking},
     ),
     Lake(
-      id: '25aa2968-e34e-4f86-87cc-56b16b5aff36',
+      id: Uuid.fromString('25aa2968-e34e-4f86-87cc-56b16b5aff36'),
       name: 'Arheilger Mühlchen',
-      features: {Feature.booking},
+      features: const {Feature.booking},
     ),
     Lake(
-      id: '55e5f52a-2de8-458a-828f-3c043ef458d9',
+      id: Uuid.fromString('55e5f52a-2de8-458a-828f-3c043ef458d9'),
       name: 'Alster in Hamburg',
-      features: {Feature.temperature},
+      features: const {Feature.temperature},
     ),
     Lake(
-      id: 'd074654c-dedd-46c3-8042-af55c93c910e',
+      id: Uuid.fromString('d074654c-dedd-46c3-8042-af55c93c910e'),
       name: 'Nordsee bei Cuxhaven',
-      features: {Feature.temperature},
+      features: const {Feature.temperature},
     ),
     Lake(
-      id: 'bedbdac7-7d61-48d5-b1bd-0de5be25e953',
+      id: Uuid.fromString('bedbdac7-7d61-48d5-b1bd-0de5be25e953'),
       name: 'Potsdamer Havel',
-      features: {Feature.temperature, Feature.booking},
+      features: const {Feature.temperature, Feature.booking},
     ),
     Lake(
-      id: 'acf32f07-e702-4e9e-b766-fb8993a71b21',
+      id: Uuid.fromString('acf32f07-e702-4e9e-b766-fb8993a71b21'),
       name: 'Aare (Bern Schönau)',
-      features: {Feature.temperature},
+      features: const {Feature.temperature},
     ),
   ];
 
@@ -166,7 +167,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
         )
       ''',
       substitutionValues: {
-        'id': lake.id,
+        'id': lake.id.toString(),
         'name': lake.name,
       },
     );
@@ -193,7 +194,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
         )
       ''',
       substitutionValues: {
-        'id': lake.id,
+        'id': lake.id.toString(),
         'name': lake.name,
         'supportsTemperature': lake.features.contains(Feature.temperature),
         'supportsBooking': lake.features.contains(Feature.booking),
@@ -234,7 +235,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
         WHERE $columnId = @lakeId
       ''',
       substitutionValues: {
-        'lakeId': lake.id,
+        'lakeId': lake.id.toString(),
         'supportsTemperature': lake.features.contains(Feature.temperature),
         'supportsBooking': lake.features.contains(Feature.booking),
       },

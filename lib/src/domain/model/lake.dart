@@ -1,9 +1,9 @@
 import 'package:meta/meta.dart';
+import 'package:sane_uuid/uuid.dart';
 
 @immutable
 class Lake {
-  // TODO: change to UUID
-  final String id;
+  final Uuid id;
   final String name;
   final Set<Feature> features;
 

@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/exception.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
@@ -15,7 +16,7 @@ class UpdateTemperature {
 
   UpdateTemperature(this._lakeRepo, this._temperatureRepo);
 
-  Future<void> call(String lakeId, DateTime time, double temperature) async {
+  Future<void> call(Uuid lakeId, DateTime time, double temperature) async {
     final lake = await _lakeRepo.getLake(lakeId);
     if (lake == null) {
       throw LakeNotFoundError(lakeId);

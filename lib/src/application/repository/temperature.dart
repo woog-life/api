@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 
 @immutable
@@ -13,9 +14,9 @@ class NearDataDto {
 }
 
 abstract class TemperatureRepository {
-  Future<LakeData?> getLakeData(String lakeId);
+  Future<LakeData?> getLakeData(Uuid lakeId);
 
-  Future<void> updateData(String lakeId, LakeData data);
+  Future<void> updateData(Uuid lakeId, LakeData data);
 
-  Future<NearDataDto> getNearestData(String lakeId, DateTime time);
+  Future<NearDataDto> getNearestData(Uuid lakeId, DateTime time);
 }

@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:postgres/postgres.dart';
+import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 import 'package:woog_api/src/infrastructure/respository/lake_postgres.dart'
@@ -30,7 +31,7 @@ class SqlTemperatureRepository implements TemperatureRepository {
   }
 
   @override
-  Future<LakeData?> getLakeData(String lakeId) async {
+  Future<LakeData?> getLakeData(Uuid lakeId) async {
     return _getIt.useConnection((connection) async {
       final rows = await connection.mappedResultsQuery(
         '''
@@ -40,7 +41,7 @@ class SqlTemperatureRepository implements TemperatureRepository {
         LIMIT 1
         ''',
         substitutionValues: {
-          'lakeId': lakeId,
+          'lakeId': lakeId.toString(),
         },
       );
 
@@ -60,7 +61,7 @@ class SqlTemperatureRepository implements TemperatureRepository {
   }
 
   @override
-  Future<void> updateData(String lakeId, LakeData data) async {
+  Future<void> updateData(Uuid lakeId, LakeData data) async {
     return _getIt.useConnection((connection) async {
       await connection.execute(
         '''
@@ -77,7 +78,7 @@ class SqlTemperatureRepository implements TemperatureRepository {
       ON CONFLICT DO NOTHING
       ''',
         substitutionValues: {
-          'lakeId': lakeId,
+          'lakeId': lakeId.toString(),
           'time': data.time,
           'temperature': data.temperature,
         },
@@ -86,7 +87,7 @@ class SqlTemperatureRepository implements TemperatureRepository {
   }
 
   @override
-  Future<NearDataDto> getNearestData(String lakeId, DateTime time) async {
+  Future<NearDataDto> getNearestData(Uuid lakeId, DateTime time) async {
     return _getIt.useConnection((connection) async {
       final lowerResult = await connection.mappedResultsQuery(
         '''
@@ -97,7 +98,7 @@ class SqlTemperatureRepository implements TemperatureRepository {
         LIMIT 1
         ''',
         substitutionValues: {
-          'lakeId': lakeId,
+          'lakeId': lakeId.toString(),
           'time': time,
         },
       );
@@ -111,7 +112,7 @@ class SqlTemperatureRepository implements TemperatureRepository {
         LIMIT 1
         ''',
         substitutionValues: {
-          'lakeId': lakeId,
+          'lakeId': lakeId.toString(),
           'time': time,
         },
       );
@@ -148,7 +149,7 @@ class SqlTemperatureRepositoryMigrator implements RepositoryMigrator {
           $columnId,
           $columnTime
         ) 
-        ''',
+      ''',
     );
   }
 
