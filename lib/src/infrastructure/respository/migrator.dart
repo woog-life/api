@@ -81,7 +81,7 @@ class Migrator {
         _logger.i('Database schema is up-to-date');
       }
     } finally {
-      lock.unlock();
+      await lock.unlock();
     }
   }
 
