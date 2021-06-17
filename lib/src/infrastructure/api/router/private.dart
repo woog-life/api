@@ -10,6 +10,7 @@ import 'package:woog_api/src/application/use_case/update_events.dart';
 import 'package:woog_api/src/application/use_case/update_temperature.dart';
 import 'package:woog_api/src/domain/error/lake_not_found.dart';
 import 'package:woog_api/src/domain/error/time.dart';
+import 'package:woog_api/src/domain/error/unsupported.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/auth.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/json.dart';
@@ -68,6 +69,13 @@ class PrivateApi {
           ErrorMessageDto(e.toString()).toJson(),
         ),
       );
+    } on UnsupportedFeatureException catch (e) {
+      return Response(
+        HttpStatus.notImplemented,
+        body: jsonEncode(
+          ErrorMessageDto(e.toString()),
+        ),
+      );
     }
   }
 
@@ -118,6 +126,13 @@ class PrivateApi {
         HttpStatus.badRequest,
         body: jsonEncode(
           ErrorMessageDto(e.toString()).toJson(),
+        ),
+      );
+    } on UnsupportedFeatureException catch (e) {
+      return Response(
+        HttpStatus.notImplemented,
+        body: jsonEncode(
+          ErrorMessageDto(e.toString()),
         ),
       );
     }

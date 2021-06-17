@@ -2,8 +2,12 @@ import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 import 'package:woog_api/src/application/repository/booking.dart';
+import 'package:woog_api/src/application/repository/lake.dart';
+import 'package:woog_api/src/domain/error/lake_not_found.dart';
 import 'package:woog_api/src/domain/error/time.dart';
+import 'package:woog_api/src/domain/error/unsupported.dart';
 import 'package:woog_api/src/domain/model/event.dart';
+import 'package:woog_api/src/domain/model/lake.dart';
 
 @immutable
 class UpdateEvent {
@@ -25,9 +29,14 @@ class UpdateEvent {
 @injectable
 class UpdateEvents {
   final Logger _logger;
-  final BookingRepository _repo;
+  final LakeRepository _lakeRepo;
+  final BookingRepository _bookingRepo;
 
-  UpdateEvents(this._logger, this._repo);
+  UpdateEvents(
+    this._logger,
+    this._lakeRepo,
+    this._bookingRepo,
+  );
 
   Future<void> call(
     String lakeId,
@@ -35,6 +44,16 @@ class UpdateEvents {
     List<UpdateEvent> events,
   ) async {
     _logger.d('Received ${events.length} events for lake $lakeId ($variation)');
+
+    final lake = await _lakeRepo.getLake(lakeId);
+    if (lake == null) {
+      throw LakeNotFoundError(lakeId);
+    }
+
+    if (!lake.features.contains(Feature.booking)) {
+      throw const UnsupportedFeatureException(Feature.booking);
+    }
+
     final modelEvents = <Event>[];
 
     for (final updateEvent in events) {
@@ -59,6 +78,6 @@ class UpdateEvents {
       modelEvents.add(event);
     }
 
-    await _repo.updateEvents(lakeId, modelEvents);
+    await _bookingRepo.updateEvents(lakeId, modelEvents);
   }
 }
