@@ -2,6 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 import 'package:woog_api/src/domain/model/lake.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart' as model;
+import 'package:woog_api/src/domain/model/lake_data.dart';
 
 part 'dto.g.dart';
 
@@ -10,17 +11,42 @@ part 'dto.g.dart';
 class LakeInfoDto {
   final String id;
   final String name;
+  final List<FeatureDto> features;
 
-  const LakeInfoDto({required this.id, required this.name});
+  const LakeInfoDto({
+    required this.id,
+    required this.name,
+    required this.features,
+  });
 
   factory LakeInfoDto.fromLake(Lake lake) {
-    return LakeInfoDto(id: lake.id, name: lake.name);
+    return LakeInfoDto(
+      id: lake.id,
+      name: lake.name,
+      features: lake.features.map((f) => f.matchDto()).toList(growable: false),
+    );
   }
 
   factory LakeInfoDto.fromJson(Map<String, dynamic> json) =>
       _$LakeInfoDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$LakeInfoDtoToJson(this);
+}
+
+enum FeatureDto {
+  temperature,
+  booking,
+}
+
+extension on Feature {
+  FeatureDto matchDto() {
+    switch (this) {
+      case Feature.temperature:
+        return FeatureDto.temperature;
+      case Feature.booking:
+        return FeatureDto.booking;
+    }
+  }
 }
 
 @JsonSerializable()
@@ -55,8 +81,11 @@ class LakeStateDto {
     required this.data,
   });
 
-  factory LakeStateDto.fromLake(Lake lake, {int? precision}) {
-    final data = lake.data;
+  factory LakeStateDto.fromLake(
+    Lake lake,
+    LakeData? data, {
+    int? precision,
+  }) {
     return LakeStateDto(
       id: lake.id,
       name: lake.name,

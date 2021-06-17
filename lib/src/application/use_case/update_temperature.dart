@@ -1,13 +1,13 @@
 import 'package:injectable/injectable.dart';
 import 'package:woog_api/src/application/repository/exception.dart';
-import 'package:woog_api/src/application/repository/lake.dart';
+import 'package:woog_api/src/application/repository/temperature.dart';
 import 'package:woog_api/src/domain/error/lake_not_found.dart';
 import 'package:woog_api/src/domain/error/time.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 
 @injectable
 class UpdateTemperature {
-  final LakeRepository _repo;
+  final TemperatureRepository _repo;
 
   UpdateTemperature(this._repo);
 

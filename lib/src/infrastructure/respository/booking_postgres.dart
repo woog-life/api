@@ -116,7 +116,7 @@ class SqlBookingRepositoryMigrator implements RepositoryMigrator {
       '''
       CREATE TABLE $tableName (
         $columnLakeId uuid NOT NULL 
-          REFERENCES ${lake.lakeTableName}(${lake.columnLakeId}),
+          REFERENCES ${lake.tableName}(${lake.columnId}),
         $columnVariation text NOT NULL,
         $columnBeginTime timestamp NOT NULL,
         $columnEndTime timestamp NOT NULL,

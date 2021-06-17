@@ -1,21 +1,20 @@
-import 'lake_data.dart';
+import 'package:meta/meta.dart';
 
+@immutable
 class Lake {
   // TODO: change to UUID
   final String id;
   final String name;
-  LakeData? _data;
+  final Set<Feature> features;
 
-  LakeData? get data => _data;
-
-  Lake({
+  const Lake({
     required this.id,
     required this.name,
-    LakeData? data,
-  }) : _data = data;
+    required this.features,
+  });
+}
 
-  // ignore: use_setters_to_change_properties
-  void setData(LakeData data) {
-    _data = data;
-  }
+enum Feature {
+  temperature,
+  booking,
 }

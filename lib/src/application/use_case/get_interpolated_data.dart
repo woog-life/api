@@ -1,11 +1,11 @@
 import 'package:injectable/injectable.dart';
-import 'package:woog_api/src/application/repository/lake.dart';
+import 'package:woog_api/src/application/repository/temperature.dart';
 import 'package:woog_api/src/domain/error/time.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 
 @injectable
 class GetInterpolatedData {
-  final LakeRepository _repo;
+  final TemperatureRepository _repo;
 
   GetInterpolatedData(this._repo);
 

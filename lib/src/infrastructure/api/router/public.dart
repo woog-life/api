@@ -9,6 +9,7 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/src/application/use_case/get_events.dart';
 import 'package:woog_api/src/application/use_case/get_interpolated_data.dart';
 import 'package:woog_api/src/application/use_case/get_lake.dart';
+import 'package:woog_api/src/application/use_case/get_lake_data.dart';
 import 'package:woog_api/src/application/use_case/get_lakes.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/json.dart';
@@ -20,6 +21,7 @@ part 'public.g.dart';
 class PublicApi {
   final GetLakes _getLakes;
   final GetLake _getLake;
+  final GetTemperature _getTemperature;
   final GetInterpolatedData _getInterpolatedData;
   final GetEvents _getEvents;
 
@@ -30,6 +32,7 @@ class PublicApi {
   PublicApi(
     this._getLakes,
     this._getLake,
+    this._getTemperature,
     this._getInterpolatedData,
     this._getEvents,
   ) {
@@ -70,6 +73,7 @@ class PublicApi {
   @Route.get('/lake/<lakeId>')
   Future<Response> getLake(Request request, String lakeId) async {
     final lake = await _getLake(lakeId);
+    final lakeData = await _getTemperature(lakeId);
 
     final int? precision;
     try {
@@ -84,6 +88,7 @@ class PublicApi {
       return Response.ok(
         jsonEncode(LakeStateDto.fromLake(
           lake,
+          lakeData,
           precision: precision,
         ).toJson()),
       );

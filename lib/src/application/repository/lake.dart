@@ -1,24 +1,11 @@
-import 'package:meta/meta.dart';
+import 'package:woog_api/src/application/repository/temperature.dart' as temp;
 import 'package:woog_api/src/domain/model/lake.dart';
-import 'package:woog_api/src/domain/model/lake_data.dart';
 
-@immutable
-class NearDataDto {
-  final LakeData? before;
-  final LakeData? after;
-
-  const NearDataDto({
-    required this.before,
-    required this.after,
-  });
-}
+@Deprecated('Use temperature.NearDataDto')
+typedef NearDataDto = temp.NearDataDto;
 
 abstract class LakeRepository {
   Future<Set<Lake>> getLakes();
 
   Future<Lake?> getLake(String lakeId);
-
-  Future<void> updateData(String lakeId, LakeData data);
-
-  Future<NearDataDto> getNearestData(String lakeId, DateTime time);
 }
