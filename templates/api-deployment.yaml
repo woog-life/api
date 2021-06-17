@@ -36,6 +36,14 @@ spec:
             httpGet:
               port: 8080
               path: /health
+          startupProbe:
+            httpGet:
+              port: 8080
+              path: /health
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /health
           ports:
             - containerPort: 8080
           envFrom:
