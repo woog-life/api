@@ -6,6 +6,7 @@ import 'package:woog_api/src/domain/model/event.dart';
 import 'package:woog_api/src/infrastructure/respository/lake_postgres.dart'
     as lake;
 import 'package:woog_api/src/infrastructure/respository/migrator.dart';
+import 'package:woog_api/src/infrastructure/respository/postres.dart';
 
 const tableName = 'booking';
 const columnLakeId = 'lake_id';
@@ -19,8 +20,6 @@ const columnAvailable = 'available';
 @Injectable(as: BookingRepository)
 class SqlBookingRepository implements BookingRepository {
   final GetIt _getIt;
-
-  Future<PostgreSQLConnection> get _connection => _getIt.getAsync();
 
   SqlBookingRepository(this._getIt);
 
@@ -46,34 +45,35 @@ class SqlBookingRepository implements BookingRepository {
   Future<List<Event>> getAvailableEvents(
     String lakeId,
     DateTime endsAfter,
-  ) async {
-    final connection = await _connection;
-    final result = await connection.mappedResultsQuery(
-      '''
+  ) {
+    return _getIt.useConnection((connection) async {
+      final result = await connection.mappedResultsQuery(
+        '''
         SELECT * FROM $tableName
         WHERE $columnLakeId = @lakeId 
           AND $columnEndTime > @endTime
           AND $columnAvailable = TRUE
         ORDER BY $columnBeginTime
       ''',
-      substitutionValues: {
-        'lakeId': lakeId,
-        'endTime': endsAfter,
-      },
-    );
+        substitutionValues: {
+          'lakeId': lakeId,
+          'endTime': endsAfter,
+        },
+      );
 
-    return result.map((e) => e[tableName]!).map(_eventFromRow).toList();
+      return result.map((e) => e[tableName]!).map(_eventFromRow).toList();
+    });
   }
 
   @override
   Future<void> updateEvents(
     String lakeId,
     List<Event> events,
-  ) async {
-    final connection = await _connection;
-    for (final event in events) {
-      await connection.execute(
-        '''
+  ) {
+    return _getIt.useConnection((connection) async {
+      for (final event in events) {
+        await connection.execute(
+          '''
         INSERT INTO $tableName(
           $columnLakeId,
           $columnVariation,
@@ -94,17 +94,18 @@ class SqlBookingRepository implements BookingRepository {
         ON CONFLICT ($columnLakeId, $columnVariation, $columnBeginTime)
         DO UPDATE SET $columnAvailable = @available;
         ''',
-        substitutionValues: {
-          'lakeId': lakeId,
-          'variation': event.variation,
-          'bookingLink': event.bookingLink,
-          'available': event.isAvailable,
-          'beginTime': event.beginTime,
-          'endTime': event.endTime,
-          'saleStartTime': event.saleStartTime,
-        },
-      );
-    }
+          substitutionValues: {
+            'lakeId': lakeId,
+            'variation': event.variation,
+            'bookingLink': event.bookingLink,
+            'available': event.isAvailable,
+            'beginTime': event.beginTime,
+            'endTime': event.endTime,
+            'saleStartTime': event.saleStartTime,
+          },
+        );
+      }
+    });
   }
 }
 
