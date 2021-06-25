@@ -13,10 +13,23 @@ class NearDataDto {
   });
 }
 
+@immutable
+class LakeDataExtrema {
+  final LakeData min;
+  final LakeData max;
+
+  const LakeDataExtrema({
+    required this.min,
+    required this.max
+});
+}
+
 abstract class TemperatureRepository {
   Future<LakeData?> getLakeData(Uuid lakeId);
 
   Future<void> updateData(Uuid lakeId, LakeData data);
 
   Future<NearDataDto> getNearestData(Uuid lakeId, DateTime time);
+
+  Future<LakeDataExtrema?> getExtrema(Uuid lakeId);
 }

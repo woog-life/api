@@ -127,6 +127,53 @@ class SqlTemperatureRepository implements TemperatureRepository {
       return NearDataDto(before: lower, after: higher);
     });
   }
+
+  @override
+  Future<LakeDataExtrema?> getExtrema(Uuid lakeId) {
+    return _getIt.useConnection((connection) async {
+      final minResult = await connection.mappedResultsQuery(
+        '''
+        SELECT $columnTime, $columnTemperature
+        FROM $tableName
+        WHERE $columnId = @lakeId AND $columnTemperature = (
+          SELECT MIN ($columnTemperature)
+          FROM $tableName
+          WHERE $columnId = @lakeId
+        )
+        ORDER BY $columnTime ASC
+        LIMIT 1
+        ''',
+        substitutionValues: {
+          'lakeId': lakeId.toString(),
+        },
+      );
+
+      final maxResult = await connection.mappedResultsQuery(
+        '''
+        SELECT $columnTime, $columnTemperature
+        FROM $tableName
+        WHERE $columnId = @lakeId AND $columnTemperature = (
+          SELECT MAX ($columnTemperature)
+          FROM $tableName
+          WHERE $columnId = @lakeId
+        )
+        ORDER BY $columnTime ASC
+        LIMIT 1
+        ''',
+        substitutionValues: {
+          'lakeId': lakeId.toString(),
+        },
+      );
+
+      if (minResult.isEmpty || maxResult.isEmpty) {
+        return null;
+      }
+
+      return LakeDataExtrema(
+          min: _dataFromColumns(minResult.single[tableName]!),
+          max: _dataFromColumns(maxResult.single[tableName]!));
+    });
+  }
 }
 
 @injectable

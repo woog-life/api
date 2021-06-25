@@ -8,6 +8,7 @@ import 'package:sane_uuid/uuid.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/src/application/use_case/get_events.dart';
+import 'package:woog_api/src/application/use_case/get_extrema.dart';
 import 'package:woog_api/src/application/use_case/get_interpolated_data.dart';
 import 'package:woog_api/src/application/use_case/get_lake.dart';
 import 'package:woog_api/src/application/use_case/get_lake_data.dart';
@@ -25,6 +26,7 @@ class PublicApi {
   final GetTemperature _getTemperature;
   final GetInterpolatedData _getInterpolatedData;
   final GetEvents _getEvents;
+  final GetExtrema _getExtrema;
 
   Router get _router => _$PublicApiRouter(this);
 
@@ -36,6 +38,7 @@ class PublicApi {
     this._getTemperature,
     this._getInterpolatedData,
     this._getEvents,
+    this._getExtrema,
   ) {
     _handler = const Pipeline()
         .addMiddleware(trailingSlashRedirect())
@@ -193,6 +196,48 @@ class PublicApi {
           precision: precision,
         ),
       ),
+    );
+  }
+
+  @Route.get('/lake/<lakeId>/temperature/extrema')
+  Future<Response> getExtrema(Request request, String lakeId) async {
+    final Uuid lakeUuid;
+    try {
+      lakeUuid = Uuid.fromString(lakeId);
+    } on FormatException {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto('Invalid UUID: $lakeId'),
+        ),
+      );
+    }
+
+    final extrema = await _getExtrema(lakeUuid);
+
+    final int? precision;
+    try {
+      precision = _getPrecision(request);
+    } on FormatException {
+      return Response(HttpStatus.badRequest);
+    }
+
+    if (extrema == null) {
+      return Response.notFound(
+          jsonEncode(
+            ErrorMessageDto('No temperatures for lake $lakeUuid'),
+          ),
+      );
+    }
+
+    return Response.ok(
+      jsonEncode(
+        LakeDataExtremaDto.fromData(
+          extrema.min,
+          extrema.max,
+          precision: precision
+        )
+      )
     );
   }
 
