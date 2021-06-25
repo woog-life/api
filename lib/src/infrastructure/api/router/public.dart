@@ -224,21 +224,15 @@ class PublicApi {
 
     if (extrema == null) {
       return Response.notFound(
-          jsonEncode(
-            ErrorMessageDto('No temperatures for lake $lakeUuid'),
-          ),
+        jsonEncode(
+          ErrorMessageDto('No temperatures for lake $lakeUuid'),
+        ),
       );
     }
 
-    return Response.ok(
-      jsonEncode(
-        LakeDataExtremaDto.fromData(
-          extrema.min,
-          extrema.max,
-          precision: precision
-        )
-      )
-    );
+    return Response.ok(jsonEncode(LakeDataExtremaDto.fromData(
+        extrema.min, extrema.max,
+        precision: precision)));
   }
 
   @Route.get('/lake/<lakeId>/booking')
