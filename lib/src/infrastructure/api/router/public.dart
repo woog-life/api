@@ -9,10 +9,11 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/src/application/use_case/get_events.dart';
 import 'package:woog_api/src/application/use_case/get_extrema.dart';
-import 'package:woog_api/src/application/use_case/get_interpolated_data.dart';
 import 'package:woog_api/src/application/use_case/get_lake.dart';
-import 'package:woog_api/src/application/use_case/get_lake_data.dart';
 import 'package:woog_api/src/application/use_case/get_lakes.dart';
+import 'package:woog_api/src/application/use_case/get_temperature.dart';
+import 'package:woog_api/src/domain/error/time.dart';
+import 'package:woog_api/src/domain/model/lake_data.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/json.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/trailing_slash.dart';
@@ -24,7 +25,6 @@ class PublicApi {
   final GetLakes _getLakes;
   final GetLake _getLake;
   final GetTemperature _getTemperature;
-  final GetInterpolatedData _getInterpolatedData;
   final GetEvents _getEvents;
   final GetExtrema _getExtrema;
 
@@ -36,7 +36,6 @@ class PublicApi {
     this._getLakes,
     this._getLake,
     this._getTemperature,
-    this._getInterpolatedData,
     this._getEvents,
     this._getExtrema,
   ) {
@@ -144,7 +143,7 @@ class PublicApi {
       return Response(HttpStatus.badRequest);
     }
 
-    final data = await _getInterpolatedData(lakeUuid, time);
+    final data = await _getTemperature(lakeUuid, time: time);
 
     if (data == null) {
       return Response.notFound(const ErrorMessageDto('No lake data found'));
@@ -156,6 +155,15 @@ class PublicApi {
         precision: precision,
       )),
     );
+  }
+
+  DateTime? _getTime(Request request) {
+    final atArgument = request.url.queryParameters['at'];
+    if (atArgument == null) {
+      return null;
+    } else {
+      return DateTime.parse(atArgument);
+    }
   }
 
   @Route.get('/lake/<lakeId>/temperature')
@@ -172,13 +180,30 @@ class PublicApi {
       );
     }
 
-    final temperature = await _getTemperature(lakeUuid);
+    final DateTime? time;
+    try {
+      time = _getTime(request);
+    } on FormatException {
+      return Response(HttpStatus.badRequest);
+    }
 
     final int? precision;
     try {
       precision = _getPrecision(request);
     } on FormatException {
       return Response(HttpStatus.badRequest);
+    }
+
+    final LakeData? temperature;
+    try {
+      temperature = await _getTemperature(lakeUuid, time: time);
+    } on TimeError catch (e) {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto(e.toString()).toJson(),
+        ),
+      );
     }
 
     if (temperature == null) {
