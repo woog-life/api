@@ -18,7 +18,10 @@ class LakeDataExtrema {
   final LakeData min;
   final LakeData max;
 
-  const LakeDataExtrema({required this.min, required this.max});
+  const LakeDataExtrema({
+    required this.min,
+    required this.max,
+  });
 }
 
 abstract class TemperatureRepository {

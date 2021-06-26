@@ -170,8 +170,9 @@ class SqlTemperatureRepository implements TemperatureRepository {
       }
 
       return LakeDataExtrema(
-          min: _dataFromColumns(minResult.single[tableName]!),
-          max: _dataFromColumns(maxResult.single[tableName]!));
+        min: _dataFromColumns(minResult.single[tableName]!),
+        max: _dataFromColumns(maxResult.single[tableName]!),
+      );
     });
   }
 }
