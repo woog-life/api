@@ -134,7 +134,10 @@ class LakeDataExtremaDto {
   final LakeDataDto min;
   final LakeDataDto max;
 
-  const LakeDataExtremaDto({required this.min, required this.max});
+  const LakeDataExtremaDto({
+    required this.min,
+    required this.max,
+  });
 
   factory LakeDataExtremaDto.fromData(
     model.LakeData min,
