@@ -1,9 +1,9 @@
-abstract class TimeError implements Exception {}
+abstract class TimeException implements Exception {}
 
-class FutureTimeError implements TimeError {
+class FutureTimeException implements TimeException {
   final DateTime futureTime;
 
-  FutureTimeError(this.futureTime);
+  FutureTimeException(this.futureTime);
 
   @override
   String toString() {
@@ -11,10 +11,10 @@ class FutureTimeError implements TimeError {
   }
 }
 
-class NonUtcTimeError implements TimeError {
+class NonUtcTimeException implements TimeException {
   final DateTime nonUtcTime;
 
-  NonUtcTimeError(this.nonUtcTime);
+  NonUtcTimeException(this.nonUtcTime);
 
   @override
   String toString() {

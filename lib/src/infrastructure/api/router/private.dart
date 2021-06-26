@@ -9,9 +9,9 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/src/application/use_case/update_events.dart';
 import 'package:woog_api/src/application/use_case/update_temperature.dart';
-import 'package:woog_api/src/domain/error/lake_not_found.dart';
-import 'package:woog_api/src/domain/error/time.dart';
-import 'package:woog_api/src/domain/error/unsupported.dart';
+import 'package:woog_api/src/domain/exception/lake_not_found.dart';
+import 'package:woog_api/src/domain/exception/time.dart';
+import 'package:woog_api/src/domain/exception/unsupported.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/auth.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/json.dart';
@@ -68,14 +68,14 @@ class PrivateApi {
     try {
       await _updateTemperature(lakeUuid, update.time, update.temperature);
       return Response(HttpStatus.noContent);
-    } on LakeNotFoundError catch (e) {
+    } on LakeNotFoundException catch (e) {
       return Response(
         HttpStatus.notFound,
         body: jsonEncode(
           ErrorMessageDto(e.toString()),
         ),
       );
-    } on TimeError catch (e) {
+    } on TimeException catch (e) {
       return Response(
         HttpStatus.badRequest,
         body: jsonEncode(
@@ -139,14 +139,14 @@ class PrivateApi {
             .toList(growable: false),
       );
       return Response(HttpStatus.noContent);
-    } on LakeNotFoundError catch (e) {
+    } on LakeNotFoundException catch (e) {
       return Response(
         HttpStatus.notFound,
         body: jsonEncode(
           ErrorMessageDto(e.toString()),
         ),
       );
-    } on TimeError catch (e) {
+    } on TimeException catch (e) {
       return Response(
         HttpStatus.badRequest,
         body: jsonEncode(

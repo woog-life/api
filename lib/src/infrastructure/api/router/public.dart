@@ -12,7 +12,7 @@ import 'package:woog_api/src/application/use_case/get_extrema.dart';
 import 'package:woog_api/src/application/use_case/get_lake.dart';
 import 'package:woog_api/src/application/use_case/get_lakes.dart';
 import 'package:woog_api/src/application/use_case/get_temperature.dart';
-import 'package:woog_api/src/domain/error/time.dart';
+import 'package:woog_api/src/domain/exception/time.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/json.dart';
@@ -197,7 +197,7 @@ class PublicApi {
     final LakeData? temperature;
     try {
       temperature = await _getTemperature(lakeUuid, time: time);
-    } on TimeError catch (e) {
+    } on TimeException catch (e) {
       return Response(
         HttpStatus.badRequest,
         body: jsonEncode(

@@ -1,9 +1,9 @@
 import 'package:sane_uuid/uuid.dart';
 
-class LakeNotFoundError implements Exception {
+class LakeNotFoundException implements Exception {
   final Uuid lakeId;
 
-  LakeNotFoundError(this.lakeId);
+  LakeNotFoundException(this.lakeId);
 
   @override
   String toString() {

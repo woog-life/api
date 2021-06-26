@@ -2,7 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
 import 'package:woog_api/src/domain/algo/interpolation.dart';
-import 'package:woog_api/src/domain/error/time.dart';
+import 'package:woog_api/src/domain/exception/time.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 
 @injectable
@@ -19,7 +19,7 @@ class GetTemperature {
       return _repo.getLakeData(lakeId);
     }
     if (!time.isUtc) {
-      throw NonUtcTimeError(time);
+      throw NonUtcTimeException(time);
     }
 
     final nearestData = await _repo.getNearestData(lakeId, time);

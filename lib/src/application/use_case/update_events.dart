@@ -4,9 +4,9 @@ import 'package:meta/meta.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/booking.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
-import 'package:woog_api/src/domain/error/lake_not_found.dart';
-import 'package:woog_api/src/domain/error/time.dart';
-import 'package:woog_api/src/domain/error/unsupported.dart';
+import 'package:woog_api/src/domain/exception/lake_not_found.dart';
+import 'package:woog_api/src/domain/exception/time.dart';
+import 'package:woog_api/src/domain/exception/unsupported.dart';
 import 'package:woog_api/src/domain/model/event.dart';
 import 'package:woog_api/src/domain/model/lake.dart';
 
@@ -48,7 +48,7 @@ class UpdateEvents {
 
     final lake = await _lakeRepo.getLake(lakeId);
     if (lake == null) {
-      throw LakeNotFoundError(lakeId);
+      throw LakeNotFoundException(lakeId);
     }
 
     if (!lake.features.contains(Feature.booking)) {
@@ -64,7 +64,7 @@ class UpdateEvents {
         updateEvent.saleStartTime,
       ]) {
         if (!time.isUtc) {
-          throw NonUtcTimeError(time);
+          throw NonUtcTimeException(time);
         }
       }
 

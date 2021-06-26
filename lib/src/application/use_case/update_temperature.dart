@@ -3,9 +3,9 @@ import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/exception.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
-import 'package:woog_api/src/domain/error/lake_not_found.dart';
-import 'package:woog_api/src/domain/error/time.dart';
-import 'package:woog_api/src/domain/error/unsupported.dart';
+import 'package:woog_api/src/domain/exception/lake_not_found.dart';
+import 'package:woog_api/src/domain/exception/time.dart';
+import 'package:woog_api/src/domain/exception/unsupported.dart';
 import 'package:woog_api/src/domain/model/lake.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 
@@ -19,7 +19,7 @@ class UpdateTemperature {
   Future<void> call(Uuid lakeId, DateTime time, double temperature) async {
     final lake = await _lakeRepo.getLake(lakeId);
     if (lake == null) {
-      throw LakeNotFoundError(lakeId);
+      throw LakeNotFoundException(lakeId);
     }
 
     if (!lake.features.contains(Feature.temperature)) {
@@ -27,12 +27,12 @@ class UpdateTemperature {
     }
 
     if (!time.isUtc) {
-      throw NonUtcTimeError(time);
+      throw NonUtcTimeException(time);
     }
 
     final aMinuteFromNow = DateTime.now().add(const Duration(minutes: 1));
     if (time.isAfter(aMinuteFromNow)) {
-      throw FutureTimeError(time);
+      throw FutureTimeException(time);
     }
 
     final data = LakeData(
@@ -42,7 +42,7 @@ class UpdateTemperature {
     try {
       _temperatureRepo.updateData(lakeId, data);
     } on NotFoundException {
-      throw LakeNotFoundError(lakeId);
+      throw LakeNotFoundException(lakeId);
     }
   }
 }
