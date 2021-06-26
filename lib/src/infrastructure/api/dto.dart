@@ -136,11 +136,15 @@ class LakeDataExtremaDto {
 
   const LakeDataExtremaDto({required this.min, required this.max});
 
-  factory LakeDataExtremaDto.fromData(model.LakeData min, model.LakeData max,
-      {int? precision}) {
+  factory LakeDataExtremaDto.fromData(
+    model.LakeData min,
+    model.LakeData max, {
+    int? precision,
+  }) {
     return LakeDataExtremaDto(
-        min: LakeDataDto.fromData(min, precision: precision),
-        max: LakeDataDto.fromData(max, precision: precision));
+      min: LakeDataDto.fromData(min, precision: precision),
+      max: LakeDataDto.fromData(max, precision: precision),
+    );
   }
 
   factory LakeDataExtremaDto.fromJson(Map<String, dynamic> json) =>

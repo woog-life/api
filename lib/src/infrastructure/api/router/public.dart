@@ -230,9 +230,15 @@ class PublicApi {
       );
     }
 
-    return Response.ok(jsonEncode(LakeDataExtremaDto.fromData(
-        extrema.min, extrema.max,
-        precision: precision)));
+    return Response.ok(
+      jsonEncode(
+        LakeDataExtremaDto.fromData(
+          extrema.min,
+          extrema.max,
+          precision: precision,
+        ),
+      ),
+    );
   }
 
   @Route.get('/lake/<lakeId>/booking')
