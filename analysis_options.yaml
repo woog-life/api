@@ -1,4 +1,4 @@
-include: package:lint/analysis_options.yaml
+include: package:lints/recommended.yaml
 
 analyzer:
   exclude:
@@ -8,4 +8,4 @@ analyzer:
 linter:
   rules:
     prefer_single_quotes: true
-    sort_pub_dependencies: false
+    sort_pub_dependencies: true
