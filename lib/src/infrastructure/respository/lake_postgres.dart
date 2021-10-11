@@ -106,7 +106,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
       features: const {Feature.temperature},
     ),
     Lake(
-      id: 'ab337e4e-7673-4b5e-9c95-393f06f548c8',
+      id: Uuid.fromString('ab337e4e-7673-4b5e-9c95-393f06f548c8'),
       name: 'Rhein (Köln)',
       features: const {Feature.temperature},
     ),
