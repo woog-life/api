@@ -105,6 +105,10 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
       name: 'Aare (Bern Schönau)',
       features: const {Feature.temperature},
     ),
+    Lake(
+      id: 'ab337e4e-7673-4b5e-9c95-393f06f548c8',
+      name: 'Rhein (Köln)'
+    ),
   ];
 
   Future<void> _create(PostgreSQLExecutionContext batch) async {
@@ -148,6 +152,9 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
     }
     if (oldVersion < 11 && newVersion >= 11) {
       await _setFeatures(transaction, _lakes[1]);
+    }
+    if (oldVersion < 12 && newVersion >= 12) {
+      await _insertLake(transaction, _lakes[6]);
     }
   }
 
