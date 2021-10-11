@@ -192,7 +192,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
           $columnId,
           $columnName,
           $columnSupportsTemperature,
-          $columnSupportsBooking,
+          $columnSupportsBooking
         )
         VALUES (
           @id,
