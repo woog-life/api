@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 import 'package:postgres/postgres.dart';
 import 'package:woog_api/src/infrastructure/respository/booking_postgres.dart';
 import 'package:woog_api/src/infrastructure/respository/lake_postgres.dart';
-import 'package:woog_api/src/infrastructure/respository/postres.dart';
+import 'package:woog_api/src/infrastructure/respository/postgres.dart';
 import 'package:woog_api/src/infrastructure/respository/temperature_postgres.dart';
 
 abstract class RepositoryMigrator {

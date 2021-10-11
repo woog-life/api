@@ -7,7 +7,7 @@ import 'package:woog_api/src/domain/model/event.dart';
 import 'package:woog_api/src/infrastructure/respository/lake_postgres.dart'
     as lake;
 import 'package:woog_api/src/infrastructure/respository/migrator.dart';
-import 'package:woog_api/src/infrastructure/respository/postres.dart';
+import 'package:woog_api/src/infrastructure/respository/postgres.dart';
 
 const tableName = 'booking';
 const columnLakeId = 'lake_id';

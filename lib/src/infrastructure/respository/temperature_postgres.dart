@@ -7,7 +7,7 @@ import 'package:woog_api/src/domain/model/lake_data.dart';
 import 'package:woog_api/src/infrastructure/respository/lake_postgres.dart'
     as lake;
 import 'package:woog_api/src/infrastructure/respository/migrator.dart';
-import 'package:woog_api/src/infrastructure/respository/postres.dart';
+import 'package:woog_api/src/infrastructure/respository/postgres.dart';
 
 const tableName = 'lake_data';
 const columnId = 'lake_id';
