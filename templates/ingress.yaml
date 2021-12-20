@@ -19,5 +19,7 @@ spec:
           - backend:
               service:
                 name: backend
+                port:
+                  name: http
             path: /
             pathType: Prefix
