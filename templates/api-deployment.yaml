@@ -8,7 +8,7 @@ metadata:
     app: backend
 spec:
   revisionHistoryLimit: 1
-  replicas: 2
+  replicas: 0
   strategy:
     rollingUpdate:
       maxSurge: 2
