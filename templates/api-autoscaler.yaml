@@ -2,7 +2,6 @@
 {{/*apiVersion: autoscaling/v2beta2*/}}
 {{/*kind: HorizontalPodAutoscaler*/}}
 {{/*metadata:*/}}
-{{/*  namespace: wooglife*/}}
 {{/*  name: backend-autoscaler*/}}
 {{/*spec:*/}}
 {{/*  scaleTargetRef:*/}}

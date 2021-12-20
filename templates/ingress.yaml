@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backend
+  annotations:
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-issuer-http
+    cert-manager.io/issue-temporary-certificate: "false"
+spec:
+  tls:
+    - hosts:
+        - api.woog.life
+      secretName: backend-cert
+  rules:
+    - host: api.woog.life
+      http:
+        paths:
+          - backend:
+              service:
+                name: backend
+            path: /
+            pathType: Prefix
