@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk as smithy
+FROM openjdk:18-jdk-bullseye as smithy
 WORKDIR /apidocs
 RUN wget https://github.com/woog-life/apispec/archive/refs/heads/main.zip && unzip main.zip && mv apispec-main/* .
 RUN ./gradlew build
