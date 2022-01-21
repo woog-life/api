@@ -12,7 +12,7 @@ dependencies:
   injectable: ^1.0.0
 
   # JSON serialization
-  json_annotation: ^4.0.0
+  json_annotation: ^4.4.0
 
   # Logging
   logger: ^1.0.0
