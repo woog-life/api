@@ -78,12 +78,12 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
     Lake(
       id: Uuid.fromString('69c8438b-5aef-442f-a70d-e0d783ea2b38'),
       name: 'Großer Woog',
-      features: const {Feature.temperature, Feature.booking},
+      features: const {Feature.temperature},
     ),
     Lake(
       id: Uuid.fromString('25aa2968-e34e-4f86-87cc-56b16b5aff36'),
       name: 'Arheilger Mühlchen',
-      features: const {Feature.booking},
+      features: const {},
     ),
     Lake(
       id: Uuid.fromString('55e5f52a-2de8-458a-828f-3c043ef458d9'),
@@ -98,7 +98,7 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
     Lake(
       id: Uuid.fromString('bedbdac7-7d61-48d5-b1bd-0de5be25e953'),
       name: 'Potsdamer Havel',
-      features: const {Feature.temperature, Feature.booking},
+      features: const {Feature.temperature},
     ),
     Lake(
       id: Uuid.fromString('acf32f07-e702-4e9e-b766-fb8993a71b21'),
@@ -156,6 +156,11 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
     }
     if (oldVersion < 12 && newVersion >= 12) {
       await _insertLake(transaction, _lakes[6]);
+    }
+    if (oldVersion < 13 && newVersion >= 13) {
+      await Future.wait(
+        [for (final lake in _lakes) _setFeatures(transaction, lake)],
+      );
     }
   }
 
