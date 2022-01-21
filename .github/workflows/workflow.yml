@@ -8,7 +8,7 @@ jobs:
     container: dart:2.14
     steps:
       - name: Check out repo
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Get dependencies
         run: pub get
       - name: Run code generation
@@ -22,7 +22,7 @@ jobs:
     container: dart:2.14
     steps:
       - name: Check out repo
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Check bin formatting
         run: dart format bin --set-exit-if-changed
       - name: Check lib formatting
@@ -36,7 +36,7 @@ jobs:
     container: dart:2.14
     steps:
       - name: Check out repo
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Get dependencies
         run: pub get
       - name: Run code generation
@@ -52,7 +52,7 @@ jobs:
       - lint
       - test
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: push_docker
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Substitute environment variables in values.yaml
         run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
       - uses: WyriHaximus/github-action-helm3@v2
