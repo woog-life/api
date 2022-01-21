@@ -10,7 +10,12 @@ class GetLakes {
 
   Future<List<Lake>> call() async {
     final lakes = await _repo.getLakes();
-    return lakes.toList(growable: false)
-      ..sort((a, b) => a.name.compareTo(b.name));
+    final result = lakes
+        .where((element) => element.features.isNotEmpty)
+        .toList(growable: false);
+
+    result.sort((a, b) => a.name.compareTo(b.name));
+
+    return result;
   }
 }
