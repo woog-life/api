@@ -1,5 +1,10 @@
 name: Workflow
-on: [push]
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+
 
 jobs:
   test:
@@ -43,6 +48,18 @@ jobs:
         run: pub run build_runner build
       - name: Run Analysis
         run: dart analyze
+
+  build_docker:
+    runs-on: ubuntu-latest
+    if: success() && github.event_name == 'pull_request'
+    needs:
+      - check_format
+      - lint
+      - test
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: docker build -t ghcr.io/woog-life/api:citest --build-arg "build=citest" .
 
   push_docker:
     runs-on: ubuntu-latest
