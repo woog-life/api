@@ -19,7 +19,7 @@ jobs:
   check_format:
     name: Check Format
     runs-on: ubuntu-latest
-    container: dart:2.15
+    container: dart:2.16
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
@@ -33,7 +33,7 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    container: dart:2.15
+    container: dart:2.16
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
