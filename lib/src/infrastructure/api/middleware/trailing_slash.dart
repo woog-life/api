@@ -8,6 +8,7 @@ Middleware trailingSlashRedirect() {
         requestPath.substring(0, requestPath.length - 1),
       );
     }
+    return null;
   }
 
   return createMiddleware(requestHandler: _handleRequest);
