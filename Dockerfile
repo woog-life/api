@@ -8,11 +8,11 @@ FROM dart:2.16 AS builder
 WORKDIR /app
 
 COPY pubspec.* ./
-RUN pub get
+RUN dart pub get
 
 COPY . .
 
-RUN pub run build_runner build --delete-conflicting-outputs
+RUN dart run build_runner build --delete-conflicting-outputs
 RUN dart compile exe bin/main.dart -o app
 
 FROM scratch
