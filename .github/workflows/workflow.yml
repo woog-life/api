@@ -10,7 +10,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    container: dart:2.15
+    container: dart:2.16
     steps:
       - name: Check out repo
         uses: actions/checkout@v3
