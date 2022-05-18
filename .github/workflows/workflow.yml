@@ -17,7 +17,7 @@ jobs:
       - name: Get dependencies
         run: dart pub get
       - name: Run code generation
-        run: dart pub run build_runner build
+        run: dart run build_runner build
       - name: Run tests
         run: dart test
 
@@ -45,7 +45,7 @@ jobs:
       - name: Get dependencies
         run: dart pub get
       - name: Run code generation
-        run: dart pub run build_runner build
+        run: dart run build_runner build
       - name: Run Analysis
         run: dart analyze
 
