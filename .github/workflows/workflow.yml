@@ -47,7 +47,7 @@ jobs:
       - name: Run code generation
         run: dart run build_runner build
       - name: Run Analysis
-        run: dart analyze
+        run: dart analyze --fatal-infos
 
   build_docker:
     runs-on: ubuntu-latest
