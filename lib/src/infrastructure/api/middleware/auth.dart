@@ -13,7 +13,7 @@ class AuthMiddleware {
   static Middleware _createDelegate(String apiKey) {
     final expectedHeader = 'Bearer $apiKey';
 
-    Response? _handleRequest(Request request) {
+    Response? handleRequest(Request request) {
       final headerValue = request.headers[HttpHeaders.authorizationHeader];
       if (headerValue == expectedHeader) {
         return null;
@@ -24,7 +24,7 @@ class AuthMiddleware {
       }
     }
 
-    return createMiddleware(requestHandler: _handleRequest);
+    return createMiddleware(requestHandler: handleRequest);
   }
 
   Handler call(Handler innerHandler) => _delegate(innerHandler);

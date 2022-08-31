@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:shelf/shelf.dart';
 
 Handler jsonHeaderMiddleware(Handler handler) {
-  Future<Response> _addJsonHeader(Request request) async {
+  Future<Response> addJsonHeader(Request request) async {
     final response = await handler(request);
     if (response.contentLength == 0) {
       return response;
@@ -16,5 +16,5 @@ Handler jsonHeaderMiddleware(Handler handler) {
     }
   }
 
-  return _addJsonHeader;
+  return addJsonHeader;
 }

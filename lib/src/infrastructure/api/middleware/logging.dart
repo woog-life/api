@@ -23,7 +23,7 @@ class LoggingMiddleware {
   LoggingMiddleware(Logger logger) : _delegate = _createDelegate(logger);
 
   Handler call(Handler innerHandler) {
-    FutureOr<Response> _filteredDelegate(Request request) {
+    FutureOr<Response> filteredDelegate(Request request) {
       if (request.url.path == 'health') {
         return innerHandler(request);
       } else {
@@ -31,6 +31,6 @@ class LoggingMiddleware {
       }
     }
 
-    return _filteredDelegate;
+    return filteredDelegate;
   }
 }

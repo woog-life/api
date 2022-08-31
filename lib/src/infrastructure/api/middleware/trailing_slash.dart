@@ -1,7 +1,7 @@
 import 'package:shelf/shelf.dart';
 
 Middleware trailingSlashRedirect() {
-  Response? _handleRequest(Request request) {
+  Response? handleRequest(Request request) {
     final requestPath = request.requestedUri.path;
     if (requestPath.endsWith('/') && requestPath != '/') {
       return Response.movedPermanently(
@@ -11,5 +11,5 @@ Middleware trailingSlashRedirect() {
     return null;
   }
 
-  return createMiddleware(requestHandler: _handleRequest);
+  return createMiddleware(requestHandler: handleRequest);
 }

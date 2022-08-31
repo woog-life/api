@@ -10,7 +10,7 @@ class SentryMiddleware {
   SentryMiddleware(this.sentryState);
 
   Handler call(Handler innerHandler) {
-    Future<Response> _handle(Request request) async {
+    Future<Response> handle(Request request) async {
       try {
         return await innerHandler(request);
       } catch (throwable, stackTrace) {
@@ -24,6 +24,6 @@ class SentryMiddleware {
       }
     }
 
-    return _handle;
+    return handle;
   }
 }
