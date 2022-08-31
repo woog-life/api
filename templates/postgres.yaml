@@ -18,7 +18,7 @@ data:
   POSTGRES_DB: woog
   POSTGRES_HOSTNAME: backend-postgres
   POSTGRES_USER: woog
-  PGDATA: /data/pg14
+  PGDATA: /pg/14/data
 ---
 apiVersion: v1
 kind: Service
@@ -74,7 +74,7 @@ spec:
             - containerPort: 5432
               protocol: TCP
           volumeMounts:
-            - mountPath: /data
+            - mountPath: /pg
               name: backend-postgres
             - mountPath: /olddata
               name: olddata
