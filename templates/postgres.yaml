@@ -18,46 +18,7 @@ data:
   POSTGRES_DB: woog
   POSTGRES_HOSTNAME: backend-postgres
   POSTGRES_USER: woog
-  PGDATA: /data/pg
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: backend-postgres
-  labels:
-    app: backend-postgres
-spec:
-  replicas: 1
-  revisionHistoryLimit: 1
-  strategy:
-    type: Recreate
-  selector:
-    matchLabels:
-      app: backend-postgres
-  template:
-    metadata:
-      labels:
-        app: backend-postgres
-    spec:
-      volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: backend-postgres-data
-      containers:
-        - name: backend-postgres
-          image: postgres:13-alpine
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 5432
-              protocol: TCP
-          volumeMounts:
-            - mountPath: /data
-              name: data
-          envFrom:
-            - secretRef:
-                name: woog-secrets
-            - configMapRef:
-                name: backend-postgres-config
+  PGDATA: /data/pg14
 ---
 apiVersion: v1
 kind: Service
@@ -71,3 +32,54 @@ spec:
       targetPort: 5432
   selector:
     app: backend-postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: backend-postgres
+  labels:
+    app: backend-postgres
+spec:
+  replicas: 1
+  serviceName: backend-postgres
+  revisionHistoryLimit: 1
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: backend-postgres
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  selector:
+    matchLabels:
+      app: backend-postgres
+  template:
+    metadata:
+      labels:
+        app: backend-postgres
+    spec:
+      volumes:
+        - name: olddata
+          persistentVolumeClaim:
+            claimName: backend-postgres-data
+      containers:
+        - name: backend-postgres
+          image: postgres:14-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /data
+              name: backend-postgres-data
+            - mountPath: /olddata
+              name: olddata
+          envFrom:
+            - secretRef:
+                name: woog-secrets
+            - configMapRef:
+                name: backend-postgres-config
