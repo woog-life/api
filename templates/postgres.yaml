@@ -18,7 +18,7 @@ data:
   POSTGRES_DB: woog
   POSTGRES_HOSTNAME: backend-postgres
   POSTGRES_USER: woog
-  PGDATA: /pg/14/data
+  PGDATA: /pg/13/data
 ---
 apiVersion: v1
 kind: Service
@@ -68,7 +68,7 @@ spec:
             claimName: backend-postgres-data
       containers:
         - name: backend-postgres
-          image: postgres:14-alpine
+          image: postgres:13-alpine
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
@@ -76,8 +76,6 @@ spec:
           volumeMounts:
             - mountPath: /pg
               name: backend-postgres
-            - mountPath: /olddata
-              name: olddata
           envFrom:
             - secretRef:
                 name: woog-secrets
