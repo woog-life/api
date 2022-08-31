@@ -75,7 +75,7 @@ spec:
               protocol: TCP
           volumeMounts:
             - mountPath: /data
-              name: backend-postgres-data
+              name: backend-postgres
             - mountPath: /olddata
               name: olddata
           envFrom:
