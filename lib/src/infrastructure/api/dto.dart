@@ -92,7 +92,11 @@ class LakeStateDto {
       name: lake.name,
       data: data == null
           ? null
-          : LakeDataDto.fromData(data, precision: precision),
+          : LakeDataDto.fromData(
+              data,
+              precision: precision,
+              formatRegion: Region.usa,
+            ),
     );
   }
 
@@ -118,11 +122,11 @@ class LakeDataDto {
   factory LakeDataDto.fromData(
     model.LakeData data, {
     int? precision,
-    Region formatRegion = Region.usa,
+    required Region formatRegion,
   }) {
     var preciseTemperature = data.temperature.toStringAsFixed(precision ?? 2);
     preciseTemperature = preciseTemperature.replaceAll(
-      r'\.',
+      '.',
       formatRegion.decimalSeparator,
     );
     return LakeDataDto(
@@ -153,7 +157,7 @@ class LakeDataExtremaDto {
     model.LakeData min,
     model.LakeData max, {
     int? precision,
-    Region formatRegion = Region.usa,
+    required Region formatRegion,
   }) {
     return LakeDataExtremaDto(
       min: LakeDataDto.fromData(
