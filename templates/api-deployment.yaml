@@ -45,6 +45,7 @@ spec:
               path: /health
           ports:
             - containerPort: 8080
+              name: http
           envFrom:
             - configMapRef:
                 name: backend-config

@@ -6,6 +6,9 @@ spec:
   selector:
     app: backend
   ports:
-    - name: http
+    - name: http-legacy
       port: 8080
-      targetPort: 8080
+      targetPort: http
+    - name: http
+      port: 80
+      targetPort: http
