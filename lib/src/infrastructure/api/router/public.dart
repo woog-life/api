@@ -171,6 +171,7 @@ class PublicApi {
       jsonEncode(LakeDataDto.fromData(
         data,
         precision: precision,
+        formatRegion: Region.usa,
       )),
     );
   }
