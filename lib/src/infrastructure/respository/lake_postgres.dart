@@ -110,6 +110,11 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
       name: 'Rhein (Köln)',
       features: const {Feature.temperature},
     ),
+    Lake(
+      id: Uuid.fromString('ab6fbeb2-be73-4223-8f04-425929339838'),
+      name: 'Blaarmeersen (Gent)',
+      features: const {Feature.temperature},
+    ),
   ];
 
   Future<void> _create(PostgreSQLExecutionContext batch) async {
@@ -161,6 +166,9 @@ class SqlLakeRepositoryMigrator implements RepositoryMigrator {
       await Future.wait(
         [for (final lake in _lakes) _setFeatures(transaction, lake)],
       );
+    }
+    if (oldVersion < 14 && newVersion >= 14) {
+      await _insertLake(transaction, _lakes[7]);
     }
   }
 
