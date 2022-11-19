@@ -14,6 +14,7 @@ import 'package:woog_api/src/application/use_case/get_lakes.dart';
 import 'package:woog_api/src/application/use_case/get_temperature.dart';
 import 'package:woog_api/src/domain/exception/time.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
+import 'package:woog_api/src/domain/model/region.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/json.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/trailing_slash.dart';
@@ -70,6 +71,23 @@ class PublicApi {
       return null;
     } else {
       return min(5, max(1, int.parse(precisionArgument)));
+    }
+  }
+
+  Region _getFormatRegion(Request request) {
+    final arg = request.url.queryParameters['formatRegion'];
+    if (arg == null) {
+      return Region.usa;
+    } else {
+      final region = Region.parseIdentifier(arg);
+      if (region == null) {
+        throw ArgumentError.value(
+          arg,
+          'formatRegion',
+          'Invalid region identifier',
+        );
+      }
+      return region;
     }
   }
 
@@ -194,6 +212,17 @@ class PublicApi {
       return Response(HttpStatus.badRequest);
     }
 
+    final Region formatRegion;
+    try {
+      formatRegion = _getFormatRegion(request);
+    } on ArgumentError catch (e) {
+      return Response.badRequest(
+        body: jsonEncode(
+          ErrorMessageDto(e.message),
+        ),
+      );
+    }
+
     final LakeData? temperature;
     try {
       temperature = await _getTemperature(lakeUuid, time: time);
@@ -219,6 +248,7 @@ class PublicApi {
         LakeDataDto.fromData(
           temperature,
           precision: precision,
+          formatRegion: formatRegion,
         ),
       ),
     );
@@ -255,12 +285,24 @@ class PublicApi {
       );
     }
 
+    final Region formatRegion;
+    try {
+      formatRegion = _getFormatRegion(request);
+    } on ArgumentError catch (e) {
+      return Response.badRequest(
+        body: jsonEncode(
+          ErrorMessageDto(e.message),
+        ),
+      );
+    }
+
     return Response.ok(
       jsonEncode(
         LakeDataExtremaDto.fromData(
           extrema.min,
           extrema.max,
           precision: precision,
+          formatRegion: formatRegion,
         ),
       ),
     );

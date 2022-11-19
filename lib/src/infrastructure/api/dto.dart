@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:woog_api/src/domain/model/lake.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart' as model;
 import 'package:woog_api/src/domain/model/lake_data.dart';
+import 'package:woog_api/src/domain/model/region.dart';
 
 part 'dto.g.dart';
 
@@ -114,11 +115,20 @@ class LakeDataDto {
     required this.preciseTemperature,
   });
 
-  factory LakeDataDto.fromData(model.LakeData data, {int? precision}) {
+  factory LakeDataDto.fromData(
+    model.LakeData data, {
+    int? precision,
+    Region formatRegion = Region.usa,
+  }) {
+    var preciseTemperature = data.temperature.toStringAsFixed(precision ?? 2);
+    preciseTemperature = preciseTemperature.replaceAll(
+      r'\.',
+      formatRegion.decimalSeparator,
+    );
     return LakeDataDto(
       time: data.time,
       temperature: data.temperature.round(),
-      preciseTemperature: data.temperature.toStringAsFixed(precision ?? 2),
+      preciseTemperature: preciseTemperature,
     );
   }
 
@@ -143,10 +153,19 @@ class LakeDataExtremaDto {
     model.LakeData min,
     model.LakeData max, {
     int? precision,
+    Region formatRegion = Region.usa,
   }) {
     return LakeDataExtremaDto(
-      min: LakeDataDto.fromData(min, precision: precision),
-      max: LakeDataDto.fromData(max, precision: precision),
+      min: LakeDataDto.fromData(
+        min,
+        precision: precision,
+        formatRegion: formatRegion,
+      ),
+      max: LakeDataDto.fromData(
+        max,
+        precision: precision,
+        formatRegion: formatRegion,
+      ),
     );
   }
 
