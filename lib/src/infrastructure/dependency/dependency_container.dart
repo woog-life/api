@@ -4,6 +4,8 @@ import 'package:woog_api/src/infrastructure/dependency/dependency_container.conf
 
 @InjectableInit(
   preferRelativeImports: false,
+  asExtension: false,
+  initializerName: '\$initGetIt',
 )
 Future<void> configureDependencies(GetIt getIt) => $initGetIt(
       getIt,
