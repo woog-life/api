@@ -7,6 +7,8 @@ environment:
   sdk: '>=2.18.0 <3.0.0'
 
 dependencies:
+  country_code: ^1.0.0
+
   # Dependency injection
   get_it: ^7.0.0
   injectable: ^1.0.0
