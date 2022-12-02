@@ -38,7 +38,6 @@ final _commaCountries = {
   CountryCode.ID,
   CountryCode.IT,
   CountryCode.KZ,
-  CountryCode.RS,
   CountryCode.KG,
   CountryCode.LV,
   CountryCode.LB,
