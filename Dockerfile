@@ -3,7 +3,7 @@ WORKDIR /apidocs
 RUN wget https://github.com/woog-life/apispec/archive/refs/heads/main.zip && unzip main.zip && mv apispec-main/* .
 RUN ./gradlew build
 
-FROM dart:2.18 AS builder
+FROM dart:2.19 AS builder
 
 WORKDIR /app
 
