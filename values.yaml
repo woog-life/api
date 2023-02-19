@@ -1,5 +1,10 @@
 api:
   image: ghcr.io/woog-life/api:${GITHUB_SHA}
 
+postgres:
+  db: woog
+  user: woog
+  host: backend-db
+
 sentry:
   dsn: https://79b3dd30a32f43afa5324a918bd7180b@o224573.ingest.sentry.io/5765100

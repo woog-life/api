@@ -1,0 +1,15 @@
+apiVersion: "acid.zalan.do/v1"
+kind: postgresql
+metadata:
+  name: {{ .Values.postgres.host }}
+spec:
+  teamId: "woog"
+  volume:
+    size: 1Gi
+  numberOfInstances: 2
+  users:
+    {{ .Values.postgres.user }}: []
+  databases:
+    {{ .Values.postgres.db }}: {{ .Values.postgres.user }}
+  postgresql:
+    version: "13"

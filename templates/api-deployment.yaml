@@ -46,6 +46,12 @@ spec:
           ports:
             - containerPort: 8080
               name: http
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.user }}.{{ .Values.postgres.host }}.credentials.postgresql.acid.zalan.do
+                  key: password
           envFrom:
             - configMapRef:
                 name: backend-config
