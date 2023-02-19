@@ -3,7 +3,7 @@ kind: postgresql
 metadata:
   name: {{ .Values.postgres.host }}
 spec:
-  teamId: "woog"
+  teamId: "backend"
   volume:
     size: 1Gi
   numberOfInstances: 2
