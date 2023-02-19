@@ -1,12 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:postgres/postgres.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/booking.dart';
 import 'package:woog_api/src/domain/model/event.dart';
-import 'package:woog_api/src/infrastructure/respository/lake_postgres.dart'
-    as lake;
-import 'package:woog_api/src/infrastructure/respository/migrator.dart';
 import 'package:woog_api/src/infrastructure/respository/postgres.dart';
 
 const tableName = 'booking';
@@ -107,54 +103,5 @@ class SqlBookingRepository implements BookingRepository {
         );
       }
     });
-  }
-}
-
-@injectable
-class SqlBookingRepositoryMigrator implements RepositoryMigrator {
-  Future<void> _create(PostgreSQLExecutionContext batch) async {
-    await batch.execute(
-      '''
-      CREATE TABLE $tableName (
-        $columnLakeId uuid NOT NULL 
-          REFERENCES ${lake.tableName}(${lake.columnId}),
-        $columnVariation text NOT NULL,
-        $columnBeginTime timestamp NOT NULL,
-        $columnEndTime timestamp NOT NULL,
-        $columnSaleStartTime timestamp NOT NULL,
-        $columnBookingLink text NOT NULL,
-        $columnAvailable boolean NOT NULL,
-        PRIMARY KEY($columnLakeId, $columnVariation, $columnBeginTime)
-      );
-      ''',
-    );
-    await batch.execute(
-      '''
-        CREATE INDEX idx_time ON $tableName (
-          $columnLakeId,
-          $columnEndTime
-        );
-        ''',
-    );
-  }
-
-  @override
-  Future<void> upgrade(
-    PostgreSQLExecutionContext transaction,
-    int oldVersion,
-    int newVersion,
-  ) async {
-    if (oldVersion < 3 && newVersion >= 3) {
-      await _create(transaction);
-    }
-    if (oldVersion < 5 && newVersion >= 4) {
-      await _dropData(transaction);
-    }
-  }
-
-  Future<void> _dropData(
-    PostgreSQLExecutionContext transaction,
-  ) async {
-    await transaction.execute('DELETE FROM $tableName');
   }
 }

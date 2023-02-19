@@ -1,12 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:postgres/postgres.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
-import 'package:woog_api/src/infrastructure/respository/lake_postgres.dart'
-    as lake;
-import 'package:woog_api/src/infrastructure/respository/migrator.dart';
 import 'package:woog_api/src/infrastructure/respository/postgres.dart';
 
 const tableName = 'lake_data';
@@ -174,41 +170,5 @@ class SqlTemperatureRepository implements TemperatureRepository {
         max: _dataFromColumns(maxResult.single[tableName]!),
       );
     });
-  }
-}
-
-@injectable
-class SqlTemperatureRepositoryMigrator implements RepositoryMigrator {
-  Future<void> _create(PostgreSQLExecutionContext batch) async {
-    await batch.execute(
-      '''
-      CREATE TABLE $tableName (
-        $columnId uuid REFERENCES ${lake.tableName}(${lake.columnId})
-          ON DELETE CASCADE,
-        $columnTime timestamp NOT NULL,
-        $columnTemperature real NOT NULL,
-        UNIQUE ($columnId, $columnTime)
-      );
-      ''',
-    );
-    await batch.execute(
-      '''
-        CREATE INDEX idx_timestamp ON $tableName (
-          $columnId,
-          $columnTime
-        ) 
-      ''',
-    );
-  }
-
-  @override
-  Future<void> upgrade(
-    PostgreSQLExecutionContext transaction,
-    int oldVersion,
-    int newVersion,
-  ) async {
-    if (oldVersion < 2 && newVersion >= 2) {
-      await _create(transaction);
-    }
   }
 }

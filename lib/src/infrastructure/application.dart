@@ -3,7 +3,6 @@ import 'package:logger/logger.dart';
 import 'package:woog_api/src/infrastructure/api/woog_api.dart';
 import 'package:woog_api/src/infrastructure/config.dart';
 import 'package:woog_api/src/infrastructure/dependency/dependency_container.dart';
-import 'package:woog_api/src/infrastructure/respository/migrator.dart';
 
 class Application {
   final GetIt _getIt;
@@ -28,7 +27,6 @@ class Application {
   }
 
   Future<void> launch() async {
-    await _getIt<Migrator>().migrate();
     await _launchApi();
   }
 }
