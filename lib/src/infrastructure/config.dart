@@ -17,6 +17,7 @@ class Config {
   final String databaseHost;
   final String databaseUser;
   final String databasePassword;
+  final bool databaseUseTls;
 
   final String docsPath;
 
@@ -52,6 +53,11 @@ class Config {
         name: 'POSTGRES_PASSWORD',
         defaultValue: 'pw',
       ).resolve(environment),
+      databaseUseTls: _Variable(
+            name: 'POSTGRES_USE_TLS',
+            defaultValue: 'false',
+          ).resolve(environment) ==
+          'true',
       docsPath: _Variable(
         name: 'DOCS_PATH',
         defaultValue: '',
@@ -68,6 +74,7 @@ class Config {
     required this.databaseName,
     required this.databaseUser,
     required this.databasePassword,
+    required this.databaseUseTls,
     required this.docsPath,
   });
 }

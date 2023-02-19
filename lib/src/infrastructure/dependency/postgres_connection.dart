@@ -17,6 +17,7 @@ abstract class PostgresConnectionModule {
       config.databaseName,
       username: config.databaseUser,
       password: config.databasePassword,
+      useSSL: config.databaseUseTls,
     );
     await connection.open();
     return connection;
