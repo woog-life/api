@@ -72,10 +72,14 @@ jobs:
       - lint
       - test
     steps:
+      - # Setting up Docker Buildx with docker-container driver is required
+        # at the moment to be able to use a subdirectory with Git context
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
       - name: Build container image
         uses: docker/build-push-action@v4
         with:
-          context: migrations
+          context: "{{defaultContext}}:migrations"
           push: true
           tags: ghcr.io/${{ github.repository }}/migrations:${{ github.sha }}
 
