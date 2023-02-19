@@ -88,6 +88,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Substitute environment variables in values.yaml
         run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - uses: WyriHaximus/github-action-helm3@v2
         with:
           exec: helm upgrade backend . --install --namespace=wooglife --atomic
