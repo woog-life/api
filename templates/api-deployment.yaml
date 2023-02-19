@@ -30,8 +30,6 @@ spec:
             - configMapRef:
                 name: backend-config
           env:
-            - name: FLYWAY_BASELINE_ON_MIGRATE
-              value: "true"
             - name: FLYWAY_URL
               value: jdbc:postgresql://$(POSTGRES_HOSTNAME):5432/$(POSTGRES_DB)
             - name: FLYWAY_USER
