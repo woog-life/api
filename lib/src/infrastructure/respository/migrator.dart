@@ -1,3 +1,5 @@
+// ignore_for_file: dead_code
+
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
@@ -37,6 +39,9 @@ class Migrator {
   );
 
   Future<void> migrate() async {
+    _logger.i('Skipping migration due to flyway being superior');
+    return;
+
     await _getIt.useConnection((connection) async {
       final table = await connection.query(
         '''

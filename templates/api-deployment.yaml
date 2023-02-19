@@ -20,9 +20,33 @@ spec:
       labels:
         app: backend
     spec:
+      initContainers:
+        - name: migrations
+          image: {{ .Values.image.migrations }}
+          args:
+            - migrate
+            - -skipCheckForUpdate
+          envFrom:
+            - configMapRef:
+                name: backend-config
+          env:
+            - name: FLYWAY_BASELINE_ON_MIGRATE
+              value: "true"
+            - name: FLYWAY_URL
+              value: jdbc:postgresql://$(POSTGRES_HOSTNAME):5432/$(POSTGRES_DB)
+            - name: FLYWAY_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: POSTGRES_USER
+            - name: FLYWAY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.postgres.user }}.{{ .Values.postgres.host }}.credentials.postgresql.acid.zalan.do
+                  key: password
       containers:
-        - name: backend
-          image: {{ .Values.api.image }}
+        - name: app
+          image: {{ .Values.image.app }}
           imagePullPolicy: IfNotPresent
           resources:
             requests:

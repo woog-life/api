@@ -10,3 +10,5 @@ templates/
 values.yaml
 test/
 .idea/
+
+migrations/
