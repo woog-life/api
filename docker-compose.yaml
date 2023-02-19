@@ -16,7 +16,7 @@ services:
   db:
     volumes:
       - pg_data:/data
-    image: postgres:13-alpine
+    image: postgres:14-alpine
     environment:
       POSTGRES_PASSWORD: pw
       PGDATA: /data
