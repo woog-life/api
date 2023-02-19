@@ -60,7 +60,7 @@ jobs:
       - name: Build container image
         uses: docker/build-push-action@v4
         with:
-          build_args: |
+          build-args: |
             build=citest
           tags: ghcr.io/${{ github.repository }}/app:${{ github.sha }}
 
@@ -106,7 +106,7 @@ jobs:
       - name: Build container image
         uses: docker/build-push-action@v4
         with:
-          build_args: |
+          build-args: |
             build=${{ github.sha }}
           push: true
           tags: ghcr.io/${{ github.repository }}/app:${{ github.sha }}
