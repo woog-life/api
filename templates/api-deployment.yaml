@@ -55,7 +55,5 @@ spec:
           envFrom:
             - configMapRef:
                 name: backend-config
-            - configMapRef:
-                name: backend-postgres-config
             - secretRef:
                 name: woog-secrets
