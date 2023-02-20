@@ -121,7 +121,7 @@ jobs:
         run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
         env:
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-      - uses: WyriHaximus/github-action-helm3@v2
+      - uses: WyriHaximus/github-action-helm3@v3
         with:
           exec: helm upgrade backend . --install --namespace=wooglife --atomic
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
