@@ -114,6 +114,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [push_docker, push_migrations_docker]
+    concurrency: production
     steps:
       - uses: actions/checkout@v3
       - name: Substitute environment variables in values.yaml
