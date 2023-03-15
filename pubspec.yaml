@@ -29,7 +29,7 @@ dependencies:
   sane_uuid: ^1.0.0-alpha.3
 
   # Alerting
-  sentry: ^6.0.0
+  sentry: ^7.0.0
 
   # Web server
   shelf: ^1.0.0
