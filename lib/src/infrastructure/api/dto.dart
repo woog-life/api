@@ -69,42 +69,6 @@ class LakeInfoListDto {
   Map<String, dynamic> toJson() => _$LakeInfoListDtoToJson(this);
 }
 
-@JsonSerializable()
-@immutable
-class LakeStateDto {
-  final String id;
-  final String name;
-  final LakeDataDto? data;
-
-  const LakeStateDto({
-    required this.id,
-    required this.name,
-    required this.data,
-  });
-
-  factory LakeStateDto.fromLake(
-    Lake lake,
-    LakeData? data, {
-    int? precision,
-  }) {
-    return LakeStateDto(
-      id: lake.id.toString(),
-      name: lake.name,
-      data: data == null
-          ? null
-          : LakeDataDto.fromData(
-              data,
-              precision: precision,
-              formatRegion: Region.usa,
-            ),
-    );
-  }
-
-  factory LakeStateDto.fromJson(Map<String, dynamic> json) =>
-      _$LakeStateDtoFromJson(json);
-
-  Map<String, dynamic> toJson() => _$LakeStateDtoToJson(this);
-}
 
 @JsonSerializable()
 @immutable

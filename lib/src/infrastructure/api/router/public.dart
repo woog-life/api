@@ -106,24 +106,12 @@ class PublicApi {
     }
 
     final lake = await _getLake(lakeUuid);
-    final lakeData = await _getTemperature(lakeUuid);
-
-    final int? precision;
-    try {
-      precision = _getPrecision(request);
-    } on FormatException {
-      return Response(HttpStatus.badRequest);
-    }
 
     if (lake == null) {
       return Response(HttpStatus.notFound);
     } else {
       return Response.ok(
-        jsonEncode(LakeStateDto.fromLake(
-          lake,
-          lakeData,
-          precision: precision,
-        ).toJson()),
+        jsonEncode(LakeInfoDto.fromLake(lake).toJson()),
       );
     }
   }
