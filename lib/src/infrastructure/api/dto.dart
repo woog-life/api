@@ -69,7 +69,6 @@ class LakeInfoListDto {
   Map<String, dynamic> toJson() => _$LakeInfoListDtoToJson(this);
 }
 
-
 @JsonSerializable()
 @immutable
 class LakeDataDto {
