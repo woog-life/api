@@ -24,3 +24,5 @@ lib/src/version.dart
 
 # Default database location
 woog.db
+
+.tool-versions
