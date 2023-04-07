@@ -2,7 +2,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 import 'package:woog_api/src/domain/model/lake.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart' as model;
-import 'package:woog_api/src/domain/model/lake_data.dart';
 import 'package:woog_api/src/domain/model/region.dart';
 
 part 'dto.g.dart';
