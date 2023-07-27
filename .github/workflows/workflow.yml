@@ -1,9 +1,8 @@
 name: Workflow
 on:
   push:
-    branches:
-      - 'main'
-  pull_request:
+    branches: [ main ]
+  pull_request: { }
 
 
 jobs:
@@ -49,7 +48,7 @@ jobs:
       - name: Run Analysis
         run: dart analyze --fatal-infos
 
-  build_docker:
+  build-app-container-image:
     runs-on: ubuntu-latest
     if: success() && github.event_name == 'pull_request'
     needs:
@@ -57,21 +56,26 @@ jobs:
       - lint
       - test
     steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
       - name: Build container image
         uses: docker/build-push-action@v4
         with:
           build-args: |
             build=citest
-          tags: ghcr.io/${{ github.repository }}/app:${{ github.sha }}
+          push: false
+          tags: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/app:${{ github.sha }}"
 
-  push_migrations_docker:
+  push-migrations-container-image:
     runs-on: ubuntu-latest
-    if: success() && github.ref == 'refs/heads/main'
+    if: success() && github.ref_name == github.event.repository.default_branch
     needs:
       - check_format
       - lint
       - test
     steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
       - # Setting up Docker Buildx with docker-container driver is required
         # at the moment to be able to use a subdirectory with Git context
         name: Set up Docker Buildx
@@ -87,16 +91,18 @@ jobs:
         with:
           context: "{{defaultContext}}:migrations"
           push: true
-          tags: ghcr.io/${{ github.repository }}/migrations:${{ github.sha }}
+          tags: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/migrations:${{ github.sha }}"
 
-  push_docker:
+  push-app-container-image:
     runs-on: ubuntu-latest
-    if: success() && github.ref == 'refs/heads/main'
+    if: success() && github.ref_name == github.event.repository.default_branch
     needs:
       - check_format
       - lint
       - test
     steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -109,17 +115,23 @@ jobs:
           build-args: |
             build=${{ github.sha }}
           push: true
-          tags: ghcr.io/${{ github.repository }}/app:${{ github.sha }}
+          tags: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/app:${{ github.sha }}"
 
   deploy:
     runs-on: ubuntu-latest
-    needs: [push_docker, push_migrations_docker]
+    needs:
+      - push-app-container-image
+      - push-migrations-container-image
     concurrency: production
     steps:
       - uses: actions/checkout@v3
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
       - name: Substitute environment variables in values.yaml
         run: "envsubst < values.yaml > values_sub.yaml && mv values_sub.yaml values.yaml"
         env:
+          APP_IMAGE_NAME: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/app"
+          MIGRATIONS_IMAGE_NAME: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/migrations"
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - uses: WyriHaximus/github-action-helm3@v3
         with:

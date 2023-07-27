@@ -1,6 +1,6 @@
 image:
-  app: ghcr.io/woog-life/api/app:${GITHUB_SHA}
-  migrations: ghcr.io/woog-life/api/migrations:${GITHUB_SHA}
+  app: ${APP_IMAGE_NAME}:${GITHUB_SHA}
+  migrations: ${MIGRATIONS_IMAGE_NAME}:${GITHUB_SHA}
 
 postgres:
   db: woog
