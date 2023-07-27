@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:logger/logger.dart';
 import 'package:sentry/sentry.dart';
 
@@ -36,10 +38,11 @@ class SentryLogger extends Logger {
     );
   }
 
-  SentryLevel? _toSentryLevel(Level level) {
+  SentryLevel _toSentryLevel(Level level) {
     switch (level) {
-      case Level.verbose:
       case Level.nothing:
+      case Level.verbose:
+      case Level.off:
       case Level.all:
       case Level.trace:
       case Level.debug:
@@ -53,8 +56,6 @@ class SentryLogger extends Logger {
       case Level.wtf:
       case Level.fatal:
         return SentryLevel.fatal;
-      case Level.off:
-        return null;
     }
   }
 }
