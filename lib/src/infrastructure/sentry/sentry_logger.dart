@@ -17,21 +17,31 @@ class SentryLogger extends Logger {
   @override
   void log(
     Level level,
-    dynamic message, [
+    dynamic message, {
     dynamic error,
     StackTrace? stackTrace,
-  ]) {
+    DateTime? time,
+  }) {
     Sentry.addBreadcrumb(Breadcrumb(
       message: message.toString(),
       level: _toSentryLevel(level),
+      timestamp: time,
     ));
-    super.log(level, message, error, stackTrace);
+    super.log(
+      level,
+      message,
+      error: error,
+      stackTrace: stackTrace,
+      time: time,
+    );
   }
 
-  SentryLevel _toSentryLevel(Level level) {
+  SentryLevel? _toSentryLevel(Level level) {
     switch (level) {
       case Level.verbose:
       case Level.nothing:
+      case Level.all:
+      case Level.trace:
       case Level.debug:
         return SentryLevel.debug;
       case Level.info:
@@ -41,7 +51,10 @@ class SentryLogger extends Logger {
       case Level.error:
         return SentryLevel.error;
       case Level.wtf:
+      case Level.fatal:
         return SentryLevel.fatal;
+      case Level.off:
+        return null;
     }
   }
 }
