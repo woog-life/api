@@ -137,3 +137,23 @@ jobs:
         with:
           exec: helm upgrade backend . --install --namespace=wooglife --atomic
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
+
+  clean:
+    runs-on: ubuntu-latest
+    concurrency: cleanup
+    needs: [ deploy ]
+    steps:
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
+      - name: Clean up old app container images
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/app
+          package-type: container
+          min-versions-to-keep: 10
+      - name: Clean up old migrations container images
+        uses: actions/delete-package-versions@v4
+        with:
+          package-name: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/migrations
+          package-type: container
+          min-versions-to-keep: 10
