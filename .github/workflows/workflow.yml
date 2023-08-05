@@ -20,7 +20,7 @@ jobs:
       - name: Run tests
         run: dart test
 
-  check_format:
+  check-format:
     name: Check Format
     runs-on: ubuntu-latest
     container: dart:3.0
@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     if: success() && github.event_name == 'pull_request'
     needs:
-      - check_format
+      - check-format
       - lint
       - test
     steps:
@@ -70,7 +70,7 @@ jobs:
     runs-on: ubuntu-latest
     if: success() && github.ref_name == github.event.repository.default_branch
     needs:
-      - check_format
+      - check-format
       - lint
       - test
     steps:
@@ -97,7 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     if: success() && github.ref_name == github.event.repository.default_branch
     needs:
-      - check_format
+      - check-format
       - lint
       - test
     steps:
