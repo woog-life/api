@@ -141,6 +141,7 @@ jobs:
   clean:
     runs-on: ubuntu-latest
     concurrency: cleanup
+    continue-on-error: true
     needs: [ deploy ]
     steps:
       - name: Inject slug/short variables
