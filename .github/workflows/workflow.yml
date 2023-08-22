@@ -9,10 +9,10 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    container: dart:3.0
     steps:
       - name: Check out repo
         uses: actions/checkout@v3
+      - uses: asdf-vm/actions/install@v2
       - name: Get dependencies
         run: dart pub get
       - name: Run code generation
@@ -23,10 +23,10 @@ jobs:
   check-format:
     name: Check Format
     runs-on: ubuntu-latest
-    container: dart:3.0
     steps:
       - name: Check out repo
         uses: actions/checkout@v3
+      - uses: asdf-vm/actions/install@v2
       - name: Check bin formatting
         run: dart format bin --set-exit-if-changed
       - name: Check lib formatting
@@ -37,10 +37,10 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    container: dart:3.0
     steps:
       - name: Check out repo
         uses: actions/checkout@v3
+      - uses: asdf-vm/actions/install@v2
       - name: Get dependencies
         run: dart pub get
       - name: Run code generation
