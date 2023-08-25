@@ -35,7 +35,7 @@ final class SqlTidesRepository implements TidesRepository {
   Future<TidalExtremumData?> getLastTidalExtremum({
     required Uuid lakeId,
     required DateTime time,
-  }) async {
+  }) {
     return _getIt.useConnection((connection) async {
       final rows = await connection.mappedResultsQuery(
         '''
@@ -64,7 +64,7 @@ final class SqlTidesRepository implements TidesRepository {
     required Uuid lakeId,
     required DateTime time,
     required int limit,
-  }) async {
+  }) {
     return _getIt.useConnection((connection) async {
       final rows = await connection.mappedResultsQuery(
         '''
@@ -87,6 +87,81 @@ final class SqlTidesRepository implements TidesRepository {
       return rows
           .map((row) => _dataFromColumns(row[tableName]!))
           .toList(growable: false);
+    });
+  }
+
+  @override
+  Future<void> deleteBetween({
+    required Uuid lakeId,
+    required DateTime startInclusive,
+    required DateTime endInclusive,
+  }) {
+    return _getIt.useConnection((connection) async {
+      await connection.execute(
+        '''
+        DELETE FROM $tableName
+        WHERE $lakeId = @lakeId
+        AND $columnTime >= @startTime
+        AND $columnTime <= @endTime
+        ''',
+        substitutionValues: {
+          'lakeId': lakeId.toString(),
+          'startTime': startInclusive,
+          'endTime': endInclusive,
+        },
+      );
+    });
+  }
+
+  @override
+  Future<void> delete({
+    required Uuid lakeId,
+    required DateTime time,
+  }) {
+    return _getIt.useConnection((connection) async {
+      await connection.execute(
+        '''
+        DELETE FROM $tableName
+        WHERE $lakeId = @lakeId
+        AND $columnTime = @time
+        ''',
+        substitutionValues: {
+          'lakeId': lakeId.toString(),
+          'time': time,
+        },
+      );
+    });
+  }
+
+  @override
+  Future<void> insertData(Uuid lakeId, List<TidalExtremumData> data) {
+    return _getIt.useConnection((connection) async {
+      await connection.transaction((connection) {
+        return Future.wait(
+          data.map((extremum) => connection.execute(
+                '''
+                INSERT INTO $tableName (
+                  $columnId,
+                  $columnHighTide,
+                  $columnTime,
+                  $columnHeight
+                )
+                VALUES (
+                   @lakeId,
+                   @highTide
+                   @time,
+                   @height
+                )
+                ''',
+                substitutionValues: {
+                  'lakeId': lakeId.toString(),
+                  'time': extremum.time,
+                  'highTide': extremum.isHighTide,
+                  'height': extremum.height,
+                },
+              )),
+        );
+      });
     });
   }
 }

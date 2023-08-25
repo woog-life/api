@@ -112,6 +112,8 @@ class PrivateApi {
     final update = TidalExtremaDto.fromJson(body);
     final extrema = <TidalExtremumData>[];
     for (final extremum in update.extrema) {
+      // We try to parse the height as double just to validate the format, but
+      // keep the string around so we don't get weird float formatting.
       if (double.tryParse(extremum.height) == null) {
         return Response(
           HttpStatus.badRequest,
@@ -122,6 +124,15 @@ class PrivateApi {
           ),
         );
       }
+    }
+
+    if (extrema.length < 2) {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto('Must PUT at least two extrema'),
+        ),
+      );
     }
 
     try {

@@ -12,4 +12,20 @@ abstract interface class TidesRepository {
     required Uuid lakeId,
     required DateTime time,
   });
+
+  Future<void> delete({
+    required Uuid lakeId,
+    required DateTime time,
+  });
+
+  Future<void> deleteBetween({
+    required Uuid lakeId,
+    required DateTime startInclusive,
+    required DateTime endInclusive,
+  });
+
+  Future<void> insertData(
+    Uuid lakeId,
+    List<TidalExtremumData> data,
+  );
 }

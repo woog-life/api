@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
 @immutable
-final class TidalExtremumData {
+final class TidalExtremumData implements Comparable<TidalExtremumData> {
   final bool isHighTide;
   final DateTime time;
   final String height;
@@ -11,4 +11,9 @@ final class TidalExtremumData {
     required this.time,
     required this.height,
   });
+
+  @override
+  int compareTo(TidalExtremumData other) {
+    return time.compareTo(other.time);
+  }
 }
