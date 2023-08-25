@@ -36,12 +36,15 @@ final class LakeInfoDto {
 
 enum FeatureDto {
   temperature,
+  tides,
   ;
 
   static FeatureDto fromFeature(Feature feature) {
     switch (feature) {
       case Feature.temperature:
         return FeatureDto.temperature;
+      case Feature.tides:
+        return FeatureDto.tides;
     }
   }
 }

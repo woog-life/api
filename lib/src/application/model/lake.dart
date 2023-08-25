@@ -16,4 +16,5 @@ final class Lake {
 
 enum Feature {
   temperature,
+  tides,
 }

@@ -2,15 +2,15 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
 import 'package:sane_uuid/uuid.dart';
-import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/application/model/lake.dart';
+import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/infrastructure/respository/postgres.dart';
 
 const tableName = 'lake';
 const columnId = 'id';
 const columnName = 'name';
 const columnSupportsTemperature = 'supports_temperature';
-const columnSupportsBooking = 'supports_booking';
+const columnSupportsTides = 'supports_tides';
 
 @prod
 @Injectable(as: LakeRepository)
@@ -27,6 +27,9 @@ final class SqlLakeRepository implements LakeRepository {
     final features = <Feature>{};
     if (row[columnSupportsTemperature] as bool) {
       features.add(Feature.temperature);
+    }
+    if (row[columnSupportsTides] as bool) {
+      features.add(Feature.tides);
     }
 
     return Lake(
