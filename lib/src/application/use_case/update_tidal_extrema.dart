@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:logger/logger.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/exception/not_found.dart';
 import 'package:woog_api/src/application/exception/unsupported.dart';
@@ -9,10 +10,12 @@ import 'package:woog_api/src/application/repository/tides.dart';
 
 @injectable
 final class UpdateTidalExtrema {
+  final Logger _logger;
   final LakeRepository _lakeRepo;
   final TidesRepository _tidesRepo;
 
   UpdateTidalExtrema(
+    this._logger,
     this._lakeRepo,
     this._tidesRepo,
   );
@@ -33,11 +36,16 @@ final class UpdateTidalExtrema {
 
     // These two really should run in one transaction, but well...
     await _deleteObsoleteData(lakeId, data.first, data.last);
+    _logger.i('Inserting tidal data');
     await _tidesRepo.insertData(lakeId, data);
   }
 
   Future<void> _deleteObsoleteData(
-      Uuid lakeId, TidalExtremumData first, TidalExtremumData last) async {
+    Uuid lakeId,
+    TidalExtremumData first,
+    TidalExtremumData last,
+  ) async {
+    _logger.i('Deleting obsolete data for lake $lakeId');
     /*
     We try to find existing data before and after the new data. If we find any,
     we make sure that there high-low tide rhythms works out, otherwise we delete
