@@ -100,7 +100,7 @@ final class SqlTidesRepository implements TidesRepository {
       await connection.execute(
         '''
         DELETE FROM $tableName
-        WHERE $lakeId = @lakeId
+        WHERE $columnId = @lakeId
         AND $columnTime >= @startTime
         AND $columnTime <= @endTime
         ''',
@@ -122,7 +122,7 @@ final class SqlTidesRepository implements TidesRepository {
       await connection.execute(
         '''
         DELETE FROM $tableName
-        WHERE $lakeId = @lakeId
+        WHERE $columnId = @lakeId
         AND $columnTime = @time
         ''',
         substitutionValues: {
