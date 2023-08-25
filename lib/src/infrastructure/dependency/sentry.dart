@@ -4,7 +4,7 @@ import 'package:woog_api/src/infrastructure/config.dart';
 import 'package:woog_api/src/infrastructure/sentry/sentry_state.dart';
 
 @module
-abstract base class SentryModule {
+abstract class SentryModule {
   @preResolve
   @singleton
   Future<SentryState> createSentry(

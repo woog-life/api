@@ -4,7 +4,7 @@ import 'package:woog_api/src/infrastructure/sentry/sentry_logger.dart';
 import 'package:woog_api/src/infrastructure/sentry/sentry_state.dart';
 
 @module
-abstract base class LoggerModule {
+abstract class LoggerModule {
   @injectable
   Logger createLogger(SentryState sentryState) {
     if (sentryState.isEnabled) {
