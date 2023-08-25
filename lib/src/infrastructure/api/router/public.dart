@@ -321,7 +321,7 @@ class PublicApi {
       return Response(HttpStatus.badRequest);
     }
 
-    final upcomingLimit = request.url.queryParameters['upcomingLimit'] as int;
+    final upcomingLimit = request.url.queryParameters['upcomingLimit'] as int?;
 
     final List<TidalExtremumData> data;
     try {
