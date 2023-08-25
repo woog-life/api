@@ -28,9 +28,6 @@ final class SqlLakeRepository implements LakeRepository {
     if (row[columnSupportsTemperature] as bool) {
       features.add(Feature.temperature);
     }
-    if (row[columnSupportsBooking] as bool) {
-      features.add(Feature.booking);
-    }
 
     return Lake(
       id: Uuid.fromString(id as String),

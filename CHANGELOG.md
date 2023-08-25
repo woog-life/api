@@ -1,3 +1,3 @@
-## 1.0.0
+## 0.14.0
 
-- Initial version, created by Stagehand
+- Removed booking feature

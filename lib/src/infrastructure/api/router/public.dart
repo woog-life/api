@@ -7,7 +7,6 @@ import 'package:injectable/injectable.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
-import 'package:woog_api/src/application/use_case/get_events.dart';
 import 'package:woog_api/src/application/use_case/get_extrema.dart';
 import 'package:woog_api/src/application/use_case/get_lake.dart';
 import 'package:woog_api/src/application/use_case/get_lakes.dart';
@@ -26,7 +25,6 @@ class PublicApi {
   final GetLakes _getLakes;
   final GetLake _getLake;
   final GetTemperature _getTemperature;
-  final GetEvents _getEvents;
   final GetExtrema _getExtrema;
 
   Router get _router => _$PublicApiRouter(this);
@@ -37,7 +35,6 @@ class PublicApi {
     this._getLakes,
     this._getLake,
     this._getTemperature,
-    this._getEvents,
     this._getExtrema,
   ) {
     _handler = const Pipeline()
@@ -294,38 +291,6 @@ class PublicApi {
           formatRegion: formatRegion,
         ),
       ),
-    );
-  }
-
-  @Route.get('/lake/<lakeId>/booking')
-  Future<Response> _getBooking(Request request, String lakeId) async {
-    final Uuid lakeUuid;
-    try {
-      lakeUuid = Uuid.fromString(lakeId);
-    } on FormatException {
-      return Response(
-        HttpStatus.badRequest,
-        body: jsonEncode(
-          ErrorMessageDto('Invalid UUID: $lakeId'),
-        ),
-      );
-    }
-
-    final events = await _getEvents(lakeUuid);
-
-    return Response.ok(
-      jsonEncode(EventsDto(
-        [
-          for (final event in events)
-            EventDto(
-              variation: event.variation,
-              bookingLink: event.bookingLink,
-              beginTime: event.beginTime,
-              endTime: event.endTime,
-              saleStartTime: event.saleStartTime,
-            )
-        ],
-      )),
     );
   }
 }
