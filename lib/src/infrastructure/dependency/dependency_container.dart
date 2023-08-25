@@ -6,6 +6,7 @@ import 'package:woog_api/src/infrastructure/dependency/dependency_container.conf
   preferRelativeImports: false,
   asExtension: false,
   initializerName: '\$initGetIt',
+  ignoreUnregisteredTypes: [GetIt],
 )
 Future<void> configureDependencies(GetIt getIt) => $initGetIt(
       getIt,
