@@ -97,7 +97,7 @@ final class SqlTidesRepository implements TidesRepository {
     required DateTime endInclusive,
   }) {
     return _getIt.useConnection((connection) async {
-      await connection.execute(
+      await connection.query(
         '''
         DELETE FROM $tableName
         WHERE $columnId = @lakeId
@@ -119,7 +119,7 @@ final class SqlTidesRepository implements TidesRepository {
     required DateTime time,
   }) {
     return _getIt.useConnection((connection) async {
-      await connection.execute(
+      await connection.query(
         '''
         DELETE FROM $tableName
         WHERE $columnId = @lakeId
@@ -139,7 +139,7 @@ final class SqlTidesRepository implements TidesRepository {
       await connection.transaction(
         (connection) {
           return Future.wait(
-            data.map((extremum) => connection.execute(
+            data.map((extremum) => connection.query(
                   '''
                   INSERT INTO $tableName (
                     $columnId,

@@ -61,7 +61,7 @@ final class SqlTemperatureRepository implements TemperatureRepository {
   @override
   Future<void> updateData(Uuid lakeId, LakeData data) async {
     return _getIt.useConnection((connection) async {
-      await connection.execute(
+      await connection.query(
         '''
       INSERT INTO $tableName (
         $columnId,
@@ -105,7 +105,7 @@ final class SqlTemperatureRepository implements TemperatureRepository {
         '''
         SELECT $columnTime, $columnTemperature
         FROM $tableName
-        WHERE $columnId = @lakeId AND $columnTime >= @time    
+        WHERE $columnId = @lakeId AND $columnTime >= @time
         ORDER BY $columnTime ASC
         LIMIT 1
         ''',
