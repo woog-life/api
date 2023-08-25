@@ -110,16 +110,24 @@ class PrivateApi {
     }
 
     final update = TidalExtremaDto.fromJson(body);
+    final extrema = <TidalExtremumData>[];
+    for (final extremum in update.extrema) {
+      if (double.tryParse(extremum.height) == null) {
+        return Response(
+          HttpStatus.badRequest,
+          body: jsonEncode(
+            ErrorMessageDto(
+              'Invalid height at time ${extremum.time}: ${extremum.height}',
+            ),
+          ),
+        );
+      }
+    }
+
     try {
       await _updateTidalExtrema(
         lakeId: lakeUuid,
-        data: update.extrema
-            .map((e) => TidalExtremumData(
-                  isHighTide: e.isHighTide,
-                  time: e.time,
-                  height: e.height,
-                ))
-            .toList(growable: false),
+        data: extrema,
       );
       return Response(HttpStatus.noContent);
     } on NotFoundException catch (e) {

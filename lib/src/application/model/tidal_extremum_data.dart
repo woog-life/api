@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 final class TidalExtremumData {
   final bool isHighTide;
   final DateTime time;
-  final double height;
+  final String height;
 
   TidalExtremumData({
     required this.isHighTide,

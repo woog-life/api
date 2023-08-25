@@ -300,6 +300,15 @@ class PublicApi {
     );
   }
 
+  T? parseParam<T>(Request request, String name, T Function(String) parse) {
+    final arg = request.url.queryParameters[name];
+    if (arg == null) {
+      return null;
+    }
+
+    return parse(arg);
+  }
+
   @Route.get('/lake/<lakeId>/tides')
   Future<Response> getTidalExtrema(Request request, String lakeId) async {
     final Uuid lakeUuid;
@@ -321,7 +330,16 @@ class PublicApi {
       return Response(HttpStatus.badRequest);
     }
 
-    final upcomingLimit = request.url.queryParameters['upcomingLimit'] as int?;
+    final upcomingLimit = parseParam(request, 'upcomingLimit', int.parse);
+
+    if (upcomingLimit != null && (upcomingLimit < 1 || upcomingLimit > 20)) {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto('Invalid upcomingLimit: $upcomingLimit'),
+        ),
+      );
+    }
 
     final List<TidalExtremumData> data;
     try {

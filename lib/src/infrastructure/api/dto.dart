@@ -173,7 +173,7 @@ final class TidalExtremaDto {
 final class TidalExtremumDataDto {
   final bool isHighTide;
   final DateTime time;
-  final double height;
+  final String height;
 
   const TidalExtremumDataDto({
     required this.isHighTide,
