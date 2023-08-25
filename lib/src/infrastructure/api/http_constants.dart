@@ -10,25 +10,23 @@ enum HttpMethod {
   options,
   trace,
   patch,
-}
+  ;
 
-HttpMethod? matchHttpMethod(String value) {
-  for (final method in HttpMethod.values) {
-    if (method.value == value) {
-      return method;
-    }
-  }
-  return null;
-}
-
-extension HttpMethodImpl on HttpMethod {
-  // TODO inline
   static const safeMethods = {
     HttpMethod.get,
     HttpMethod.head,
     HttpMethod.options,
     HttpMethod.trace,
   };
+
+  static HttpMethod? fromValue(String value) {
+    for (final method in HttpMethod.values) {
+      if (method.value == value) {
+        return method;
+      }
+    }
+    return null;
+  }
 
   bool get isSafe => safeMethods.contains(this);
 

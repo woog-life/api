@@ -23,7 +23,8 @@ final class LakeInfoDto {
     return LakeInfoDto(
       id: lake.id.toString(),
       name: lake.name,
-      features: lake.features.map((f) => f.matchDto()).toList(growable: false),
+      features:
+          lake.features.map(FeatureDto.fromFeature).toList(growable: false),
     );
   }
 
@@ -36,12 +37,10 @@ final class LakeInfoDto {
 enum FeatureDto {
   temperature,
   booking,
-}
+  ;
 
-extension on Feature {
-  // TODO: inline
-  FeatureDto matchDto() {
-    switch (this) {
+  static FeatureDto fromFeature(Feature feature) {
+    switch (feature) {
       case Feature.temperature:
         return FeatureDto.temperature;
       case Feature.booking:

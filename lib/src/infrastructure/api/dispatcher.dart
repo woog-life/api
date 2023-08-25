@@ -31,7 +31,7 @@ final class Dispatcher {
   }
 
   FutureOr<Response> call(Request request) {
-    final method = matchHttpMethod(request.method);
+    final method = HttpMethod.fromValue(request.method);
     if (method == null) {
       throw ArgumentError.value(method, 'method', 'Invalid HTTP method');
     } else if (method == HttpMethod.get && _hasBasePath(request, 'docs')) {
