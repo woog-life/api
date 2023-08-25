@@ -157,6 +157,38 @@ final class TemperatureUpdateDto {
 
 @JsonSerializable()
 @immutable
+final class TidalExtremaDto {
+  final List<TidalExtremumDataDto> extrema;
+
+  const TidalExtremaDto({required this.extrema});
+
+  factory TidalExtremaDto.fromJson(Map<String, dynamic> json) =>
+      _$TidalExtremaDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TidalExtremaDtoToJson(this);
+}
+
+@JsonSerializable()
+@immutable
+final class TidalExtremumDataDto {
+  final bool isHighTide;
+  final DateTime time;
+  final double height;
+
+  const TidalExtremumDataDto({
+    required this.isHighTide,
+    required this.time,
+    required this.height,
+  });
+
+  factory TidalExtremumDataDto.fromJson(Map<String, dynamic> json) =>
+      _$TidalExtremumDataDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TidalExtremumDataDtoToJson(this);
+}
+
+@JsonSerializable()
+@immutable
 final class ErrorMessageDto {
   final String errorMessage;
 

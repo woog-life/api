@@ -7,13 +7,17 @@ import 'package:injectable/injectable.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
+import 'package:woog_api/src/application/exception/not_found.dart';
+import 'package:woog_api/src/application/exception/time.dart';
+import 'package:woog_api/src/application/exception/unsupported.dart';
+import 'package:woog_api/src/application/model/lake_data.dart';
+import 'package:woog_api/src/application/model/region.dart';
+import 'package:woog_api/src/application/model/tidal_extremum_data.dart';
 import 'package:woog_api/src/application/use_case/get_extrema.dart';
 import 'package:woog_api/src/application/use_case/get_lake.dart';
 import 'package:woog_api/src/application/use_case/get_lakes.dart';
 import 'package:woog_api/src/application/use_case/get_temperature.dart';
-import 'package:woog_api/src/application/exception/time.dart';
-import 'package:woog_api/src/application/model/lake_data.dart';
-import 'package:woog_api/src/application/model/region.dart';
+import 'package:woog_api/src/application/use_case/get_tidal_extrema.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/json.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/trailing_slash.dart';
@@ -26,6 +30,7 @@ class PublicApi {
   final GetLake _getLake;
   final GetTemperature _getTemperature;
   final GetExtrema _getExtrema;
+  final GetTidalExtrema _getTidalExtrema;
 
   Router get _router => _$PublicApiRouter(this);
 
@@ -36,6 +41,7 @@ class PublicApi {
     this._getLake,
     this._getTemperature,
     this._getExtrema,
+    this._getTidalExtrema,
   ) {
     _handler = const Pipeline()
         .addMiddleware(trailingSlashRedirect())
@@ -289,6 +295,76 @@ class PublicApi {
           extrema.max,
           precision: precision,
           formatRegion: formatRegion,
+        ),
+      ),
+    );
+  }
+
+  @Route.get('/lake/<lakeId>/tides')
+  Future<Response> _putTidalExtrema(Request request, String lakeId) async {
+    final body = jsonDecode(await request.readAsString());
+    if (body is! Map<String, dynamic>) {
+      return Response(HttpStatus.badRequest);
+    }
+
+    final Uuid lakeUuid;
+    try {
+      lakeUuid = Uuid.fromString(lakeId);
+    } on FormatException {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto('Invalid UUID: $lakeId'),
+        ),
+      );
+    }
+
+    final DateTime? time;
+    try {
+      time = _getTime(request);
+    } on FormatException {
+      return Response(HttpStatus.badRequest);
+    }
+
+    final upcomingLimit = request.url.queryParameters['upcomingLimit'] as int;
+
+    final List<TidalExtremumData> data;
+    try {
+      data = await _getTidalExtrema(
+        lakeId: lakeUuid,
+        time: time,
+        upcomingLimit: upcomingLimit,
+      );
+    } on NotFoundException catch (e) {
+      return Response(
+        HttpStatus.notFound,
+        body: jsonEncode(
+          ErrorMessageDto(e.toString()),
+        ),
+      );
+    } on TimeException catch (e) {
+      return Response(
+        HttpStatus.badRequest,
+        body: jsonEncode(
+          ErrorMessageDto(e.toString()).toJson(),
+        ),
+      );
+    } on UnsupportedFeatureException catch (e) {
+      return Response(
+        HttpStatus.notImplemented,
+        body: jsonEncode(
+          ErrorMessageDto(e.toString()),
+        ),
+      );
+    }
+
+    return Response.ok(
+      jsonEncode(
+        TidalExtremaDto(
+          extrema: data
+              .map((e) => TidalExtremumDataDto(
+                  isHighTide: e.isHighTide, time: e.time, height: e.height))
+              .toList(growable: false),
         ),
       ),
     );
