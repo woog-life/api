@@ -136,32 +136,35 @@ final class SqlTidesRepository implements TidesRepository {
   @override
   Future<void> insertData(Uuid lakeId, List<TidalExtremumData> data) {
     return _getIt.useConnection((connection) async {
-      await connection.transaction((connection) {
-        return Future.wait(
-          data.map((extremum) => connection.execute(
-                '''
-                INSERT INTO $tableName (
-                  $columnId,
-                  $columnHighTide,
-                  $columnTime,
-                  $columnHeight
-                )
-                VALUES (
-                   @lakeId,
-                   @highTide,
-                   @time,
-                   @height
-                )
-                ''',
-                substitutionValues: {
-                  'lakeId': lakeId.toString(),
-                  'time': extremum.time,
-                  'highTide': extremum.isHighTide,
-                  'height': extremum.height,
-                },
-              )),
-        );
-      });
+      await connection.transaction(
+        (connection) {
+          return Future.wait(
+            data.map((extremum) => connection.execute(
+                  '''
+                  INSERT INTO $tableName (
+                    $columnId,
+                    $columnHighTide,
+                    $columnTime,
+                    $columnHeight
+                  )
+                  VALUES (
+                     @lakeId,
+                     @highTide,
+                     @time,
+                     @height
+                  )
+                  ''',
+                  substitutionValues: {
+                    'lakeId': lakeId.toString(),
+                    'time': extremum.time,
+                    'highTide': extremum.isHighTide,
+                    'height': extremum.height,
+                  },
+                )),
+          );
+        },
+        commitTimeoutInSeconds: 240,
+      );
     });
   }
 }
