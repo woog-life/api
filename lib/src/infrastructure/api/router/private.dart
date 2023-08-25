@@ -124,6 +124,12 @@ class PrivateApi {
           ),
         );
       }
+
+      extrema.add(TidalExtremumData(
+        isHighTide: extremum.isHighTide,
+        time: extremum.time,
+        height: extremum.height,
+      ));
     }
 
     if (extrema.length < 2) {
