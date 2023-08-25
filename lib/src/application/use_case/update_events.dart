@@ -4,11 +4,11 @@ import 'package:meta/meta.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/booking.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
-import 'package:woog_api/src/domain/exception/lake_not_found.dart';
-import 'package:woog_api/src/domain/exception/time.dart';
-import 'package:woog_api/src/domain/exception/unsupported.dart';
-import 'package:woog_api/src/domain/model/event.dart';
-import 'package:woog_api/src/domain/model/lake.dart';
+import 'package:woog_api/src/application/exception/not_found.dart';
+import 'package:woog_api/src/application/exception/time.dart';
+import 'package:woog_api/src/application/exception/unsupported.dart';
+import 'package:woog_api/src/application/model/event.dart';
+import 'package:woog_api/src/application/model/lake.dart';
 
 @immutable
 final class UpdateEvent {

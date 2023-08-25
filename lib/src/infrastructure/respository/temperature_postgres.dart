@@ -3,7 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
-import 'package:woog_api/src/domain/model/lake_data.dart';
+import 'package:woog_api/src/application/model/lake_data.dart';
 import 'package:woog_api/src/infrastructure/respository/postgres.dart';
 
 const tableName = 'lake_data';

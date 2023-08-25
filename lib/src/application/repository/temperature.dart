@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:sane_uuid/uuid.dart';
-import 'package:woog_api/src/domain/model/lake_data.dart';
+import 'package:woog_api/src/application/model/lake_data.dart';
 
 @immutable
 final class NearDataDto {

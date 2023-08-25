@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/booking.dart';
-import 'package:woog_api/src/domain/model/event.dart';
+import 'package:woog_api/src/application/model/event.dart';
 
 @injectable
 final class GetEvents {

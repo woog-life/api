@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
-import 'package:woog_api/src/domain/model/lake_data.dart';
-import 'package:woog_api/src/domain/model/region.dart';
+import 'package:woog_api/src/application/model/lake_data.dart';
+import 'package:woog_api/src/application/model/region.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 
 void main() {

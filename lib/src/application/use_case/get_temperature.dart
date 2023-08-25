@@ -1,9 +1,9 @@
 import 'package:injectable/injectable.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
-import 'package:woog_api/src/domain/algo/interpolation.dart';
-import 'package:woog_api/src/domain/exception/time.dart';
-import 'package:woog_api/src/domain/model/lake_data.dart';
+import 'package:woog_api/src/application/algo/interpolation.dart';
+import 'package:woog_api/src/application/exception/time.dart';
+import 'package:woog_api/src/application/model/lake_data.dart';
 
 @injectable
 final class GetTemperature {

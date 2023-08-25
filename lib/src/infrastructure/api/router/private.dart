@@ -9,9 +9,9 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:woog_api/src/application/use_case/update_events.dart';
 import 'package:woog_api/src/application/use_case/update_temperature.dart';
-import 'package:woog_api/src/domain/exception/lake_not_found.dart';
-import 'package:woog_api/src/domain/exception/time.dart';
-import 'package:woog_api/src/domain/exception/unsupported.dart';
+import 'package:woog_api/src/application/exception/not_found.dart';
+import 'package:woog_api/src/application/exception/time.dart';
+import 'package:woog_api/src/application/exception/unsupported.dart';
 import 'package:woog_api/src/infrastructure/api/dto.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/auth.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/json.dart';
@@ -68,7 +68,7 @@ class PrivateApi {
     try {
       await _updateTemperature(lakeUuid, update.time, update.temperature);
       return Response(HttpStatus.noContent);
-    } on LakeNotFoundException catch (e) {
+    } on NotFoundException catch (e) {
       return Response(
         HttpStatus.notFound,
         body: jsonEncode(

@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
-import 'package:woog_api/src/domain/model/lake.dart';
+import 'package:woog_api/src/application/model/lake.dart';
 
 @injectable
 final class GetLakes {
