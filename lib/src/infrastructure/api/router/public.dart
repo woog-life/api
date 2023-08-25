@@ -301,7 +301,7 @@ class PublicApi {
   }
 
   @Route.get('/lake/<lakeId>/tides')
-  Future<Response> _putTidalExtrema(Request request, String lakeId) async {
+  Future<Response> getTidalExtrema(Request request, String lakeId) async {
     final body = jsonDecode(await request.readAsString());
     if (body is! Map<String, dynamic>) {
       return Response(HttpStatus.badRequest);
