@@ -148,7 +148,7 @@ final class SqlTidesRepository implements TidesRepository {
                 )
                 VALUES (
                    @lakeId,
-                   @highTide
+                   @highTide,
                    @time,
                    @height
                 )
