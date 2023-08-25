@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
 @immutable
-class LakeData {
+final class LakeData {
   final DateTime time;
   final double temperature;
 

@@ -8,7 +8,7 @@ part 'dto.g.dart';
 
 @JsonSerializable()
 @immutable
-class LakeInfoDto {
+final class LakeInfoDto {
   final String id;
   final String name;
   final List<FeatureDto> features;
@@ -39,6 +39,7 @@ enum FeatureDto {
 }
 
 extension on Feature {
+  // TODO: inline
   FeatureDto matchDto() {
     switch (this) {
       case Feature.temperature:
@@ -51,7 +52,7 @@ extension on Feature {
 
 @JsonSerializable()
 @immutable
-class LakeInfoListDto {
+final class LakeInfoListDto {
   final List<LakeInfoDto> lakes;
 
   const LakeInfoListDto(this.lakes);
@@ -70,7 +71,7 @@ class LakeInfoListDto {
 
 @JsonSerializable()
 @immutable
-class LakeDataDto {
+final class LakeDataDto {
   final DateTime time;
   final int temperature;
   final String preciseTemperature;
@@ -106,7 +107,7 @@ class LakeDataDto {
 
 @JsonSerializable()
 @immutable
-class LakeDataExtremaDto {
+final class LakeDataExtremaDto {
   final LakeDataDto min;
   final LakeDataDto max;
 
@@ -143,7 +144,7 @@ class LakeDataExtremaDto {
 
 @JsonSerializable()
 @immutable
-class TemperatureUpdateDto {
+final class TemperatureUpdateDto {
   final DateTime time;
   final double temperature;
 
@@ -157,7 +158,7 @@ class TemperatureUpdateDto {
 
 @JsonSerializable()
 @immutable
-class EventDto {
+final class EventDto {
   final String variation;
   final String bookingLink;
   final DateTime beginTime;
@@ -180,7 +181,7 @@ class EventDto {
 
 @JsonSerializable()
 @immutable
-class EventsDto {
+final class EventsDto {
   final List<EventDto> events;
 
   const EventsDto(this.events);
@@ -193,7 +194,7 @@ class EventsDto {
 
 @JsonSerializable()
 @immutable
-class EventUpdateDto {
+final class EventUpdateDto {
   final String bookingLink;
   final DateTime beginTime;
   final DateTime endTime;
@@ -216,7 +217,7 @@ class EventUpdateDto {
 
 @JsonSerializable()
 @immutable
-class EventsUpdateDto {
+final class EventsUpdateDto {
   final String variation;
   final List<EventUpdateDto> events;
 
@@ -233,7 +234,7 @@ class EventsUpdateDto {
 
 @JsonSerializable()
 @immutable
-class ErrorMessageDto {
+final class ErrorMessageDto {
   final String errorMessage;
 
   const ErrorMessageDto(this.errorMessage);
@@ -246,7 +247,7 @@ class ErrorMessageDto {
 
 @JsonSerializable()
 @immutable
-class LegacyEventUpdateDto implements EventUpdateDto {
+final class LegacyEventUpdateDto implements EventUpdateDto {
   @override
   @JsonKey(name: 'booking_link')
   final String bookingLink;
@@ -280,7 +281,7 @@ class LegacyEventUpdateDto implements EventUpdateDto {
 
 @JsonSerializable()
 @immutable
-class LegacyEventsUpdateDto implements EventsUpdateDto {
+final class LegacyEventsUpdateDto implements EventsUpdateDto {
   @override
   final String variation;
   @override

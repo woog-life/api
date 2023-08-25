@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:meta/meta.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
@@ -11,7 +12,8 @@ const columnTime = 'timestamp';
 const columnTemperature = 'temperature';
 
 @Injectable(as: TemperatureRepository)
-class SqlTemperatureRepository implements TemperatureRepository {
+@immutable
+final class SqlTemperatureRepository implements TemperatureRepository {
   final GetIt _getIt;
 
   SqlTemperatureRepository(this._getIt);

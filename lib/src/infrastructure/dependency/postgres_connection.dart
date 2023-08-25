@@ -4,7 +4,7 @@ import 'package:postgres/postgres.dart';
 import 'package:woog_api/src/infrastructure/config.dart';
 
 @module
-abstract class PostgresConnectionModule {
+abstract base class PostgresConnectionModule {
   @prod
   Future<PostgreSQLConnection> createConnection(
     Logger logger,

@@ -3,7 +3,7 @@ import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 
 @immutable
-class NearDataDto {
+final class NearDataDto {
   final LakeData? before;
   final LakeData? after;
 
@@ -14,7 +14,7 @@ class NearDataDto {
 }
 
 @immutable
-class LakeDataExtrema {
+final class LakeDataExtrema {
   final LakeData min;
   final LakeData max;
 
@@ -24,7 +24,7 @@ class LakeDataExtrema {
   });
 }
 
-abstract class TemperatureRepository {
+abstract interface class TemperatureRepository {
   Future<LakeData?> getLakeData(Uuid lakeId);
 
   Future<void> updateData(Uuid lakeId, LakeData data);

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
+import 'package:meta/meta.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:woog_api/src/infrastructure/api/dispatcher.dart';
@@ -12,7 +13,8 @@ import 'package:woog_api/src/infrastructure/api/middleware/logging.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/sentry.dart';
 
 @injectable
-class WoogApi {
+@immutable
+final class WoogApi {
   final LoggingMiddleware _loggingMiddleware;
   final SentryMiddleware _sentryMiddleware;
   final Dispatcher _dispatcher;

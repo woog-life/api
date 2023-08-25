@@ -1,4 +1,7 @@
-class NotFoundException implements Exception {
+import 'package:meta/meta.dart';
+
+@immutable
+final class NotFoundException implements Exception {
   final String id;
   final String message;
 

@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:meta/meta.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/domain/model/lake.dart';
@@ -13,7 +14,8 @@ const columnSupportsBooking = 'supports_booking';
 
 @prod
 @Injectable(as: LakeRepository)
-class SqlLakeRepository implements LakeRepository {
+@immutable
+final class SqlLakeRepository implements LakeRepository {
   final GetIt _getIt;
 
   SqlLakeRepository(this._getIt);

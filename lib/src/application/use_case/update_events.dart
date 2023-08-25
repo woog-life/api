@@ -11,7 +11,7 @@ import 'package:woog_api/src/domain/model/event.dart';
 import 'package:woog_api/src/domain/model/lake.dart';
 
 @immutable
-class UpdateEvent {
+final class UpdateEvent {
   final String bookingLink;
   final DateTime beginTime;
   final DateTime endTime;

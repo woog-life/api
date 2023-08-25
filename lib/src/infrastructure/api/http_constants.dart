@@ -22,6 +22,7 @@ HttpMethod? matchHttpMethod(String value) {
 }
 
 extension HttpMethodImpl on HttpMethod {
+  // TODO inline
   static const safeMethods = {
     HttpMethod.get,
     HttpMethod.head,

@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
 @immutable
-class Event {
+final class Event {
   final String variation;
   final String bookingLink;
   final DateTime beginTime;

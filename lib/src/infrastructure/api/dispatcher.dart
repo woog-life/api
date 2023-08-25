@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:injectable/injectable.dart';
+import 'package:meta/meta.dart';
 import 'package:shelf/shelf.dart';
 import 'package:woog_api/src/infrastructure/api/http_constants.dart';
 import 'package:woog_api/src/infrastructure/api/router/private.dart';
@@ -8,7 +9,8 @@ import 'package:woog_api/src/infrastructure/api/router/public.dart';
 import 'package:woog_api/src/infrastructure/api/router/static.dart';
 
 @injectable
-class Dispatcher {
+@immutable
+final class Dispatcher {
   final PrivateApi _privateApi;
   final PublicApi _publicApi;
   final StaticServer _staticServer;

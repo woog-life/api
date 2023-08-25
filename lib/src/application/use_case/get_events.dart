@@ -4,7 +4,7 @@ import 'package:woog_api/src/application/repository/booking.dart';
 import 'package:woog_api/src/domain/model/event.dart';
 
 @injectable
-class GetEvents {
+final class GetEvents {
   final BookingRepository _repo;
 
   GetEvents(this._repo);

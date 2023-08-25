@@ -5,7 +5,7 @@ import 'package:woog_api/src/domain/model/lake.dart';
 @Deprecated('Use temperature.NearDataDto')
 typedef NearDataDto = temp.NearDataDto;
 
-abstract class LakeRepository {
+abstract interface class LakeRepository {
   Future<Set<Lake>> getLakes();
 
   Future<Lake?> getLake(Uuid lakeId);

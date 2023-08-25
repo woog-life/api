@@ -1,7 +1,7 @@
 import 'package:meta/meta.dart';
 
 @immutable
-class TimeValue {
+final class TimeValue {
   final DateTime time;
   final double value;
 

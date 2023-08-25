@@ -1,4 +1,5 @@
 import 'package:country_code/country_code.dart';
+import 'package:meta/meta.dart';
 
 final _commaCountries = {
   CountryCode.AL,
@@ -135,7 +136,8 @@ final _dotCountries = {
   CountryCode.US,
 };
 
-class Region {
+@immutable
+final class Region {
   final String identifier;
   final String decimalSeparator;
 

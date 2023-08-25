@@ -1,9 +1,10 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:logger/logger.dart';
+import 'package:meta/meta.dart';
 import 'package:sentry/sentry.dart';
 
-class SentryLogger extends Logger {
+final class SentryLogger extends Logger {
   SentryLogger({
     LogFilter? filter,
     LogPrinter? printer,

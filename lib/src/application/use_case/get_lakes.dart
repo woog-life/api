@@ -3,7 +3,7 @@ import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/domain/model/lake.dart';
 
 @injectable
-class GetLakes {
+final class GetLakes {
   final LakeRepository _repo;
 
   GetLakes(this._repo);

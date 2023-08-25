@@ -6,7 +6,7 @@ import 'package:woog_api/src/domain/exception/time.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 
 @injectable
-class GetTemperature {
+final class GetTemperature {
   final TemperatureRepository _repo;
 
   GetTemperature(this._repo);

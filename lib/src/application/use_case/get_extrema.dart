@@ -3,7 +3,7 @@ import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
 
 @injectable
-class GetExtrema {
+final class GetExtrema {
   final TemperatureRepository _repo;
 
   GetExtrema(this._repo);

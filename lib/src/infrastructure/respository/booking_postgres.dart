@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
+import 'package:meta/meta.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/repository/booking.dart';
 import 'package:woog_api/src/domain/model/event.dart';
@@ -15,7 +16,8 @@ const columnBookingLink = 'booking_link';
 const columnAvailable = 'available';
 
 @Injectable(as: BookingRepository)
-class SqlBookingRepository implements BookingRepository {
+@immutable
+final class SqlBookingRepository implements BookingRepository {
   final GetIt _getIt;
 
   SqlBookingRepository(this._getIt);

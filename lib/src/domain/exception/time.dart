@@ -1,6 +1,9 @@
+import 'package:meta/meta.dart';
+
 abstract class TimeException implements Exception {}
 
-class FutureTimeException implements TimeException {
+@immutable
+final class FutureTimeException implements TimeException {
   final DateTime futureTime;
 
   FutureTimeException(this.futureTime);
@@ -11,7 +14,8 @@ class FutureTimeException implements TimeException {
   }
 }
 
-class NonUtcTimeException implements TimeException {
+@immutable
+final class NonUtcTimeException implements TimeException {
   final DateTime nonUtcTime;
 
   NonUtcTimeException(this.nonUtcTime);

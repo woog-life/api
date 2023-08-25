@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:injectable/injectable.dart';
+import 'package:meta/meta.dart';
 import 'package:woog_api/src/version.dart';
 
 @singleton
 @injectable
-class Config {
+@immutable
+final class Config {
   final String version;
   final String build;
 
@@ -79,7 +81,8 @@ class Config {
   });
 }
 
-class _Variable {
+@immutable
+final class _Variable {
   final String name;
   final String defaultValue;
 

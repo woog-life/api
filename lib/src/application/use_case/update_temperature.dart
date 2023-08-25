@@ -10,7 +10,7 @@ import 'package:woog_api/src/domain/model/lake.dart';
 import 'package:woog_api/src/domain/model/lake_data.dart';
 
 @injectable
-class UpdateTemperature {
+final class UpdateTemperature {
   final LakeRepository _lakeRepo;
   final TemperatureRepository _temperatureRepo;
 
