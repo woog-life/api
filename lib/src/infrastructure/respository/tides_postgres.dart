@@ -160,10 +160,11 @@ final class SqlTidesRepository implements TidesRepository {
                     'highTide': extremum.isHighTide,
                     'height': extremum.height,
                   },
+                  timeoutInSeconds: 240,
                 )),
           );
         },
-        commitTimeoutInSeconds: 240,
+        commitTimeoutInSeconds: 360,
       );
     });
   }
