@@ -2,6 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/exception/not_found.dart';
+import 'package:woog_api/src/application/exception/time.dart';
 import 'package:woog_api/src/application/exception/unsupported.dart';
 import 'package:woog_api/src/application/model/lake.dart';
 import 'package:woog_api/src/application/model/tidal_extremum_data.dart';
@@ -33,6 +34,12 @@ final class UpdateTidalExtrema {
     }
 
     data.sort();
+
+    for (final extremum in data) {
+      if (!extremum.time.isUtc) {
+        throw NonUtcTimeException(extremum.time);
+      }
+    }
 
     // These two really should run in one transaction, but well...
     await _deleteObsoleteData(lakeId, data.first, data.last);
