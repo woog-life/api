@@ -12,4 +12,4 @@ spec:
   databases:
     {{ .Values.postgres.db }}: {{ .Values.postgres.user }}
   postgresql:
-    version: "14"
+    version: "15"
