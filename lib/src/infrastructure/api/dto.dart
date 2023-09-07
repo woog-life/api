@@ -11,21 +11,25 @@ part 'dto.g.dart';
 final class LakeInfoDto {
   final String id;
   final String name;
+  @Deprecated('Use supportedFeatures instead')
   final List<FeatureDto> features;
   final List<FeatureDto> supportedFeatures;
 
   const LakeInfoDto({
     required this.id,
     required this.name,
+    required this.features,
     required this.supportedFeatures,
-  }) : features = supportedFeatures;
+  });
 
   factory LakeInfoDto.fromLake(Lake lake) {
+    final featureDtos =
+        lake.features.map(FeatureDto.fromFeature).toList(growable: false);
     return LakeInfoDto(
       id: lake.id.toString(),
       name: lake.name,
-      supportedFeatures:
-          lake.features.map(FeatureDto.fromFeature).toList(growable: false),
+      features: featureDtos,
+      supportedFeatures: featureDtos,
     );
   }
 
