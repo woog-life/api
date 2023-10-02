@@ -9,6 +9,7 @@ import 'package:woog_api/src/infrastructure/respository/postgres.dart';
 const tableName = 'lake';
 const columnId = 'id';
 const columnName = 'name';
+const columnTimeZone = 'time_zone_id';
 const columnSupportsTemperature = 'supports_temperature';
 const columnSupportsTides = 'supports_tides';
 
@@ -23,6 +24,7 @@ final class SqlLakeRepository implements LakeRepository {
   Lake _lakeFromRow(Map<String, dynamic> row) {
     final id = row[columnId];
     final name = row[columnName];
+    final timeZoneId = row[columnTimeZone];
 
     final features = <Feature>{};
     if (row[columnSupportsTemperature] as bool) {
@@ -36,6 +38,7 @@ final class SqlLakeRepository implements LakeRepository {
       id: Uuid.fromString(id as String),
       name: name as String,
       features: features,
+      timeZoneId: timeZoneId as String,
     );
   }
 
