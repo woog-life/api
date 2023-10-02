@@ -2,8 +2,10 @@ FROM eclipse-temurin:19-jammy AS smithy
 RUN apt-get update -qq && apt-get install -y --no-install-recommends unzip && apt-get clean
 
 WORKDIR /apidocs
-# renovate: type=git-digest repo=https://github.com/woog-life/apispec
+
+# renovate: type=gitsha repo=https://github.com/woog-life/apispec
 ENV APISPEC_VERSION=cc4f635f813b8690850d3f1b618a9016cdf38936
+
 RUN wget https://github.com/woog-life/apispec/archive/$APISPEC_VERSION.zip -O apispec.zip  \
     && unzip apispec.zip  \
     && mv apispec-$APISPEC_VERSION/* . \
