@@ -4,7 +4,6 @@ import 'package:woog_api/src/application/exception/not_found.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
 import 'package:woog_api/src/application/algo/interpolation.dart';
-import 'package:woog_api/src/application/exception/time.dart';
 import 'package:woog_api/src/application/model/lake_data.dart';
 import 'package:timezone/timezone.dart' as tz;
 
