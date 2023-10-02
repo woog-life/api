@@ -5,8 +5,10 @@ import 'package:woog_api/src/infrastructure/api/dto.dart';
 
 void main() {
   final time = DateTime(2022, 11, 19);
-  final data = LakeData(
+
+  final data = LocalizedLakeData(
     time: time,
+    localTime: time.toLocal(),
     temperature: 12.5,
   );
   group('fromData respects formatRegion', () {

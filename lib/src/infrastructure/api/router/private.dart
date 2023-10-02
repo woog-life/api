@@ -109,7 +109,7 @@ class PrivateApi {
       );
     }
 
-    final update = TidalExtremaDto.fromJson(body);
+    final update = TidalExtremaInputDto.fromJson(body);
     final extrema = <TidalExtremumData>[];
     for (final extremum in update.extrema) {
       // We try to parse the height as double just to validate the format, but

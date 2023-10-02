@@ -1,5 +1,6 @@
 import 'package:meta/meta.dart';
 import 'package:sane_uuid/uuid.dart';
+import 'package:timezone/timezone.dart' as tz;
 import 'package:woog_api/src/application/model/lake_data.dart';
 
 @immutable
@@ -14,14 +15,21 @@ final class NearDataDto {
 }
 
 @immutable
-final class LakeDataExtrema {
-  final LakeData min;
-  final LakeData max;
+final class LakeDataExtrema<LD extends LakeData> {
+  final LD min;
+  final LD max;
 
   const LakeDataExtrema({
     required this.min,
     required this.max,
   });
+
+  LakeDataExtrema<LocalizedLakeData> localize(tz.Location location) {
+    return LakeDataExtrema(
+      min: min.localize(location),
+      max: max.localize(location),
+    );
+  }
 }
 
 abstract interface class TemperatureRepository {

@@ -1,9 +1,19 @@
-FROM openjdk:19-jdk-bullseye AS smithy
+FROM eclipse-temurin:19-jammy AS smithy
+RUN apt-get update -qq && apt-get install -y --no-install-recommends unzip && apt-get clean
+
 WORKDIR /apidocs
-RUN wget https://github.com/woog-life/apispec/archive/refs/heads/main.zip && unzip main.zip && mv apispec-main/* .
+
+# renovate: type=git-digest repo=https://github.com/woog-life/apispec
+ENV APISPEC_VERSION=76a44a3d724f0ccfe4ed99ee1793e5dbbd2afcee
+
+RUN wget https://github.com/woog-life/apispec/archive/$APISPEC_VERSION.zip -O apispec.zip  \
+    && unzip apispec.zip  \
+    && mv apispec-$APISPEC_VERSION/* . \
+    && rm apispec.zip \
+    && rm -r apispec-$APISPEC_VERSION
 RUN ./gradlew build
 
-FROM dart:3.1.2 AS builder
+FROM dart:3.1.3 AS builder
 
 WORKDIR /app
 
@@ -15,7 +25,7 @@ COPY . .
 RUN dart run build_runner build --delete-conflicting-outputs
 RUN dart compile exe bin/main.dart -o app
 
-FROM swaggerapi/swagger-ui:v5.7.2@sha256:08e8a7e5be9a1c785159859cde5f7c908e45121e34ed1a122d589cd94387b69e AS swagger
+FROM swaggerapi/swagger-ui:v5.9.0@sha256:384a42c8dd8b5a5e5b02269df10df076848088f06b16e9f9422368900d6d9f80 AS swagger
 
 # We don't want the script to actually start nginx
 RUN head -n -1 /docker-entrypoint.sh > /tmp.sh && mv /tmp.sh /docker-entrypoint.sh && \
