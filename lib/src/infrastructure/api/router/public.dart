@@ -215,7 +215,7 @@ class PublicApi {
       );
     }
 
-    final LakeData? temperature;
+    final LocalizedLakeData? temperature;
     try {
       temperature = await _getTemperature(lakeUuid, time: time);
     } on TimeException catch (e) {
@@ -341,7 +341,7 @@ class PublicApi {
       );
     }
 
-    final List<TidalExtremumData> data;
+    final List<LocalizedTidalExtremumData> data;
     try {
       data = await _getTidalExtrema(
         lakeId: lakeUuid,
@@ -374,10 +374,8 @@ class PublicApi {
     return Response.ok(
       jsonEncode(
         TidalExtremaDto(
-          extrema: data
-              .map((e) => TidalExtremumDataDto(
-                  isHighTide: e.isHighTide, time: e.time, height: e.height))
-              .toList(growable: false),
+          extrema:
+              data.map(TidalExtremumDataDto.fromData).toList(growable: false),
         ),
       ),
     );

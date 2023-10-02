@@ -3,10 +3,11 @@ import 'package:meta/meta.dart';
 import 'package:woog_api/src/application/model/lake.dart';
 import 'package:woog_api/src/application/model/lake_data.dart' as model;
 import 'package:woog_api/src/application/model/region.dart';
+import 'package:woog_api/src/application/model/tidal_extremum_data.dart';
 
 part 'dto.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(createFactory: false)
 @immutable
 final class LakeInfoDto {
   final String id;
@@ -36,9 +37,6 @@ final class LakeInfoDto {
     );
   }
 
-  factory LakeInfoDto.fromJson(Map<String, dynamic> json) =>
-      _$LakeInfoDtoFromJson(json);
-
   Map<String, dynamic> toJson() => _$LakeInfoDtoToJson(this);
 }
 
@@ -57,7 +55,7 @@ enum FeatureDto {
   }
 }
 
-@JsonSerializable()
+@JsonSerializable(createFactory: false)
 @immutable
 final class LakeInfoListDto {
   final List<LakeInfoDto> lakes;
@@ -70,27 +68,26 @@ final class LakeInfoListDto {
     );
   }
 
-  factory LakeInfoListDto.fromJson(Map<String, dynamic> json) =>
-      _$LakeInfoListDtoFromJson(json);
-
   Map<String, dynamic> toJson() => _$LakeInfoListDtoToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(createFactory: false)
 @immutable
 final class LakeDataDto {
   final DateTime time;
+  final DateTime localTime;
   final int temperature;
   final String preciseTemperature;
 
   const LakeDataDto({
     required this.time,
+    required this.localTime,
     required this.temperature,
     required this.preciseTemperature,
   });
 
   factory LakeDataDto.fromData(
-    model.LakeData data, {
+    model.LocalizedLakeData data, {
     int? precision,
     required Region formatRegion,
   }) {
@@ -101,18 +98,16 @@ final class LakeDataDto {
     );
     return LakeDataDto(
       time: data.time,
+      localTime: data.localTime,
       temperature: data.temperature.round(),
       preciseTemperature: preciseTemperature,
     );
   }
 
-  factory LakeDataDto.fromJson(Map<String, dynamic> json) =>
-      _$LakeDataDtoFromJson(json);
-
   Map<String, dynamic> toJson() => _$LakeDataDtoToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(createFactory: false)
 @immutable
 final class LakeDataExtremaDto {
   final LakeDataDto min;
@@ -124,8 +119,8 @@ final class LakeDataExtremaDto {
   });
 
   factory LakeDataExtremaDto.fromData(
-    model.LakeData min,
-    model.LakeData max, {
+    model.LocalizedLakeData min,
+    model.LocalizedLakeData max, {
     int? precision,
     required Region formatRegion,
   }) {
@@ -143,13 +138,10 @@ final class LakeDataExtremaDto {
     );
   }
 
-  factory LakeDataExtremaDto.fromJson(Map<String, dynamic> json) =>
-      _$LakeDataExtremaDtoFromJson(json);
-
   Map<String, dynamic> toJson() => _$LakeDataExtremaDtoToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
 @immutable
 final class TemperatureUpdateDto {
   final DateTime time;
@@ -159,51 +151,79 @@ final class TemperatureUpdateDto {
 
   factory TemperatureUpdateDto.fromJson(Map<String, dynamic> json) =>
       _$TemperatureUpdateDtoFromJson(json);
-
-  Map<String, dynamic> toJson() => _$TemperatureUpdateDtoToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
+@immutable
+final class TidalExtremaInputDto {
+  final List<TidalExtremumInputDataDto> extrema;
+
+  const TidalExtremaInputDto({required this.extrema});
+
+  factory TidalExtremaInputDto.fromJson(Map<String, dynamic> json) =>
+      _$TidalExtremaInputDtoFromJson(json);
+}
+
+@JsonSerializable(createToJson: false)
+@immutable
+final class TidalExtremumInputDataDto {
+  final bool isHighTide;
+  final DateTime time;
+  final String height;
+
+  const TidalExtremumInputDataDto({
+    required this.isHighTide,
+    required this.time,
+    required this.height,
+  });
+
+  factory TidalExtremumInputDataDto.fromJson(Map<String, dynamic> json) =>
+      _$TidalExtremumInputDataDtoFromJson(json);
+}
+
+@JsonSerializable(createFactory: false)
 @immutable
 final class TidalExtremaDto {
   final List<TidalExtremumDataDto> extrema;
 
   const TidalExtremaDto({required this.extrema});
 
-  factory TidalExtremaDto.fromJson(Map<String, dynamic> json) =>
-      _$TidalExtremaDtoFromJson(json);
-
   Map<String, dynamic> toJson() => _$TidalExtremaDtoToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(createFactory: false)
 @immutable
 final class TidalExtremumDataDto {
   final bool isHighTide;
   final DateTime time;
+  final DateTime localTime;
   final String height;
 
   const TidalExtremumDataDto({
     required this.isHighTide,
     required this.time,
+    required this.localTime,
     required this.height,
   });
 
-  factory TidalExtremumDataDto.fromJson(Map<String, dynamic> json) =>
-      _$TidalExtremumDataDtoFromJson(json);
+  factory TidalExtremumDataDto.fromData(LocalizedTidalExtremumData data) {
+    return TidalExtremumDataDto(
+      isHighTide: data.isHighTide,
+      time: data.time,
+      localTime: data.localTime,
+      height: data.height,
+    );
+  }
 
   Map<String, dynamic> toJson() => _$TidalExtremumDataDtoToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(createFactory: false)
 @immutable
 final class ErrorMessageDto {
   final String errorMessage;
 
   const ErrorMessageDto(this.errorMessage);
-
-  factory ErrorMessageDto.fromJson(Map<String, dynamic> json) =>
-      _$ErrorMessageDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$ErrorMessageDtoToJson(this);
 }
