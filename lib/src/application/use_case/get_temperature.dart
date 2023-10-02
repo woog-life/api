@@ -1,26 +1,45 @@
 import 'package:injectable/injectable.dart';
 import 'package:sane_uuid/uuid.dart';
+import 'package:woog_api/src/application/exception/not_found.dart';
+import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
 import 'package:woog_api/src/application/algo/interpolation.dart';
 import 'package:woog_api/src/application/exception/time.dart';
 import 'package:woog_api/src/application/model/lake_data.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 @injectable
 final class GetTemperature {
+  final LakeRepository _lakeRepo;
   final TemperatureRepository _repo;
 
-  GetTemperature(this._repo);
+  GetTemperature(this._lakeRepo, this._repo);
 
-  Future<LakeData?> call(
+  Future<LocalizedLakeData?> call(
     Uuid lakeId, {
     DateTime? time,
   }) async {
+    final lake = await _lakeRepo.getLake(lakeId);
+    if (lake == null) {
+      throw LakeNotFoundException(lakeId);
+    }
+
+    final location = tz.getLocation(lake.timeZoneId);
+
     if (time == null) {
-      return _repo.getLakeData(lakeId);
-    } else if (!time.isUtc) {
+      final result = await _repo.getLakeData(lakeId);
+      return result?.localize(location);
+    }
+
+    if (!time.isUtc) {
       time = time.toUtc();
     }
 
+    final result = await _interpolateData(lakeId, time);
+    return result?.localize(location);
+  }
+
+  Future<LakeData?> _interpolateData(Uuid lakeId, DateTime time) async {
     final nearestData = await _repo.getNearestData(lakeId, time);
     final before = nearestData.before;
     final after = nearestData.after;
