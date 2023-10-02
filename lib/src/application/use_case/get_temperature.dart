@@ -17,9 +17,8 @@ final class GetTemperature {
   }) async {
     if (time == null) {
       return _repo.getLakeData(lakeId);
-    }
-    if (!time.isUtc) {
-      throw NonUtcTimeException(time);
+    } else if (!time.isUtc) {
+      time = time.toUtc();
     }
 
     final nearestData = await _repo.getNearestData(lakeId, time);

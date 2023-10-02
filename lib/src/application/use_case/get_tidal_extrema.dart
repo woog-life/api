@@ -18,7 +18,7 @@ final class GetTidalExtrema {
     if (time == null) {
       time = DateTime.now().toUtc();
     } else if (!time.isUtc) {
-      throw NonUtcTimeException(time);
+      time = time.toUtc();
     }
 
     final lastExtremum = await _repo.getLastTidalExtremum(
