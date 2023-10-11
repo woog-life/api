@@ -1,4 +1,4 @@
-FROM eclipse-temurin:20-jammy AS smithy
+FROM eclipse-temurin:21-jammy AS smithy
 RUN apt-get update -qq && apt-get install -y --no-install-recommends unzip && apt-get clean
 
 WORKDIR /apidocs
