@@ -5,16 +5,11 @@ import 'package:sentry/sentry.dart';
 
 final class SentryLogger extends Logger {
   SentryLogger({
-    LogFilter? filter,
-    LogPrinter? printer,
-    LogOutput? output,
-    Level? level,
-  }) : super(
-          filter: filter,
-          printer: printer,
-          output: output,
-          level: level,
-        );
+    super.filter,
+    super.printer,
+    super.output,
+    super.level,
+  });
 
   @override
   void log(
