@@ -42,8 +42,8 @@ COPY --from=smithy /apidocs/build/smithyprojections/woog-api-spec/source/openapi
 COPY --from=builder /runtime/ /
 COPY --from=builder /app/app /app/
 
-ARG build
-ENV BUILD_SHA=$build
+ARG APP_VERSION
+ENV BUILD_SHA=$APP_VERSION
 ENV DOCS_PATH="/docs"
 
 EXPOSE 8080

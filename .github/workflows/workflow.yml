@@ -48,80 +48,34 @@ jobs:
       - name: Run Analysis
         run: dart analyze --fatal-infos
 
+
   build-app-container-image:
-    runs-on: ubuntu-latest
-    if: success() && github.event_name == 'pull_request'
     needs:
       - check-format
       - lint
       - test
-    steps:
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v4
-      - name: Build container image
-        uses: docker/build-push-action@v5
-        with:
-          build-args: |
-            build=citest
-          push: false
-          tags: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/app:${{ github.sha }}"
+    uses: BlindfoldedSurgery/actions-container/.github/workflows/build-image-docker.yml@v2
+    with:
+      push-image: ${{ github.ref_name == github.event.repository.default_branch }}
+      image-name: api/app
 
-  push-migrations-container-image:
-    runs-on: ubuntu-latest
-    if: success() && github.ref_name == github.event.repository.default_branch
+  build-migrations-container-image:
     needs:
       - check-format
       - lint
       - test
-    steps:
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v4
-      - # Setting up Docker Buildx with docker-container driver is required
-        # at the moment to be able to use a subdirectory with Git context
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ github.token }}
-      - name: Build container image
-        uses: docker/build-push-action@v5
-        with:
-          context: "{{defaultContext}}:migrations"
-          push: true
-          tags: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/migrations:${{ github.sha }}"
-
-  push-app-container-image:
-    runs-on: ubuntu-latest
-    if: success() && github.ref_name == github.event.repository.default_branch
-    needs:
-      - check-format
-      - lint
-      - test
-    steps:
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v4
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ github.token }}
-      - name: Build container image
-        uses: docker/build-push-action@v5
-        with:
-          build-args: |
-            build=${{ github.sha }}
-          push: true
-          tags: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/app:${{ github.sha }}"
+    uses: BlindfoldedSurgery/actions-container/.github/workflows/build-image-docker.yml@v2
+    with:
+      push-image: ${{ github.ref_name == github.event.repository.default_branch }}
+      image-name: api/migrations
+      context: "{{defaultContext}}:migrations"
 
   deploy:
     runs-on: ubuntu-latest
+    if: success() && github.ref_name == github.event.repository.default_branch
     needs:
-      - push-app-container-image
-      - push-migrations-container-image
+      - build-app-container-image
+      - build-migrations-container-image
     concurrency: production
     steps:
       - uses: actions/checkout@v4
@@ -139,22 +93,12 @@ jobs:
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
 
   clean:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image-name: [ "api/app", "api/migrations" ]
     concurrency: cleanup
-    continue-on-error: true
     needs: [ deploy ]
-    steps:
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v4
-      - name: Clean up old app container images
-        uses: actions/delete-package-versions@v4
-        with:
-          package-name: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/app
-          package-type: container
-          min-versions-to-keep: 10
-      - name: Clean up old migrations container images
-        uses: actions/delete-package-versions@v4
-        with:
-          package-name: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/migrations
-          package-type: container
-          min-versions-to-keep: 10
+    uses: BlindfoldedSurgery/actions-container/.github/workflows/clean.yml@v2
+    with:
+      image-name: ${{ matrix.image-name }}
+      continue-on-error: true
