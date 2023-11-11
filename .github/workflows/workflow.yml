@@ -54,7 +54,7 @@ jobs:
       - check-format
       - lint
       - test
-    uses: BlindfoldedSurgery/actions-container/.github/workflows/build-image-docker.yml@v2
+    uses: BlindfoldedSurgery/actions-container/.github/workflows/build-image-docker.yml@v3
     with:
       push-image: ${{ github.ref_name == github.event.repository.default_branch }}
       image-name: api/app
@@ -64,7 +64,7 @@ jobs:
       - check-format
       - lint
       - test
-    uses: BlindfoldedSurgery/actions-container/.github/workflows/build-image-docker.yml@v2
+    uses: BlindfoldedSurgery/actions-container/.github/workflows/build-image-docker.yml@v3
     with:
       push-image: ${{ github.ref_name == github.event.repository.default_branch }}
       image-name: api/migrations
@@ -98,7 +98,7 @@ jobs:
         image-name: [ "api/app", "api/migrations" ]
     concurrency: cleanup
     needs: [ deploy ]
-    uses: BlindfoldedSurgery/actions-container/.github/workflows/clean.yml@v2
+    uses: BlindfoldedSurgery/actions-container/.github/workflows/clean.yml@v3
     with:
       image-name: ${{ matrix.image-name }}
       continue-on-error: true
