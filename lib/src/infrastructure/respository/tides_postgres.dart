@@ -123,30 +123,34 @@ final class SqlTidesRepository implements TidesRepository {
 
   @override
   Future<void> insertData(Uuid lakeId, List<TidalExtremumData> data) async {
-    // TODO: reuse prepared statement
-    await Future.wait(
-      data.map((extremum) => _session.executePrepared(
-            '''
-                  INSERT INTO $tableName (
-                    $columnId,
-                    $columnHighTide,
-                    $columnTime,
-                    $columnHeight
-                  )
-                  VALUES (
-                     @lakeId:uuid,
-                     @highTide:boolean,
-                     @time:timestamptz,
-                     @height:real
-                  )
-                  ''',
-            parameters: {
-              'lakeId': lakeId.toString(),
-              'time': extremum.time,
-              'highTide': extremum.isHighTide,
-              'height': extremum.height,
-            },
-          )),
-    );
+    final statement = await _session.prepare(Sql.named(
+      '''
+      INSERT INTO $tableName (
+        $columnId,
+        $columnHighTide,
+        $columnTime,
+        $columnHeight
+      )
+      VALUES (
+         @lakeId:uuid,
+         @highTide:boolean,
+         @time:timestamptz,
+         @height:real
+      )
+      ''',
+    ));
+    try {
+      final inserts = data
+          .map((extremum) => statement.run({
+                'lakeId': lakeId.toString(),
+                'time': extremum.time,
+                'highTide': extremum.isHighTide,
+                'height': extremum.height,
+              }))
+          .toList(growable: false);
+      await Future.wait(inserts);
+    } finally {
+      await statement.dispose();
+    }
   }
 }
