@@ -38,7 +38,7 @@ final class UpdateTemperature {
         temperature: temperature,
       );
       try {
-        uow.temperatureRepo.updateData(lakeId, data);
+        await uow.temperatureRepo.updateData(lakeId, data);
       } on NotFoundException {
         throw LakeNotFoundException(lakeId);
       }
