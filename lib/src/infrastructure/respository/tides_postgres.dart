@@ -66,7 +66,7 @@ final class SqlTidesRepository implements TidesRepository {
         SELECT * FROM $tableName
         WHERE $columnId = @lakeId:uuid AND $columnTime >= @time:timestamptz
         ORDER BY $columnTime ASC
-        LIMIT @limit:int
+        LIMIT @limit:int4
         ''',
       parameters: {
         'lakeId': lakeId.toString(),
