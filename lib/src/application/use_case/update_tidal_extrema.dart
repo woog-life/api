@@ -6,48 +6,48 @@ import 'package:woog_api/src/application/exception/time.dart';
 import 'package:woog_api/src/application/exception/unsupported.dart';
 import 'package:woog_api/src/application/model/lake.dart';
 import 'package:woog_api/src/application/model/tidal_extremum_data.dart';
-import 'package:woog_api/src/application/repository/lake.dart';
-import 'package:woog_api/src/application/repository/tides.dart';
+import 'package:woog_api/src/application/repository/unit_of_work.dart';
 
 @injectable
 final class UpdateTidalExtrema {
   final Logger _logger;
-  final LakeRepository _lakeRepo;
-  final TidesRepository _tidesRepo;
+  final UnitOfWorkProvider _uowProvider;
 
   UpdateTidalExtrema(
     this._logger,
-    this._lakeRepo,
-    this._tidesRepo,
+    this._uowProvider,
   );
 
   Future<void> call({
     required Uuid lakeId,
     required List<TidalExtremumData> data,
   }) async {
-    final lake = await _lakeRepo.getLake(lakeId);
+    await _uowProvider.withUnitOfWork((uow) async {
+      final lake = await uow.lakeRepo.getLake(lakeId);
 
-    if (lake == null) {
-      throw LakeNotFoundException(lakeId);
-    } else if (!lake.features.contains(Feature.tides)) {
-      throw UnsupportedFeatureException(Feature.tides);
-    }
-
-    data.sort();
-
-    for (final extremum in data) {
-      if (!extremum.time.isUtc) {
-        throw NonUtcTimeException(extremum.time);
+      if (lake == null) {
+        throw LakeNotFoundException(lakeId);
+      } else if (!lake.features.contains(Feature.tides)) {
+        throw UnsupportedFeatureException(Feature.tides);
       }
-    }
 
-    // These two really should run in one transaction, but well...
-    await _deleteObsoleteData(lakeId, data.first, data.last);
-    _logger.i('Inserting tidal data');
-    await _tidesRepo.insertData(lakeId, data);
+      data.sort();
+
+      for (final extremum in data) {
+        if (!extremum.time.isUtc) {
+          throw NonUtcTimeException(extremum.time);
+        }
+      }
+
+      // These two really should run in one transaction, but well...
+      await _deleteObsoleteData(uow, lakeId, data.first, data.last);
+      _logger.i('Inserting tidal data');
+      await uow.tidesRepo.insertData(lakeId, data);
+    });
   }
 
   Future<void> _deleteObsoleteData(
+    UnitOfWork uow,
     Uuid lakeId,
     TidalExtremumData first,
     TidalExtremumData last,
@@ -58,7 +58,7 @@ final class UpdateTidalExtrema {
     we make sure that there high-low tide rhythms works out, otherwise we delete
     the neighboring data points.
      */
-    final left = await _tidesRepo.getLastTidalExtremum(
+    final left = await uow.tidesRepo.getLastTidalExtremum(
       lakeId: lakeId,
       time: first.time,
     );
@@ -71,7 +71,7 @@ final class UpdateTidalExtrema {
       deleteStart = first.time;
     }
 
-    final rights = await _tidesRepo.getTidalExtremaAfter(
+    final rights = await uow.tidesRepo.getTidalExtremaAfter(
       lakeId: lakeId,
       time: last.time,
       limit: 2,
@@ -95,7 +95,7 @@ final class UpdateTidalExtrema {
       deleteEnd = last.time;
     }
 
-    await _tidesRepo.deleteBetween(
+    await uow.tidesRepo.deleteBetween(
       lakeId: lakeId,
       startInclusive: deleteStart,
       endInclusive: deleteEnd,

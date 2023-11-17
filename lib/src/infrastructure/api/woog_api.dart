@@ -6,6 +6,7 @@ import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
+import 'package:woog_api/src/application/repository/unit_of_work.dart';
 import 'package:woog_api/src/infrastructure/api/dispatcher.dart';
 import 'package:woog_api/src/infrastructure/api/http_constants.dart';
 import 'package:woog_api/src/infrastructure/api/middleware/cors.dart';
@@ -19,6 +20,7 @@ final class WoogApi {
   final SentryMiddleware _sentryMiddleware;
   final Dispatcher _dispatcher;
   final Logger _logger;
+  final UnitOfWorkProvider _uowProvider;
   late final Handler handler;
 
   WoogApi(
@@ -26,6 +28,7 @@ final class WoogApi {
     this._sentryMiddleware,
     this._dispatcher,
     this._logger,
+    this._uowProvider,
   ) {
     handler = const Pipeline()
         .addMiddleware(_sentryMiddleware)
@@ -57,6 +60,8 @@ final class WoogApi {
     _runOnStopSignals((signal) async {
       _logger.w('Server is stopping because of a ${signal.name} signal');
       await server.close();
+      // This shouldn't be here, but who cares.
+      await _uowProvider.dispose();
       _logger.i('Server is closed.');
     });
   }

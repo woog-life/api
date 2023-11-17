@@ -1,10 +1,9 @@
-import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
+import 'package:postgres/postgres.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/model/tidal_extremum_data.dart';
 import 'package:woog_api/src/application/repository/tides.dart';
-import 'package:woog_api/src/infrastructure/respository/postgres.dart';
+import 'package:woog_api/src/infrastructure/respository/postgres_utils.dart';
 
 const tableName = 'tide_data';
 const columnId = 'lake_id';
@@ -12,17 +11,17 @@ const columnTime = 'time';
 const columnHighTide = 'is_high_tide';
 const columnHeight = 'height';
 
-@Injectable(as: TidesRepository)
 @immutable
 final class SqlTidesRepository implements TidesRepository {
-  final GetIt _getIt;
+  final Session _session;
 
-  SqlTidesRepository(this._getIt);
+  SqlTidesRepository(this._session);
 
-  TidalExtremumData _dataFromColumns(Map<String, dynamic> row) {
-    final isHighTide = row[columnHighTide];
-    final timestamp = row[columnTime];
-    final height = row[columnHeight];
+  TidalExtremumData _dataFromColumns(ResultRow row) {
+    final columns = row.toColumnMap();
+    final isHighTide = columns[columnHighTide];
+    final timestamp = columns[columnTime];
+    final height = columns[columnHeight];
 
     return TidalExtremumData(
       isHighTide: isHighTide as bool,
@@ -35,28 +34,25 @@ final class SqlTidesRepository implements TidesRepository {
   Future<TidalExtremumData?> getLastTidalExtremum({
     required Uuid lakeId,
     required DateTime time,
-  }) {
-    return _getIt.useConnection((connection) async {
-      final rows = await connection.mappedResultsQuery(
-        '''
+  }) async {
+    final rows = await _session.executePrepared(
+      '''
         SELECT * FROM $tableName
-        WHERE $columnId = @lakeId AND $columnTime < @time
+        WHERE $columnId = @lakeId:uuid AND $columnTime < @time:timestamptz
         ORDER BY $columnTime DESC
         LIMIT 1
         ''',
-        substitutionValues: {
-          'lakeId': lakeId.toString(),
-          'time': time,
-        },
-      );
+      parameters: {
+        'lakeId': lakeId.toString(),
+        'time': time,
+      },
+    );
 
-      if (rows.isEmpty) {
-        return null;
-      }
+    if (rows.isEmpty) {
+      return null;
+    }
 
-      final dataRow = rows[0][tableName]!;
-      return _dataFromColumns(dataRow);
-    });
+    return _dataFromColumns(rows.first);
   }
 
   @override
@@ -64,30 +60,26 @@ final class SqlTidesRepository implements TidesRepository {
     required Uuid lakeId,
     required DateTime time,
     required int limit,
-  }) {
-    return _getIt.useConnection((connection) async {
-      final rows = await connection.mappedResultsQuery(
-        '''
+  }) async {
+    final rows = await _session.executePrepared(
+      '''
         SELECT * FROM $tableName
-        WHERE $columnId = @lakeId AND $columnTime >= @time
+        WHERE $columnId = @lakeId:uuid AND $columnTime >= @time:timestamptz
         ORDER BY $columnTime ASC
-        LIMIT @limit
+        LIMIT @limit:integer
         ''',
-        substitutionValues: {
-          'lakeId': lakeId.toString(),
-          'time': time,
-          'limit': limit,
-        },
-      );
+      parameters: {
+        'lakeId': lakeId.toString(),
+        'time': time,
+        'limit': limit,
+      },
+    );
 
-      if (rows.isEmpty) {
-        return [];
-      }
+    if (rows.isEmpty) {
+      return [];
+    }
 
-      return rows
-          .map((row) => _dataFromColumns(row[tableName]!))
-          .toList(growable: false);
-    });
+    return rows.map(_dataFromColumns).toList(growable: false);
   }
 
   @override
@@ -95,52 +87,46 @@ final class SqlTidesRepository implements TidesRepository {
     required Uuid lakeId,
     required DateTime startInclusive,
     required DateTime endInclusive,
-  }) {
-    return _getIt.useConnection((connection) async {
-      await connection.query(
-        '''
+  }) async {
+    await _session.executePrepared(
+      '''
         DELETE FROM $tableName
-        WHERE $columnId = @lakeId
-        AND $columnTime >= @startTime
-        AND $columnTime <= @endTime
+        WHERE $columnId = @lakeId:uuid
+        AND $columnTime >= @startTime:timestamptz
+        AND $columnTime <= @endTime:timestamptz
         ''',
-        substitutionValues: {
-          'lakeId': lakeId.toString(),
-          'startTime': startInclusive,
-          'endTime': endInclusive,
-        },
-      );
-    });
+      parameters: {
+        'lakeId': lakeId.toString(),
+        'startTime': startInclusive,
+        'endTime': endInclusive,
+      },
+    );
   }
 
   @override
   Future<void> delete({
     required Uuid lakeId,
     required DateTime time,
-  }) {
-    return _getIt.useConnection((connection) async {
-      await connection.query(
-        '''
+  }) async {
+    await _session.executePrepared(
+      '''
         DELETE FROM $tableName
-        WHERE $columnId = @lakeId
-        AND $columnTime = @time
+        WHERE $columnId = @lakeId:uuid
+        AND $columnTime = @time:timestamptz
         ''',
-        substitutionValues: {
-          'lakeId': lakeId.toString(),
-          'time': time,
-        },
-      );
-    });
+      parameters: {
+        'lakeId': lakeId.toString(),
+        'time': time,
+      },
+    );
   }
 
   @override
-  Future<void> insertData(Uuid lakeId, List<TidalExtremumData> data) {
-    return _getIt.useConnection((connection) async {
-      await connection.transaction(
-        (connection) {
-          return Future.wait(
-            data.map((extremum) => connection.query(
-                  '''
+  Future<void> insertData(Uuid lakeId, List<TidalExtremumData> data) async {
+    // TODO: reuse prepared statement
+    await Future.wait(
+      data.map((extremum) => _session.executePrepared(
+            '''
                   INSERT INTO $tableName (
                     $columnId,
                     $columnHighTide,
@@ -148,24 +134,19 @@ final class SqlTidesRepository implements TidesRepository {
                     $columnHeight
                   )
                   VALUES (
-                     @lakeId,
-                     @highTide,
-                     @time,
-                     @height
+                     @lakeId:uuid,
+                     @highTide:boolean,
+                     @time:timestamptz,
+                     @height:real
                   )
                   ''',
-                  substitutionValues: {
-                    'lakeId': lakeId.toString(),
-                    'time': extremum.time,
-                    'highTide': extremum.isHighTide,
-                    'height': extremum.height,
-                  },
-                  timeoutInSeconds: 240,
-                )),
-          );
-        },
-        commitTimeoutInSeconds: 360,
-      );
-    });
+            parameters: {
+              'lakeId': lakeId.toString(),
+              'time': extremum.time,
+              'highTide': extremum.isHighTide,
+              'height': extremum.height,
+            },
+          )),
+    );
   }
 }

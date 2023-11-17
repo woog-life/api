@@ -1,47 +1,47 @@
 import 'package:injectable/injectable.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/exception/not_found.dart';
-import 'package:woog_api/src/application/repository/lake.dart';
-import 'package:woog_api/src/application/repository/temperature.dart';
 import 'package:woog_api/src/application/exception/time.dart';
 import 'package:woog_api/src/application/exception/unsupported.dart';
 import 'package:woog_api/src/application/model/lake.dart';
 import 'package:woog_api/src/application/model/lake_data.dart';
+import 'package:woog_api/src/application/repository/unit_of_work.dart';
 
 @injectable
 final class UpdateTemperature {
-  final LakeRepository _lakeRepo;
-  final TemperatureRepository _temperatureRepo;
+  final UnitOfWorkProvider _uowProvider;
 
-  UpdateTemperature(this._lakeRepo, this._temperatureRepo);
+  UpdateTemperature(this._uowProvider);
 
   Future<void> call(Uuid lakeId, DateTime time, double temperature) async {
-    final lake = await _lakeRepo.getLake(lakeId);
-    if (lake == null) {
-      throw LakeNotFoundException(lakeId);
-    }
+    return await _uowProvider.withUnitOfWork((uow) async {
+      final lake = await uow.lakeRepo.getLake(lakeId);
+      if (lake == null) {
+        throw LakeNotFoundException(lakeId);
+      }
 
-    if (!lake.features.contains(Feature.temperature)) {
-      throw const UnsupportedFeatureException(Feature.temperature);
-    }
+      if (!lake.features.contains(Feature.temperature)) {
+        throw const UnsupportedFeatureException(Feature.temperature);
+      }
 
-    if (!time.isUtc) {
-      throw NonUtcTimeException(time);
-    }
+      if (!time.isUtc) {
+        throw NonUtcTimeException(time);
+      }
 
-    final aMinuteFromNow = DateTime.now().add(const Duration(minutes: 1));
-    if (time.isAfter(aMinuteFromNow)) {
-      throw FutureTimeException(time);
-    }
+      final aMinuteFromNow = DateTime.now().add(const Duration(minutes: 1));
+      if (time.isAfter(aMinuteFromNow)) {
+        throw FutureTimeException(time);
+      }
 
-    final data = LakeData(
-      time: time,
-      temperature: temperature,
-    );
-    try {
-      _temperatureRepo.updateData(lakeId, data);
-    } on NotFoundException {
-      throw LakeNotFoundException(lakeId);
-    }
+      final data = LakeData(
+        time: time,
+        temperature: temperature,
+      );
+      try {
+        uow.temperatureRepo.updateData(lakeId, data);
+      } on NotFoundException {
+        throw LakeNotFoundException(lakeId);
+      }
+    });
   }
 }

@@ -1,10 +1,9 @@
-import 'package:get_it/get_it.dart';
-import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
+import 'package:postgres/postgres.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/model/lake.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
-import 'package:woog_api/src/infrastructure/respository/postgres.dart';
+import 'package:woog_api/src/infrastructure/respository/postgres_utils.dart';
 
 const tableName = 'lake';
 const columnId = 'id';
@@ -13,24 +12,23 @@ const columnTimeZone = 'time_zone_id';
 const columnSupportsTemperature = 'supports_temperature';
 const columnSupportsTides = 'supports_tides';
 
-@prod
-@Injectable(as: LakeRepository)
 @immutable
 final class SqlLakeRepository implements LakeRepository {
-  final GetIt _getIt;
+  final Session _session;
 
-  SqlLakeRepository(this._getIt);
+  SqlLakeRepository(this._session);
 
-  Lake _lakeFromRow(Map<String, dynamic> row) {
-    final id = row[columnId];
-    final name = row[columnName];
-    final timeZoneId = row[columnTimeZone];
+  Lake _lakeFromRow(ResultRow row) {
+    final columns = row.toColumnMap();
+    final id = columns[columnId];
+    final name = columns[columnName];
+    final timeZoneId = columns[columnTimeZone];
 
     final features = <Feature>{};
-    if (row[columnSupportsTemperature] as bool) {
+    if (columns[columnSupportsTemperature] as bool) {
       features.add(Feature.temperature);
     }
-    if (row[columnSupportsTides] as bool) {
+    if (columns[columnSupportsTides] as bool) {
       features.add(Feature.tides);
     }
 
@@ -44,33 +42,28 @@ final class SqlLakeRepository implements LakeRepository {
 
   @override
   Future<Set<Lake>> getLakes() async {
-    return _getIt.useConnection((connection) async {
-      final result = await connection.mappedResultsQuery(
-        'SELECT * FROM $tableName',
-      );
-      return result.map((e) => e[tableName]!).map(_lakeFromRow).toSet();
-    });
+    final rows = await _session.execute(
+      'SELECT * FROM $tableName',
+    );
+    return rows.map(_lakeFromRow).toSet();
   }
 
   @override
   Future<Lake?> getLake(Uuid lakeId) async {
-    return _getIt.useConnection((connection) async {
-      final lakeRows = await connection.mappedResultsQuery(
-        '''
+    final rows = await _session.executePrepared(
+      '''
         SELECT * FROM $tableName
-        WHERE $columnId = @lakeId
+        WHERE $columnId = @lakeId:uuid
         ''',
-        substitutionValues: {
-          'lakeId': lakeId.toString(),
-        },
-      );
-      if (lakeRows.isEmpty) {
-        return null;
-      }
+      parameters: {
+        'lakeId': lakeId.toString(),
+      },
+    );
 
-      final row = lakeRows.single;
-      final lakeRow = row[tableName]!;
-      return _lakeFromRow(lakeRow);
-    });
+    if (rows.isEmpty) {
+      return null;
+    }
+
+    return _lakeFromRow(rows.single);
   }
 }
