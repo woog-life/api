@@ -1,45 +1,50 @@
 import 'package:injectable/injectable.dart';
 import 'package:sane_uuid/uuid.dart';
-import 'package:woog_api/src/application/exception/not_found.dart';
-import 'package:woog_api/src/application/repository/lake.dart';
-import 'package:woog_api/src/application/repository/temperature.dart';
-import 'package:woog_api/src/application/algo/interpolation.dart';
-import 'package:woog_api/src/application/model/lake_data.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:woog_api/src/application/algo/interpolation.dart';
+import 'package:woog_api/src/application/exception/not_found.dart';
+import 'package:woog_api/src/application/model/lake_data.dart';
+import 'package:woog_api/src/application/repository/unit_of_work.dart';
 
 @injectable
 final class GetTemperature {
-  final LakeRepository _lakeRepo;
-  final TemperatureRepository _repo;
+  final UnitOfWorkProvider _uowProvider;
 
-  GetTemperature(this._lakeRepo, this._repo);
+  GetTemperature(this._uowProvider);
 
   Future<LocalizedLakeData?> call(
     Uuid lakeId, {
     DateTime? time,
   }) async {
-    final lake = await _lakeRepo.getLake(lakeId);
-    if (lake == null) {
-      throw LakeNotFoundException(lakeId);
-    }
+    return await _uowProvider.withUnitOfWork((uow) async {
+      final lake = await uow.lakeRepo.getLake(lakeId);
+      if (lake == null) {
+        throw LakeNotFoundException(lakeId);
+      }
 
-    final location = tz.getLocation(lake.timeZoneId);
+      final location = tz.getLocation(lake.timeZoneId);
 
-    if (time == null) {
-      final result = await _repo.getLakeData(lakeId);
+      var effectiveTime = time;
+      if (effectiveTime == null) {
+        final result = await uow.temperatureRepo.getLakeData(lakeId);
+        return result?.localize(location);
+      }
+
+      if (!effectiveTime.isUtc) {
+        effectiveTime = effectiveTime.toUtc();
+      }
+
+      final result = await _interpolateData(uow, lakeId, effectiveTime);
       return result?.localize(location);
-    }
-
-    if (!time.isUtc) {
-      time = time.toUtc();
-    }
-
-    final result = await _interpolateData(lakeId, time);
-    return result?.localize(location);
+    });
   }
 
-  Future<LakeData?> _interpolateData(Uuid lakeId, DateTime time) async {
-    final nearestData = await _repo.getNearestData(lakeId, time);
+  Future<LakeData?> _interpolateData(
+    UnitOfWork uow,
+    Uuid lakeId,
+    DateTime time,
+  ) async {
+    final nearestData = await uow.temperatureRepo.getNearestData(lakeId, time);
     final before = nearestData.before;
     final after = nearestData.after;
 

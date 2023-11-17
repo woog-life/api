@@ -23,7 +23,7 @@ dependencies:
   meta: ^1.0.0
 
   # Database
-  postgres: ^2.0.0
+  postgres: ^3.0.0
 
   # That juicy UUID stuff
   sane_uuid: 1.0.0-alpha.5
