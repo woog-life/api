@@ -60,7 +60,7 @@ final class SqlTemperatureRepository implements TemperatureRepository {
       VALUES (
          @lakeId:uuid,
          @time:timestamp,
-         @temperature:real
+         @temperature:float4
       )
       ON CONFLICT DO NOTHING
       ''',
