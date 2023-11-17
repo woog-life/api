@@ -135,7 +135,7 @@ final class SqlTidesRepository implements TidesRepository {
          @lakeId:uuid,
          @highTide:boolean,
          @time:timestamptz,
-         @height:real
+         @height:text
       )
       ''',
     ));
