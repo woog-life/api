@@ -1,0 +1,7 @@
+[flyway]
+locations = ["filesystem:sql"]
+
+[environments.dev]
+url="jdbc:postgresql://localhost:5432/"
+user="postgres"
+password="pw"
