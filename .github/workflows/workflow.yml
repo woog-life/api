@@ -48,6 +48,35 @@ jobs:
       - name: Run Analysis
         run: dart analyze --fatal-infos
 
+  validate-migrations:
+    name: Validate Migrations
+    runs-on: ubuntu-latest
+    container: flyway/flyway:10.1
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: woog
+          POSTGRES_PASSWORD: woogci
+          POSTGRES_DB: woog
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check migration naming
+        working-directory: migrations/sql
+        run: |
+          for filename in *
+          do
+            pattern='^V[0-9]+__([A-Z][a-z]*)+\.sql$'
+            match=$(echo -n "$filename" | grep -E $pattern)
+            if [ ! "$match" ]
+            then
+              echo "Invalid migration file name: $filename" 1>&2
+              exit 1
+            fi
+          done
+      - run: flyway -environment=ci migrate
+        working-directory: migrations
+
 
   build-app-container-image:
     needs:
@@ -64,6 +93,7 @@ jobs:
       - check-format
       - lint
       - test
+      - validate-migrations
     uses: BlindfoldedSurgery/actions-container/.github/workflows/build-image-docker.yml@v3
     with:
       push-image: ${{ github.ref_name == github.event.repository.default_branch }}
