@@ -59,7 +59,7 @@ final class SqlTemperatureRepository implements TemperatureRepository {
       )
       VALUES (
          @lakeId:uuid,
-         @time:timestamp,
+         @time:timestamptz,
          @temperature:float4
       )
       ON CONFLICT DO NOTHING
@@ -78,7 +78,7 @@ final class SqlTemperatureRepository implements TemperatureRepository {
       '''
         SELECT $columnTime, $columnTemperature
         FROM $tableName
-        WHERE $columnId = @lakeId:uuid AND $columnTime <= @time:timestamp
+        WHERE $columnId = @lakeId:uuid AND $columnTime <= @time:timestamptz
         ORDER BY $columnTime DESC
         LIMIT 1
         ''',
@@ -92,7 +92,7 @@ final class SqlTemperatureRepository implements TemperatureRepository {
       '''
         SELECT $columnTime, $columnTemperature
         FROM $tableName
-        WHERE $columnId = @lakeId:uuid AND $columnTime >= @time:timestamp
+        WHERE $columnId = @lakeId:uuid AND $columnTime >= @time:timestamptz
         ORDER BY $columnTime ASC
         LIMIT 1
         ''',
