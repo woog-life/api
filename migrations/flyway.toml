@@ -1,7 +1,14 @@
 [flyway]
 locations = ["filesystem:sql"]
 
+# CLI syntax to use environments: flyway -environment=dev migrate
+
 [environments.dev]
 url="jdbc:postgresql://localhost:5432/"
 user="postgres"
 password="pw"
+
+[environments.ci]
+url="jdbc:postgresql://postgres:5432/woog"
+user="woog"
+password="woogci"
