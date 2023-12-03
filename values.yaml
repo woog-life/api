@@ -3,8 +3,8 @@ image:
   migrations: ${MIGRATIONS_IMAGE_NAME}:${GITHUB_SHA}
 
 openTelemetry:
-  endpoint: ${OPEN_TELEMETRY_ENDPOINT}
-  headers: ${OPEN_TELEMETRY_HEADERS}
+  endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+  headers: ${OTEL_EXPORTER_OTLP_HEADERS}
 
 postgres:
   db: woog

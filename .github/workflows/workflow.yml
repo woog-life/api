@@ -116,8 +116,8 @@ jobs:
         env:
           APP_IMAGE_NAME: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/app"
           MIGRATIONS_IMAGE_NAME: "ghcr.io/${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}/migrations"
-          OPEN_TELEMETRY_ENDPOINT: ${{ secrets.OPEN_TELEMETRY_ENDPOINT }}
-          OPEN_TELEMETRY_HEADERS: ${{ secrets.OPEN_TELEMETRY_HEADERS }}
+          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_HEADERS: ${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
       - uses: WyriHaximus/github-action-helm3@v3
         with:
