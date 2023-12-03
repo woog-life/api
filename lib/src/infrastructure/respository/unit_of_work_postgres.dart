@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
+import 'package:opentelemetry/api.dart';
 import 'package:postgres/postgres.dart';
 import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
@@ -12,6 +13,9 @@ import 'package:woog_api/src/infrastructure/respository/tides_postgres.dart';
 
 class PostgresUnitOfWork implements UnitOfWork {
   @override
+  final Tracer tracer;
+
+  @override
   final LakeRepository lakeRepo;
 
   @override
@@ -20,7 +24,7 @@ class PostgresUnitOfWork implements UnitOfWork {
   @override
   final TidesRepository tidesRepo;
 
-  PostgresUnitOfWork(Session session)
+  PostgresUnitOfWork(this.tracer, Session session)
       : lakeRepo = SqlLakeRepository(session),
         temperatureRepo = SqlTemperatureRepository(session),
         tidesRepo = SqlTidesRepository(session);
@@ -31,9 +35,13 @@ class PostgresUnitOfWork implements UnitOfWork {
 class PostgresUnitOfWorkProvider implements UnitOfWorkProvider {
   final Logger _logger;
   final Pool<void> _connectionPool;
+  final TracerProvider _tracerProvider;
 
-  PostgresUnitOfWorkProvider(this._logger, Config config)
-      : _connectionPool = Pool.withEndpoints(
+  PostgresUnitOfWorkProvider(
+    this._logger,
+    this._tracerProvider,
+    Config config,
+  ) : _connectionPool = Pool.withEndpoints(
           [
             Endpoint(
               host: config.databaseHost,
@@ -49,16 +57,26 @@ class PostgresUnitOfWorkProvider implements UnitOfWorkProvider {
         );
 
   @override
-  Future<T> withUnitOfWork<T>(Future<T> Function(UnitOfWork) action) async {
-    return await _connectionPool.withConnection(
-      (connection) async {
-        return await connection.runTx(
-          (session) async {
-            final uow = PostgresUnitOfWork(session);
-            return await action(uow);
+  Future<T> withUnitOfWork<T>({
+    required String name,
+    required Future<T> Function(UnitOfWork) action,
+  }) async {
+    final tracer = _tracerProvider.getTracer('opentelemetry-dart');
+    return await trace(
+      name,
+      () async {
+        return await _connectionPool.withConnection(
+          (connection) async {
+            return await connection.runTx(
+              (session) async {
+                final uow = PostgresUnitOfWork(tracer, session);
+                return await action(uow);
+              },
+            );
           },
         );
       },
+      tracer: tracer,
     );
   }
 

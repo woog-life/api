@@ -13,6 +13,9 @@ final class Config {
 
   final String apiKey;
 
+  final bool openTelemetryConsole;
+  final String openTelemetryEndpoint;
+  final String openTelemetryHeader;
   final String sentryDsn;
 
   final String databaseName;
@@ -34,6 +37,19 @@ final class Config {
       apiKey: _Variable(
         name: 'API_KEY',
         defaultValue: 'default-api-key',
+      ).resolve(environment),
+      openTelemetryConsole: _Variable(
+            name: 'OTEL_EXPORTER_CONSOLE',
+            defaultValue: 'true',
+          ).resolve(environment) ==
+          'true',
+      openTelemetryEndpoint: _Variable(
+        name: 'OTEL_EXPORTER_OTLP_ENDPOINT',
+        defaultValue: '',
+      ).resolve(environment),
+      openTelemetryHeader: _Variable(
+        name: 'OTEL_EXPORTER_OTLP_HEADERS',
+        defaultValue: '',
       ).resolve(environment),
       sentryDsn: _Variable(
         name: 'SENTRY_DSN',
@@ -71,6 +87,9 @@ final class Config {
     required this.version,
     required this.build,
     required this.apiKey,
+    required this.openTelemetryConsole,
+    required this.openTelemetryEndpoint,
+    required this.openTelemetryHeader,
     required this.sentryDsn,
     required this.databaseHost,
     required this.databaseName,

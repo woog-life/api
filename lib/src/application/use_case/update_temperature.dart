@@ -14,34 +14,37 @@ final class UpdateTemperature {
   UpdateTemperature(this._uowProvider);
 
   Future<void> call(Uuid lakeId, DateTime time, double temperature) async {
-    return await _uowProvider.withUnitOfWork((uow) async {
-      final lake = await uow.lakeRepo.getLake(lakeId);
-      if (lake == null) {
-        throw LakeNotFoundException(lakeId);
-      }
+    return await _uowProvider.withUnitOfWork(
+      name: 'UnitOfWorkProvider',
+      action: (uow) async {
+        final lake = await uow.lakeRepo.getLake(lakeId);
+        if (lake == null) {
+          throw LakeNotFoundException(lakeId);
+        }
 
-      if (!lake.features.contains(Feature.temperature)) {
-        throw const UnsupportedFeatureException(Feature.temperature);
-      }
+        if (!lake.features.contains(Feature.temperature)) {
+          throw const UnsupportedFeatureException(Feature.temperature);
+        }
 
-      if (!time.isUtc) {
-        throw NonUtcTimeException(time);
-      }
+        if (!time.isUtc) {
+          throw NonUtcTimeException(time);
+        }
 
-      final aMinuteFromNow = DateTime.now().add(const Duration(minutes: 1));
-      if (time.isAfter(aMinuteFromNow)) {
-        throw FutureTimeException(time);
-      }
+        final aMinuteFromNow = DateTime.now().add(const Duration(minutes: 1));
+        if (time.isAfter(aMinuteFromNow)) {
+          throw FutureTimeException(time);
+        }
 
-      final data = LakeData(
-        time: time,
-        temperature: temperature,
-      );
-      try {
-        await uow.temperatureRepo.updateData(lakeId, data);
-      } on NotFoundException {
-        throw LakeNotFoundException(lakeId);
-      }
-    });
+        final data = LakeData(
+          time: time,
+          temperature: temperature,
+        );
+        try {
+          await uow.temperatureRepo.updateData(lakeId, data);
+        } on NotFoundException {
+          throw LakeNotFoundException(lakeId);
+        }
+      },
+    );
   }
 }

@@ -10,8 +10,11 @@ final class GetLake {
   GetLake(this._uowProvider);
 
   Future<Lake?> call(Uuid lakeId) async {
-    return await _uowProvider.withUnitOfWork((uow) async {
-      return uow.lakeRepo.getLake(lakeId);
-    });
+    return await _uowProvider.withUnitOfWork(
+      name: 'GetLake',
+      action: (uow) async {
+        return uow.lakeRepo.getLake(lakeId);
+      },
+    );
   }
 }

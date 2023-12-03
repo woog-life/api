@@ -16,36 +16,40 @@ final class GetTidalExtrema {
     required DateTime? time,
     required int? upcomingLimit,
   }) async {
-    return await _uowProvider.withUnitOfWork((uow) async {
-      final lake = await uow.lakeRepo.getLake(lakeId);
-      if (lake == null) {
-        throw LakeNotFoundException(lakeId);
-      }
+    return await _uowProvider.withUnitOfWork(
+      name: 'GetTidalExtrema',
+      action: (uow) async {
+        final lake = await uow.lakeRepo.getLake(lakeId);
+        if (lake == null) {
+          throw LakeNotFoundException(lakeId);
+        }
 
-      final location = tz.getLocation(lake.timeZoneId);
+        final location = tz.getLocation(lake.timeZoneId);
 
-      var effectiveTime = time;
-      if (effectiveTime == null) {
-        effectiveTime = DateTime.now().toUtc();
-      } else if (!effectiveTime.isUtc) {
-        effectiveTime = effectiveTime.toUtc();
-      }
+        var effectiveTime = time;
+        if (effectiveTime == null) {
+          effectiveTime = DateTime.now().toUtc();
+        } else if (!effectiveTime.isUtc) {
+          effectiveTime = effectiveTime.toUtc();
+        }
 
-      final lastExtremum = await uow.tidesRepo.getLastTidalExtremum(
-        lakeId: lakeId,
-        time: effectiveTime,
-      );
+        final lastExtremum = await uow.tidesRepo.getLastTidalExtremum(
+          lakeId: lakeId,
+          time: effectiveTime,
+        );
 
-      final nextExtrema = await uow.tidesRepo.getTidalExtremaAfter(
-        lakeId: lakeId,
-        time: effectiveTime,
-        limit: upcomingLimit ?? 4,
-      );
+        final nextExtrema = await uow.tidesRepo.getTidalExtremaAfter(
+          lakeId: lakeId,
+          time: effectiveTime,
+          limit: upcomingLimit ?? 4,
+        );
 
-      return [
-        if (lastExtremum != null) lastExtremum.localize(location),
-        for (final nextExtremum in nextExtrema) nextExtremum.localize(location),
-      ];
-    });
+        return [
+          if (lastExtremum != null) lastExtremum.localize(location),
+          for (final nextExtremum in nextExtrema)
+            nextExtremum.localize(location),
+        ];
+      },
+    );
   }
 }
