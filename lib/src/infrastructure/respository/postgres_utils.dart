@@ -9,7 +9,7 @@ extension DatabaseOpenTelemetry on Tracer {
     required String sql,
     required T Function() action,
   }) {
-    final operation = sql.split(' ').first;
+    final operation = sql.trimLeft().split(' ').first;
     return withSpan(
       name: operation,
       kind: SpanKind.client,
