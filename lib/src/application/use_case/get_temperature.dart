@@ -16,27 +16,30 @@ final class GetTemperature {
     Uuid lakeId, {
     DateTime? time,
   }) async {
-    return await _uowProvider.withUnitOfWork((uow) async {
-      final lake = await uow.lakeRepo.getLake(lakeId);
-      if (lake == null) {
-        throw LakeNotFoundException(lakeId);
-      }
+    return await _uowProvider.withUnitOfWork(
+      name: 'GetTemperature',
+      action: (uow) async {
+        final lake = await uow.lakeRepo.getLake(lakeId);
+        if (lake == null) {
+          throw LakeNotFoundException(lakeId);
+        }
 
-      final location = tz.getLocation(lake.timeZoneId);
+        final location = tz.getLocation(lake.timeZoneId);
 
-      var effectiveTime = time;
-      if (effectiveTime == null) {
-        final result = await uow.temperatureRepo.getLakeData(lakeId);
+        var effectiveTime = time;
+        if (effectiveTime == null) {
+          final result = await uow.temperatureRepo.getLakeData(lakeId);
+          return result?.localize(location);
+        }
+
+        if (!effectiveTime.isUtc) {
+          effectiveTime = effectiveTime.toUtc();
+        }
+
+        final result = await _interpolateData(uow, lakeId, effectiveTime);
         return result?.localize(location);
-      }
-
-      if (!effectiveTime.isUtc) {
-        effectiveTime = effectiveTime.toUtc();
-      }
-
-      final result = await _interpolateData(uow, lakeId, effectiveTime);
-      return result?.localize(location);
-    });
+      },
+    );
   }
 
   Future<LakeData?> _interpolateData(

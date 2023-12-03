@@ -13,16 +13,19 @@ final class GetExtrema {
   GetExtrema(this._uowProvider);
 
   Future<LakeDataExtrema<LocalizedLakeData>?> call(Uuid lakeId) async {
-    return await _uowProvider.withUnitOfWork((uow) async {
-      final lake = await uow.lakeRepo.getLake(lakeId);
-      if (lake == null) {
-        throw LakeNotFoundException(lakeId);
-      }
+    return await _uowProvider.withUnitOfWork(
+      name: 'GetExtrema',
+      action: (uow) async {
+        final lake = await uow.lakeRepo.getLake(lakeId);
+        if (lake == null) {
+          throw LakeNotFoundException(lakeId);
+        }
 
-      final location = tz.getLocation(lake.timeZoneId);
+        final location = tz.getLocation(lake.timeZoneId);
 
-      final result = await uow.temperatureRepo.getExtrema(lakeId);
-      return result?.localize(location);
-    });
+        final result = await uow.temperatureRepo.getExtrema(lakeId);
+        return result?.localize(location);
+      },
+    );
   }
 }

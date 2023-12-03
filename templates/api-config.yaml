@@ -3,6 +3,9 @@ kind: ConfigMap
 metadata:
   name: backend-config
 data:
+  OTEL_EXPORTER_CONSOLE: "false"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.openTelemetry.endpoint }}"
+  OTEL_EXPORTER_OTLP_HEADERS: "{{ .Values.openTelemetry.header }}"
   POSTGRES_DB: "{{ .Values.postgres.db }}"
   POSTGRES_HOSTNAME: "{{ .Values.postgres.host }}"
   POSTGRES_USER: "{{ .Values.postgres.user }}"

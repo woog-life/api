@@ -2,6 +2,10 @@ image:
   app: ${APP_IMAGE_NAME}:${GITHUB_SHA}
   migrations: ${MIGRATIONS_IMAGE_NAME}:${GITHUB_SHA}
 
+openTelemetry:
+  endpoint: ${OPEN_TELEMETRY_ENDPOINT}
+  header: ${OPEN_TELEMETRY_HEADER}
+
 postgres:
   db: woog
   user: woog

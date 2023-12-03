@@ -22,28 +22,31 @@ final class UpdateTidalExtrema {
     required Uuid lakeId,
     required List<TidalExtremumData> data,
   }) async {
-    await _uowProvider.withUnitOfWork((uow) async {
-      final lake = await uow.lakeRepo.getLake(lakeId);
+    await _uowProvider.withUnitOfWork(
+      name: 'UpdateTidalExtrema',
+      action: (uow) async {
+        final lake = await uow.lakeRepo.getLake(lakeId);
 
-      if (lake == null) {
-        throw LakeNotFoundException(lakeId);
-      } else if (!lake.features.contains(Feature.tides)) {
-        throw UnsupportedFeatureException(Feature.tides);
-      }
-
-      data.sort();
-
-      for (final extremum in data) {
-        if (!extremum.time.isUtc) {
-          throw NonUtcTimeException(extremum.time);
+        if (lake == null) {
+          throw LakeNotFoundException(lakeId);
+        } else if (!lake.features.contains(Feature.tides)) {
+          throw UnsupportedFeatureException(Feature.tides);
         }
-      }
 
-      // These two really should run in one transaction, but well...
-      await _deleteObsoleteData(uow, lakeId, data.first, data.last);
-      _logger.i('Inserting tidal data');
-      await uow.tidesRepo.insertData(lakeId, data);
-    });
+        data.sort();
+
+        for (final extremum in data) {
+          if (!extremum.time.isUtc) {
+            throw NonUtcTimeException(extremum.time);
+          }
+        }
+
+        // These two really should run in one transaction, but well...
+        await _deleteObsoleteData(uow, lakeId, data.first, data.last);
+        _logger.i('Inserting tidal data');
+        await uow.tidesRepo.insertData(lakeId, data);
+      },
+    );
   }
 
   Future<void> _deleteObsoleteData(
