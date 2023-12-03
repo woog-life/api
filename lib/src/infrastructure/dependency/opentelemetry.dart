@@ -36,7 +36,8 @@ abstract class OpenTelemetryModule {
 
     return otel_sdk.TracerProviderBase(
       resource: otel_sdk.Resource([
-        Attribute.fromString('service.name', 'woog-life'),
+        Attribute.fromString(ResourceAttributes.serviceName, 'woog-life'),
+        Attribute.fromString(ResourceAttributes.serviceVersion, config.version),
       ]),
       processors: processors,
     );

@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:opentelemetry/api.dart';
 import 'package:postgres/postgres.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/model/lake_data.dart';
@@ -13,8 +14,9 @@ const columnTemperature = 'temperature';
 @immutable
 final class SqlTemperatureRepository implements TemperatureRepository {
   final Session _session;
+  final Tracer _tracer;
 
-  SqlTemperatureRepository(this._session);
+  SqlTemperatureRepository(this._session, this._tracer);
 
   LakeData _dataFromColumns(ResultRow row) {
     final columns = row.toColumnMap();
@@ -39,6 +41,7 @@ final class SqlTemperatureRepository implements TemperatureRepository {
       parameters: {
         'lakeId': lakeId.toString(),
       },
+      tracer: _tracer,
     );
 
     if (rows.isEmpty) {
@@ -69,6 +72,7 @@ final class SqlTemperatureRepository implements TemperatureRepository {
         'time': data.time,
         'temperature': data.temperature,
       },
+      tracer: _tracer,
     );
   }
 
@@ -86,6 +90,7 @@ final class SqlTemperatureRepository implements TemperatureRepository {
         'lakeId': lakeId.toString(),
         'time': time,
       },
+      tracer: _tracer,
     );
 
     final higherResult = await _session.executePrepared(
@@ -100,6 +105,7 @@ final class SqlTemperatureRepository implements TemperatureRepository {
         'lakeId': lakeId.toString(),
         'time': time,
       },
+      tracer: _tracer,
     );
 
     final lower =
@@ -127,6 +133,7 @@ final class SqlTemperatureRepository implements TemperatureRepository {
       parameters: {
         'lakeId': lakeId.toString(),
       },
+      tracer: _tracer,
     );
 
     final maxResult = await _session.executePrepared(
@@ -144,6 +151,7 @@ final class SqlTemperatureRepository implements TemperatureRepository {
       parameters: {
         'lakeId': lakeId.toString(),
       },
+      tracer: _tracer,
     );
 
     if (minResult.isEmpty || maxResult.isEmpty) {

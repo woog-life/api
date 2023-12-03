@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:opentelemetry/api.dart';
 import 'package:postgres/postgres.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/model/lake.dart';
@@ -15,8 +16,9 @@ const columnSupportsTides = 'supports_tides';
 @immutable
 final class SqlLakeRepository implements LakeRepository {
   final Session _session;
+  final Tracer _tracer;
 
-  SqlLakeRepository(this._session);
+  SqlLakeRepository(this._session, this._tracer);
 
   Lake _lakeFromRow(ResultRow row) {
     final columns = row.toColumnMap();
@@ -41,11 +43,15 @@ final class SqlLakeRepository implements LakeRepository {
   }
 
   @override
-  Future<Set<Lake>> getLakes() async {
-    final rows = await _session.execute(
-      'SELECT * FROM $tableName',
+  Future<Set<Lake>> getLakes() {
+    final sql = 'SELECT * FROM $tableName';
+    return _tracer.withDatabaseSpan(
+      sql: sql,
+      action: () async {
+        final rows = await _session.execute(sql);
+        return rows.map(_lakeFromRow).toSet();
+      },
     );
-    return rows.map(_lakeFromRow).toSet();
   }
 
   @override
@@ -58,6 +64,7 @@ final class SqlLakeRepository implements LakeRepository {
       parameters: {
         'lakeId': lakeId.toString(),
       },
+      tracer: _tracer,
     );
 
     if (rows.isEmpty) {

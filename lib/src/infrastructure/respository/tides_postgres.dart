@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:opentelemetry/api.dart';
 import 'package:postgres/postgres.dart';
 import 'package:sane_uuid/uuid.dart';
 import 'package:woog_api/src/application/model/tidal_extremum_data.dart';
@@ -14,8 +15,9 @@ const columnHeight = 'height';
 @immutable
 final class SqlTidesRepository implements TidesRepository {
   final Session _session;
+  final Tracer _tracer;
 
-  SqlTidesRepository(this._session);
+  SqlTidesRepository(this._session, this._tracer);
 
   TidalExtremumData _dataFromColumns(ResultRow row) {
     final columns = row.toColumnMap();
@@ -46,6 +48,7 @@ final class SqlTidesRepository implements TidesRepository {
         'lakeId': lakeId.toString(),
         'time': time,
       },
+      tracer: _tracer,
     );
 
     if (rows.isEmpty) {
@@ -73,6 +76,7 @@ final class SqlTidesRepository implements TidesRepository {
         'time': time,
         'limit': limit,
       },
+      tracer: _tracer,
     );
 
     if (rows.isEmpty) {
@@ -100,6 +104,7 @@ final class SqlTidesRepository implements TidesRepository {
         'startTime': startInclusive,
         'endTime': endInclusive,
       },
+      tracer: _tracer,
     );
   }
 
@@ -118,13 +123,13 @@ final class SqlTidesRepository implements TidesRepository {
         'lakeId': lakeId.toString(),
         'time': time,
       },
+      tracer: _tracer,
     );
   }
 
   @override
   Future<void> insertData(Uuid lakeId, List<TidalExtremumData> data) async {
-    final statement = await _session.prepare(Sql.named(
-      '''
+    final sql = '''
       INSERT INTO $tableName (
         $columnId,
         $columnHighTide,
@@ -137,20 +142,25 @@ final class SqlTidesRepository implements TidesRepository {
          @time:timestamptz,
          @height:text
       )
-      ''',
-    ));
-    try {
-      final inserts = data
-          .map((extremum) => statement.run({
-                'lakeId': lakeId.toString(),
-                'time': extremum.time,
-                'highTide': extremum.isHighTide,
-                'height': extremum.height,
-              }))
-          .toList(growable: false);
-      await Future.wait(inserts);
-    } finally {
-      await statement.dispose();
-    }
+    ''';
+    await _tracer.withDatabaseSpan(
+      sql: sql,
+      action: () async {
+        final statement = await _session.prepare(Sql.named(sql));
+        try {
+          final inserts = data
+              .map((extremum) => statement.run({
+                    'lakeId': lakeId.toString(),
+                    'time': extremum.time,
+                    'highTide': extremum.isHighTide,
+                    'height': extremum.height,
+                  }))
+              .toList(growable: false);
+          await Future.wait(inserts);
+        } finally {
+          await statement.dispose();
+        }
+      },
+    );
   }
 }

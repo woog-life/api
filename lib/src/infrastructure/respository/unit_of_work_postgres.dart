@@ -25,9 +25,9 @@ class PostgresUnitOfWork implements UnitOfWork {
   final TidesRepository tidesRepo;
 
   PostgresUnitOfWork(this.tracer, Session session)
-      : lakeRepo = SqlLakeRepository(session),
-        temperatureRepo = SqlTemperatureRepository(session),
-        tidesRepo = SqlTidesRepository(session);
+      : lakeRepo = SqlLakeRepository(session, tracer),
+        temperatureRepo = SqlTemperatureRepository(session, tracer),
+        tidesRepo = SqlTidesRepository(session, tracer);
 }
 
 @prod
