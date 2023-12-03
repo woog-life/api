@@ -4,7 +4,7 @@ image:
 
 openTelemetry:
   endpoint: ${OPEN_TELEMETRY_ENDPOINT}
-  header: ${OPEN_TELEMETRY_HEADER}
+  headers: ${OPEN_TELEMETRY_HEADERS}
 
 postgres:
   db: woog
