@@ -8,38 +8,17 @@ environment:
 
 dependencies:
   country_code: ^1.0.0
-
-  # Dependency injection
   get_it: ^7.0.0
   injectable: ^2.0.0
-
-  # JSON serialization
   json_annotation: 4.8.1
-
-  # Logging
   logger: ^2.0.0
-
-  # Static analysis
   meta: ^1.0.0
-
-  # Database
   postgres: ^3.0.0
-
-  # That juicy UUID stuff
   sane_uuid: 1.0.0-alpha.5
-
-  # Alerting
   sentry: ^7.0.0
-
-  # Web server
   shelf: ^1.0.0
-
-  # Routingdrop
   shelf_router: ^1.0.0
-
-  # Static file serving
   shelf_static: ^1.0.0
-
   timezone: ^0.9.2
 
 dev_dependencies:
