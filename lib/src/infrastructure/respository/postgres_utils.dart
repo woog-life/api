@@ -32,11 +32,17 @@ extension PreparedStatements on Session {
     return tracer.withDatabaseSpan(
       sql: sql,
       action: () async {
-        final statement = await prepare(Sql.named(sql));
+        final statement = await tracer.withSpan(
+          name: 'Statement preparation',
+          action: () => prepare(Sql.named(sql)),
+        );
         try {
           return await statement.run(parameters);
         } finally {
-          await statement.dispose();
+          await tracer.withSpan(
+            name: 'Statement disposal',
+            action: statement.dispose,
+          );
         }
       },
     );
