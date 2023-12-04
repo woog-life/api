@@ -1,12 +1,12 @@
 import 'package:opentelemetry/api.dart';
 
 extension OpenTelemetry on Tracer {
-  T withSpan<T>({
+  Future<T> withSpan<T>({
     required String name,
     SpanKind kind = SpanKind.internal,
     List<Attribute> attributes = const [],
-    required T Function() action,
-  }) {
+    required Future<T> Function() action,
+  }) async {
     final span = startSpan(
       name,
       kind: kind,
@@ -14,7 +14,7 @@ extension OpenTelemetry on Tracer {
     );
     final context = Context.current.withSpan(span);
     try {
-      return context.execute(action);
+      return await context.execute(action);
     } catch (e, s) {
       span
         ..setStatus(StatusCode.error, e.toString())

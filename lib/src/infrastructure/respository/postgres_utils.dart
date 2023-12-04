@@ -5,9 +5,9 @@ import 'package:postgres/postgres.dart';
 import 'package:woog_api/src/tracing.dart';
 
 extension DatabaseOpenTelemetry on Tracer {
-  T withDatabaseSpan<T>({
+  Future<T> withDatabaseSpan<T>({
     required String sql,
-    required T Function() action,
+    required Future<T> Function() action,
   }) {
     final operation = sql.trimLeft().split(' ').first;
     return withSpan(
