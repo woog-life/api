@@ -5,7 +5,6 @@ import 'package:meta/meta.dart';
 import 'package:woog_api/src/version.dart';
 
 @singleton
-@injectable
 @immutable
 final class Config {
   final String version;
