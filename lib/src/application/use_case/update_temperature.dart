@@ -15,7 +15,7 @@ final class UpdateTemperature {
 
   Future<void> call(Uuid lakeId, DateTime time, double temperature) async {
     return await _uowProvider.withUnitOfWork(
-      name: 'UnitOfWorkProvider',
+      name: 'UpdateTemperature',
       action: (uow) async {
         final lake = await uow.lakeRepo.getLake(lakeId);
         if (lake == null) {
