@@ -13,7 +13,7 @@ RUN wget https://github.com/woog-life/apispec/archive/$APISPEC_VERSION.zip -O ap
     && rm -r apispec-$APISPEC_VERSION
 RUN ./gradlew build
 
-FROM dart:3.2.2 AS builder
+FROM dart:3.2.3 AS builder
 
 WORKDIR /app
 
