@@ -74,8 +74,10 @@ jobs:
               exit 1
             fi
           done
-      - run: flyway -environment=ci migrate
+      - run: flyway migrate
         working-directory: migrations
+        env:
+          flyway_environment: ci
 
 
   build-app-container-image:
