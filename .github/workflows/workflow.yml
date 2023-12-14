@@ -51,7 +51,7 @@ jobs:
   validate-migrations:
     name: Validate Migrations
     runs-on: ubuntu-latest
-    container: flyway/flyway:10.2
+    container: flyway/flyway:10.3
     services:
       postgres:
         image: postgres:15-alpine
