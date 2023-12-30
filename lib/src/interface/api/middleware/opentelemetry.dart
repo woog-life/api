@@ -25,19 +25,19 @@ class OpenTelemetryMiddleware {
             span.setAttributes([
               Attribute.fromString(
                 'url.full',
-                request.url.toString(),
+                request.requestedUri.toString(),
               ),
               Attribute.fromString(
                 'url.path',
-                '/${request.url.path}',
+                '/${request.requestedUri.path}',
               ),
               Attribute.fromString(
                 'url.query',
-                request.url.query,
+                request.requestedUri.query,
               ),
               Attribute.fromString(
                 'url.scheme',
-                request.url.scheme,
+                request.requestedUri.scheme,
               ),
               Attribute.fromString(
                 'network.protocol.name',
