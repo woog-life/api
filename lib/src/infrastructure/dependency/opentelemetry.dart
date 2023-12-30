@@ -7,7 +7,6 @@ import 'package:woog_api/src/infrastructure/config.dart';
 @module
 abstract class OpenTelemetryModule {
   @preResolve
-  @singleton
   Future<TracerProvider> createTracerProvider(
     Config config,
     Logger logger,
@@ -34,12 +33,16 @@ abstract class OpenTelemetryModule {
       processors.add(otel_sdk.BatchSpanProcessor(exporter));
     }
 
-    return otel_sdk.TracerProviderBase(
+    final provider = otel_sdk.TracerProviderBase(
       resource: otel_sdk.Resource([
         Attribute.fromString(ResourceAttributes.serviceName, 'woog-life'),
         Attribute.fromString(ResourceAttributes.serviceVersion, config.version),
       ]),
       processors: processors,
     );
+
+    registerGlobalTracerProvider(provider);
+
+    return provider;
   }
 }

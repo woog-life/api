@@ -37,12 +37,10 @@ class PostgresUnitOfWorkProvider implements UnitOfWorkProvider {
 
   final Logger _logger;
   final Pool<void> _connectionPool;
-  final TracerProvider _tracerProvider;
   int _openUows = 0;
 
   PostgresUnitOfWorkProvider(
     this._logger,
-    this._tracerProvider,
     Config config,
   ) : _connectionPool = Pool.withEndpoints(
           [
@@ -68,7 +66,7 @@ class PostgresUnitOfWorkProvider implements UnitOfWorkProvider {
     _openUows += 1;
 
     try {
-      final tracer = _tracerProvider.getTracer('woog-unit-of-work');
+      final tracer = globalTracerProvider.getTracer('woog-unit-of-work');
       return await trace(
         name,
         () async {
