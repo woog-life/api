@@ -19,7 +19,7 @@ class OpenTelemetryMiddleware {
         return await innerHandler(request);
       } else {
         return await trace(
-          '${request.method} ${request.url.path}',
+          '${request.method} /${request.url.path}',
           () async {
             final span = Context.current.span;
             span.setAttributes([
@@ -29,7 +29,7 @@ class OpenTelemetryMiddleware {
               ),
               Attribute.fromString(
                 'url.path',
-                request.url.path,
+                '/${request.url.path}',
               ),
               Attribute.fromString(
                 'url.query',
