@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:woog_api/src/infrastructure/application.dart';
+import 'package:woog_api/src/application.dart';
 
 Future<void> main(List<String> arguments) async {
   final Application app;

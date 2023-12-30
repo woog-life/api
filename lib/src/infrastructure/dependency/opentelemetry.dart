@@ -2,7 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:opentelemetry/api.dart';
 import 'package:opentelemetry/sdk.dart' as otel_sdk;
-import 'package:woog_api/src/infrastructure/config.dart';
+import 'package:woog_api/src/config.dart';
 
 @module
 abstract class OpenTelemetryModule {

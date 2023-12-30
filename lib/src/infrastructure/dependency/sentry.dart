@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:sentry/sentry.dart';
-import 'package:woog_api/src/infrastructure/config.dart';
+import 'package:woog_api/src/config.dart';
 import 'package:woog_api/src/infrastructure/sentry/sentry_state.dart';
 
 @module

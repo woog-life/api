@@ -1,5 +1,5 @@
 import 'package:injectable/injectable.dart';
-import 'package:woog_api/src/infrastructure/config.dart';
+import 'package:woog_api/src/config.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 class TimeZoneModuleStub {}

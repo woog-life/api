@@ -1,7 +1,7 @@
 import 'package:test/test.dart';
 import 'package:woog_api/src/application/model/lake_data.dart';
 import 'package:woog_api/src/application/model/region.dart';
-import 'package:woog_api/src/infrastructure/api/dto.dart';
+import 'package:woog_api/src/interface/api/dto.dart';
 
 void main() {
   final time = DateTime(2022, 11, 19);

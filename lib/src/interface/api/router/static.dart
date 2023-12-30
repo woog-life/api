@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:injectable/injectable.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_static/shelf_static.dart';
-import 'package:woog_api/src/infrastructure/config.dart';
+import 'package:woog_api/src/config.dart';
 
 @injectable
 class StaticServer {

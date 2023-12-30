@@ -6,7 +6,7 @@ import 'package:woog_api/src/application/repository/lake.dart';
 import 'package:woog_api/src/application/repository/temperature.dart';
 import 'package:woog_api/src/application/repository/tides.dart';
 import 'package:woog_api/src/application/repository/unit_of_work.dart';
-import 'package:woog_api/src/infrastructure/config.dart';
+import 'package:woog_api/src/config.dart';
 import 'package:woog_api/src/infrastructure/respository/lake_postgres.dart';
 import 'package:woog_api/src/infrastructure/respository/temperature_postgres.dart';
 import 'package:woog_api/src/infrastructure/respository/tides_postgres.dart';

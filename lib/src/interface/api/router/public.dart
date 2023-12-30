@@ -19,9 +19,9 @@ import 'package:woog_api/src/application/use_case/get_lake.dart';
 import 'package:woog_api/src/application/use_case/get_lakes.dart';
 import 'package:woog_api/src/application/use_case/get_temperature.dart';
 import 'package:woog_api/src/application/use_case/get_tidal_extrema.dart';
-import 'package:woog_api/src/infrastructure/api/dto.dart';
-import 'package:woog_api/src/infrastructure/api/middleware/json.dart';
-import 'package:woog_api/src/infrastructure/api/middleware/trailing_slash.dart';
+import 'package:woog_api/src/interface/api/dto.dart';
+import 'package:woog_api/src/interface/api/middleware/json.dart';
+import 'package:woog_api/src/interface/api/middleware/trailing_slash.dart';
 
 part 'public.g.dart';
 

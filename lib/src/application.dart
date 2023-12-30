@@ -1,8 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
-import 'package:woog_api/src/infrastructure/api/woog_api.dart';
-import 'package:woog_api/src/infrastructure/config.dart';
+import 'package:woog_api/src/interface/api/woog_api.dart';
+import 'package:woog_api/src/config.dart';
 import 'package:woog_api/src/infrastructure/dependency/dependency_container.dart';
 
 @immutable

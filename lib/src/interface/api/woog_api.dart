@@ -7,11 +7,11 @@ import 'package:meta/meta.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:woog_api/src/application/repository/unit_of_work.dart';
-import 'package:woog_api/src/infrastructure/api/dispatcher.dart';
-import 'package:woog_api/src/infrastructure/api/http_constants.dart';
-import 'package:woog_api/src/infrastructure/api/middleware/cors.dart';
-import 'package:woog_api/src/infrastructure/api/middleware/logging.dart';
-import 'package:woog_api/src/infrastructure/api/middleware/sentry.dart';
+import 'package:woog_api/src/interface/api/dispatcher.dart';
+import 'package:woog_api/src/interface/api/http_constants.dart';
+import 'package:woog_api/src/interface/api/middleware/cors.dart';
+import 'package:woog_api/src/interface/api/middleware/logging.dart';
+import 'package:woog_api/src/interface/api/middleware/sentry.dart';
 
 @injectable
 @immutable

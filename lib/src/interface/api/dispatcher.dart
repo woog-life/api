@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
 import 'package:shelf/shelf.dart';
-import 'package:woog_api/src/infrastructure/api/http_constants.dart';
-import 'package:woog_api/src/infrastructure/api/router/private.dart';
-import 'package:woog_api/src/infrastructure/api/router/public.dart';
-import 'package:woog_api/src/infrastructure/api/router/static.dart';
+import 'package:woog_api/src/interface/api/http_constants.dart';
+import 'package:woog_api/src/interface/api/router/private.dart';
+import 'package:woog_api/src/interface/api/router/public.dart';
+import 'package:woog_api/src/interface/api/router/static.dart';
 
 @injectable
 @immutable
