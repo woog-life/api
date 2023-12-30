@@ -33,9 +33,12 @@ class PostgresUnitOfWork implements UnitOfWork {
 @prod
 @Singleton(as: UnitOfWorkProvider)
 class PostgresUnitOfWorkProvider implements UnitOfWorkProvider {
+  static const maxConnections = 16;
+
   final Logger _logger;
   final Pool<void> _connectionPool;
   final TracerProvider _tracerProvider;
+  int _openUows = 0;
 
   PostgresUnitOfWorkProvider(
     this._logger,
@@ -52,7 +55,7 @@ class PostgresUnitOfWorkProvider implements UnitOfWorkProvider {
             )
           ],
           settings: PoolSettings(
-            maxConnectionCount: 16,
+            maxConnectionCount: maxConnections,
             sslMode: config.databaseUseTls ? SslMode.require : SslMode.disable,
           ),
         );
@@ -62,23 +65,34 @@ class PostgresUnitOfWorkProvider implements UnitOfWorkProvider {
     required String name,
     required Future<T> Function(UnitOfWork) action,
   }) async {
-    final tracer = _tracerProvider.getTracer('opentelemetry-dart');
-    return await trace(
-      name,
-      () async {
-        return await _connectionPool.withConnection(
-          (connection) async {
-            return await connection.runTx(
-              (session) async {
-                final uow = PostgresUnitOfWork(tracer, session);
-                return await action(uow);
-              },
-            );
-          },
-        );
-      },
-      tracer: tracer,
-    );
+    _openUows += 1;
+
+    try {
+      final tracer = _tracerProvider.getTracer('woog-unit-of-work');
+      return await trace(
+        name,
+        () async {
+          return await _connectionPool.withConnection(
+            (connection) async {
+              return await connection.runTx(
+                (session) async {
+                  final uow = PostgresUnitOfWork(tracer, session);
+                  return await action(uow);
+                },
+              );
+            },
+          );
+        },
+        tracer: tracer,
+      );
+    } finally {
+      _openUows -= 1;
+    }
+  }
+
+  @override
+  bool get isReady {
+    return _connectionPool.isOpen && _openUows < maxConnections;
   }
 
   @disposeMethod

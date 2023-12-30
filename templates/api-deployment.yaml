@@ -56,15 +56,15 @@ spec:
           readinessProbe:
             httpGet:
               port: 8080
-              path: /health
+              path: /health/ready
           startupProbe:
             httpGet:
               port: 8080
-              path: /health
+              path: /health/live
           livenessProbe:
             httpGet:
               port: 8080
-              path: /health
+              path: /health/live
           ports:
             - containerPort: 8080
               name: http

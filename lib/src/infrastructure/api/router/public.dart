@@ -13,6 +13,7 @@ import 'package:woog_api/src/application/exception/unsupported.dart';
 import 'package:woog_api/src/application/model/lake_data.dart';
 import 'package:woog_api/src/application/model/region.dart';
 import 'package:woog_api/src/application/model/tidal_extremum_data.dart';
+import 'package:woog_api/src/application/repository/unit_of_work.dart';
 import 'package:woog_api/src/application/use_case/get_extrema.dart';
 import 'package:woog_api/src/application/use_case/get_lake.dart';
 import 'package:woog_api/src/application/use_case/get_lakes.dart';
@@ -26,6 +27,7 @@ part 'public.g.dart';
 
 @injectable
 class PublicApi {
+  final UnitOfWorkProvider _uowProvider;
   final GetLakes _getLakes;
   final GetLake _getLake;
   final GetTemperature _getTemperature;
@@ -37,6 +39,7 @@ class PublicApi {
   late final Handler _handler;
 
   PublicApi(
+    this._uowProvider,
     this._getLakes,
     this._getLake,
     this._getTemperature,
@@ -52,9 +55,18 @@ class PublicApi {
   FutureOr<Response> call(Request request) => _handler(request);
 
   @Route.get('/')
-  @Route.get('/health')
-  Response getHealth(Request request) {
+  @Route.get('/health/live')
+  Response getLiveness(Request request) {
     return Response(HttpStatus.ok);
+  }
+
+  @Route.get('/health/ready')
+  Response getReadiness(Request request) {
+    if (_uowProvider.isReady) {
+      return Response(HttpStatus.ok);
+    } else {
+      return Response(HttpStatus.serviceUnavailable);
+    }
   }
 
   @Route.get('/lake')

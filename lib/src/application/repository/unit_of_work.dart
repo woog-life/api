@@ -19,5 +19,7 @@ abstract interface class UnitOfWorkProvider {
     required Future<T> Function(UnitOfWork) action,
   });
 
+  bool get isReady;
+
   Future<void> dispose();
 }
