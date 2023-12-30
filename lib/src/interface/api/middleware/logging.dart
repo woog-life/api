@@ -24,7 +24,7 @@ class LoggingMiddleware {
 
   Handler call(Handler innerHandler) {
     FutureOr<Response> filteredDelegate(Request request) {
-      if (request.url.path == 'health') {
+      if (request.url.path.startsWith('health')) {
         return innerHandler(request);
       } else {
         return _delegate(innerHandler)(request);

@@ -11,11 +11,13 @@ import 'package:woog_api/src/interface/api/dispatcher.dart';
 import 'package:woog_api/src/interface/api/http_constants.dart';
 import 'package:woog_api/src/interface/api/middleware/cors.dart';
 import 'package:woog_api/src/interface/api/middleware/logging.dart';
+import 'package:woog_api/src/interface/api/middleware/opentelemetry.dart';
 import 'package:woog_api/src/interface/api/middleware/sentry.dart';
 
 @injectable
 @immutable
 final class WoogApi {
+  final OpenTelemetryMiddleware _openTelemetryMiddleware;
   final LoggingMiddleware _loggingMiddleware;
   final SentryMiddleware _sentryMiddleware;
   final Dispatcher _dispatcher;
@@ -24,6 +26,7 @@ final class WoogApi {
   late final Handler handler;
 
   WoogApi(
+    this._openTelemetryMiddleware,
     this._loggingMiddleware,
     this._sentryMiddleware,
     this._dispatcher,
@@ -33,6 +36,7 @@ final class WoogApi {
     handler = const Pipeline()
         .addMiddleware(_sentryMiddleware)
         .addMiddleware(_loggingMiddleware)
+        .addMiddleware(_openTelemetryMiddleware)
         .addMiddleware(corsMiddleware())
         .addHandler(_dispatcher);
   }
