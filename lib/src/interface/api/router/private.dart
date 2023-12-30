@@ -42,7 +42,6 @@ class PrivateApi {
   }
 
   FutureOr<Response> call(Request request) {
-
     return _handler(request);
   }
 
