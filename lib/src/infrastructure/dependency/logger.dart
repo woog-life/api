@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:woog_api/src/infrastructure/sentry/sentry_logger.dart';
-import 'package:woog_api/src/infrastructure/sentry/sentry_state.dart';
+import 'package:woog_api/src/application/model/sentry_state.dart';
 
 @module
 abstract class LoggerModule {

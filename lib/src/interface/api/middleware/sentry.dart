@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import 'package:sentry/sentry.dart';
 import 'package:shelf/shelf.dart';
-import 'package:woog_api/src/infrastructure/sentry/sentry_state.dart';
+import 'package:woog_api/src/application/model/sentry_state.dart';
 
 @injectable
 class SentryMiddleware {
