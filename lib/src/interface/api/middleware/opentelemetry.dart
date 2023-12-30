@@ -84,7 +84,6 @@ class OpenTelemetryMiddleware {
                 Attribute.fromInt(SemanticAttributes.httpStatusCode, 500),
               ]);
 
-              span.setStatus(StatusCode.error, e.toString());
               rethrow;
             }
           },
