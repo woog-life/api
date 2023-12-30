@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:injectable/injectable.dart';
-import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 import 'package:opentelemetry/api.dart';
 import 'package:shelf/shelf.dart';
@@ -9,10 +8,9 @@ import 'package:shelf/shelf.dart';
 @immutable
 @injectable
 class OpenTelemetryMiddleware {
-  final Logger _logger;
   final Tracer _tracer;
 
-  OpenTelemetryMiddleware(this._logger, TracerProvider tracerProvider)
+  OpenTelemetryMiddleware(TracerProvider tracerProvider)
       : _tracer = tracerProvider.getTracer('woog-opentelemetry-shelf');
 
   Handler call(Handler innerHandler) {
