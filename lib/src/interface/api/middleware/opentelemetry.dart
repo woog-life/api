@@ -56,6 +56,19 @@ class OpenTelemetryMiddleware {
             try {
               final response = await innerHandler(request);
 
+              final params = response.context['shelf_router/params']
+                  as Map<String, String>?;
+              if (params != null) {
+                var sanitizedPath = request.requestedUri.path;
+                for (final entry in params.entries) {
+                  sanitizedPath = sanitizedPath.replaceAll(
+                    entry.value,
+                    '<${entry.key}>',
+                  );
+                }
+                span.setName('${request.method} $sanitizedPath');
+              }
+
               span.setAttribute(
                 Attribute.fromInt(
                   SemanticAttributes.httpStatusCode,
