@@ -52,6 +52,7 @@ class PostgresUnitOfWorkProvider implements UnitOfWorkProvider {
             )
           ],
           settings: PoolSettings(
+            maxConnectionCount: 16,
             sslMode: config.databaseUseTls ? SslMode.require : SslMode.disable,
           ),
         );
