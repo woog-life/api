@@ -12,15 +12,12 @@ part 'dto.g.dart';
 final class LakeInfoDto {
   final String id;
   final String name;
-  @Deprecated('Use supportedFeatures instead')
-  final List<FeatureDto> features;
   final List<FeatureDto> supportedFeatures;
   final String timeZoneId;
 
   const LakeInfoDto({
     required this.id,
     required this.name,
-    required this.features,
     required this.supportedFeatures,
     required this.timeZoneId,
   });
@@ -31,7 +28,6 @@ final class LakeInfoDto {
     return LakeInfoDto(
       id: lake.id.toString(),
       name: lake.name,
-      features: featureDtos,
       supportedFeatures: featureDtos,
       timeZoneId: lake.timeZoneId,
     );
