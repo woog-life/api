@@ -41,9 +41,7 @@ class PrivateApi {
         .addHandler(_router);
   }
 
-  FutureOr<Response> call(Request request) {
-    return _handler(request);
-  }
+  FutureOr<Response> call(Request request) => _handler(request);
 
   @Route.put('/lake/<lakeId>/temperature')
   Future<Response> _putTemperature(Request request, String lakeId) async {
