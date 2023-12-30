@@ -4,6 +4,8 @@ import 'package:opentelemetry/api.dart';
 import 'package:postgres/postgres.dart';
 import 'package:woog_api/src/tracing.dart';
 
+final Tracer _tracer = globalTracerProvider.getTracer('postgres_utils');
+
 extension DatabaseOpenTelemetry on Tracer {
   Future<T> withDatabaseSpan<T>({
     required String sql,
@@ -27,8 +29,8 @@ extension PreparedStatements on Session {
   Future<Result> executePrepared(
     String sql, {
     required Map<String, Object?> parameters,
-    required Tracer tracer,
   }) {
+    final tracer = _tracer;
     return tracer.withDatabaseSpan(
       sql: sql,
       action: () async {

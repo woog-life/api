@@ -18,7 +18,8 @@ final class SqlLakeRepository implements LakeRepository {
   final Session _session;
   final Tracer _tracer;
 
-  SqlLakeRepository(this._session, this._tracer);
+  SqlLakeRepository(this._session)
+      : _tracer = globalTracerProvider.getTracer('SqlLakeRepository');
 
   Lake _lakeFromRow(ResultRow row) {
     final columns = row.toColumnMap();
@@ -64,7 +65,6 @@ final class SqlLakeRepository implements LakeRepository {
       parameters: {
         'lakeId': lakeId.toString(),
       },
-      tracer: _tracer,
     );
 
     if (rows.isEmpty) {

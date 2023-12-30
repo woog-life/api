@@ -13,9 +13,6 @@ import 'package:woog_api/src/infrastructure/respository/tides_postgres.dart';
 
 class PostgresUnitOfWork implements UnitOfWork {
   @override
-  final Tracer tracer;
-
-  @override
   final LakeRepository lakeRepo;
 
   @override
@@ -24,10 +21,10 @@ class PostgresUnitOfWork implements UnitOfWork {
   @override
   final TidesRepository tidesRepo;
 
-  PostgresUnitOfWork(this.tracer, Session session)
-      : lakeRepo = SqlLakeRepository(session, tracer),
-        temperatureRepo = SqlTemperatureRepository(session, tracer),
-        tidesRepo = SqlTidesRepository(session, tracer);
+  PostgresUnitOfWork(Session session)
+      : lakeRepo = SqlLakeRepository(session),
+        temperatureRepo = SqlTemperatureRepository(session),
+        tidesRepo = SqlTidesRepository(session);
 }
 
 @prod
@@ -66,7 +63,8 @@ class PostgresUnitOfWorkProvider implements UnitOfWorkProvider {
     _openUows += 1;
 
     try {
-      final tracer = globalTracerProvider.getTracer('woog-unit-of-work');
+      final tracer =
+          globalTracerProvider.getTracer('PostgresUnitOfWorkProvider');
       return await trace(
         name,
         () async {
@@ -74,7 +72,7 @@ class PostgresUnitOfWorkProvider implements UnitOfWorkProvider {
             (connection) async {
               return await connection.runTx(
                 (session) async {
-                  final uow = PostgresUnitOfWork(tracer, session);
+                  final uow = PostgresUnitOfWork(session);
                   return await action(uow);
                 },
               );

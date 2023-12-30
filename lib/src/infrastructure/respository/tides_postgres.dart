@@ -17,7 +17,8 @@ final class SqlTidesRepository implements TidesRepository {
   final Session _session;
   final Tracer _tracer;
 
-  SqlTidesRepository(this._session, this._tracer);
+  SqlTidesRepository(this._session)
+      : _tracer = globalTracerProvider.getTracer('SqlTidesRepository');
 
   TidalExtremumData _dataFromColumns(ResultRow row) {
     final columns = row.toColumnMap();
@@ -48,7 +49,6 @@ final class SqlTidesRepository implements TidesRepository {
         'lakeId': lakeId.toString(),
         'time': time,
       },
-      tracer: _tracer,
     );
 
     if (rows.isEmpty) {
@@ -76,7 +76,6 @@ final class SqlTidesRepository implements TidesRepository {
         'time': time,
         'limit': limit,
       },
-      tracer: _tracer,
     );
 
     if (rows.isEmpty) {
@@ -104,7 +103,6 @@ final class SqlTidesRepository implements TidesRepository {
         'startTime': startInclusive,
         'endTime': endInclusive,
       },
-      tracer: _tracer,
     );
   }
 
@@ -123,7 +121,6 @@ final class SqlTidesRepository implements TidesRepository {
         'lakeId': lakeId.toString(),
         'time': time,
       },
-      tracer: _tracer,
     );
   }
 
