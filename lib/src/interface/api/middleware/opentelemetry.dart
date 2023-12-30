@@ -40,10 +40,6 @@ class OpenTelemetryMiddleware {
                 request.url.scheme,
               ),
               Attribute.fromString(
-                'url.fragment',
-                request.url.fragment,
-              ),
-              Attribute.fromString(
                 'network.protocol.name',
                 'http',
               ),
