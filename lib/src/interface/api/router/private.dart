@@ -47,7 +47,10 @@ class PrivateApi {
   Future<Response> _putTemperature(Request request, String lakeId) async {
     final body = jsonDecode(await request.readAsString());
     if (body is! Map<String, dynamic>) {
-      return Response(HttpStatus.badRequest);
+      return Response(
+        HttpStatus.badRequest,
+        context: request.context,
+      );
     }
 
     final Uuid lakeUuid;
@@ -59,19 +62,24 @@ class PrivateApi {
         body: jsonEncode(
           ErrorMessageDto('Invalid UUID: $lakeId'),
         ),
+        context: request.context,
       );
     }
 
     final update = TemperatureUpdateDto.fromJson(body);
     try {
       await _updateTemperature(lakeUuid, update.time, update.temperature);
-      return Response(HttpStatus.noContent);
+      return Response(
+        HttpStatus.noContent,
+        context: request.context,
+      );
     } on NotFoundException catch (e) {
       return Response(
         HttpStatus.notFound,
         body: jsonEncode(
           ErrorMessageDto(e.toString()),
         ),
+        context: request.context,
       );
     } on TimeException catch (e) {
       return Response(
@@ -79,6 +87,7 @@ class PrivateApi {
         body: jsonEncode(
           ErrorMessageDto(e.toString()).toJson(),
         ),
+        context: request.context,
       );
     } on UnsupportedFeatureException catch (e) {
       return Response(
@@ -86,6 +95,7 @@ class PrivateApi {
         body: jsonEncode(
           ErrorMessageDto(e.toString()),
         ),
+        context: request.context,
       );
     }
   }
@@ -94,7 +104,10 @@ class PrivateApi {
   Future<Response> _putTidalExtrema(Request request, String lakeId) async {
     final body = jsonDecode(await request.readAsString());
     if (body is! Map<String, dynamic>) {
-      return Response(HttpStatus.badRequest);
+      return Response(
+        HttpStatus.badRequest,
+        context: request.context,
+      );
     }
 
     final Uuid lakeUuid;
@@ -106,6 +119,7 @@ class PrivateApi {
         body: jsonEncode(
           ErrorMessageDto('Invalid UUID: $lakeId'),
         ),
+        context: request.context,
       );
     }
 
@@ -122,6 +136,7 @@ class PrivateApi {
               'Invalid height at time ${extremum.time}: ${extremum.height}',
             ),
           ),
+          context: request.context,
         );
       }
 
@@ -138,6 +153,7 @@ class PrivateApi {
         body: jsonEncode(
           ErrorMessageDto('Must PUT at least two extrema'),
         ),
+        context: request.context,
       );
     }
 
@@ -146,13 +162,17 @@ class PrivateApi {
         lakeId: lakeUuid,
         data: extrema,
       );
-      return Response(HttpStatus.noContent);
+      return Response(
+        HttpStatus.noContent,
+        context: request.context,
+      );
     } on NotFoundException catch (e) {
       return Response(
         HttpStatus.notFound,
         body: jsonEncode(
           ErrorMessageDto(e.toString()),
         ),
+        context: request.context,
       );
     } on TimeException catch (e) {
       return Response(
@@ -160,6 +180,7 @@ class PrivateApi {
         body: jsonEncode(
           ErrorMessageDto(e.toString()).toJson(),
         ),
+        context: request.context,
       );
     } on UnsupportedFeatureException catch (e) {
       return Response(
@@ -167,6 +188,7 @@ class PrivateApi {
         body: jsonEncode(
           ErrorMessageDto(e.toString()),
         ),
+        context: request.context,
       );
     }
   }

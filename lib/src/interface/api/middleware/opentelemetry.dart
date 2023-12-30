@@ -61,8 +61,6 @@ class OpenTelemetryMiddleware {
               final params = response.context['shelf_router/params']
                   as Map<String, String>?;
 
-              _logger.i('Found params: $params');
-
               if (params != null) {
                 var sanitizedPath = request.requestedUri.path;
                 for (final entry in params.entries) {

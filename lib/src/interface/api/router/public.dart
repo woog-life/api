@@ -77,6 +77,7 @@ class PublicApi {
       jsonEncode(
         LakeInfoListDto.of(lakes).toJson(),
       ),
+      context: request.context,
     );
   }
 
@@ -117,16 +118,21 @@ class PublicApi {
         body: jsonEncode(
           ErrorMessageDto('Invalid UUID: $lakeId'),
         ),
+        context: request.context,
       );
     }
 
     final lake = await _getLake(lakeUuid);
 
     if (lake == null) {
-      return Response(HttpStatus.notFound);
+      return Response(
+        HttpStatus.notFound,
+        context: request.context,
+      );
     } else {
       return Response.ok(
         jsonEncode(LakeInfoDto.fromLake(lake).toJson()),
+        context: request.context,
       );
     }
   }
@@ -146,6 +152,7 @@ class PublicApi {
         body: jsonEncode(
           ErrorMessageDto('Invalid UUID: $lakeId'),
         ),
+        context: request.context,
       );
     }
 
@@ -154,6 +161,7 @@ class PublicApi {
       return Response(
         HttpStatus.badRequest,
         body: jsonEncode(ErrorMessageDto('invalid timestamp: $timestamp')),
+        context: request.context,
       );
     }
 
@@ -161,13 +169,19 @@ class PublicApi {
     try {
       precision = _getPrecision(request);
     } on FormatException {
-      return Response(HttpStatus.badRequest);
+      return Response(
+        HttpStatus.badRequest,
+        context: request.context,
+      );
     }
 
     final data = await _getTemperature(lakeUuid, time: time);
 
     if (data == null) {
-      return Response.notFound(const ErrorMessageDto('No lake data found'));
+      return Response.notFound(
+        const ErrorMessageDto('No lake data found'),
+        context: request.context,
+      );
     }
 
     return Response.ok(
@@ -176,6 +190,7 @@ class PublicApi {
         precision: precision,
         formatRegion: Region.usa,
       )),
+      context: request.context,
     );
   }
 
@@ -199,6 +214,7 @@ class PublicApi {
         body: jsonEncode(
           ErrorMessageDto('Invalid UUID: $lakeId'),
         ),
+        context: request.context,
       );
     }
 
@@ -206,14 +222,20 @@ class PublicApi {
     try {
       time = _getTime(request);
     } on FormatException {
-      return Response(HttpStatus.badRequest);
+      return Response(
+        HttpStatus.badRequest,
+        context: request.context,
+      );
     }
 
     final int? precision;
     try {
       precision = _getPrecision(request);
     } on FormatException {
-      return Response(HttpStatus.badRequest);
+      return Response(
+        HttpStatus.badRequest,
+        context: request.context,
+      );
     }
 
     final Region formatRegion;
@@ -221,9 +243,8 @@ class PublicApi {
       formatRegion = _getFormatRegion(request);
     } on ArgumentError catch (e) {
       return Response.badRequest(
-        body: jsonEncode(
-          ErrorMessageDto(e.message),
-        ),
+        body: jsonEncode(ErrorMessageDto(e.message)),
+        context: request.context,
       );
     }
 
@@ -236,6 +257,7 @@ class PublicApi {
         body: jsonEncode(
           ErrorMessageDto(e.toString()).toJson(),
         ),
+        context: request.context,
       );
     }
 
@@ -244,6 +266,7 @@ class PublicApi {
         jsonEncode(
           ErrorMessageDto('No temperature for lake $lakeUuid'),
         ),
+        context: request.context,
       );
     }
 
@@ -255,6 +278,7 @@ class PublicApi {
           formatRegion: formatRegion,
         ),
       ),
+      context: request.context,
     );
   }
 
@@ -269,6 +293,7 @@ class PublicApi {
         body: jsonEncode(
           ErrorMessageDto('Invalid UUID: $lakeId'),
         ),
+        context: request.context,
       );
     }
 
@@ -278,7 +303,10 @@ class PublicApi {
     try {
       precision = _getPrecision(request);
     } on FormatException {
-      return Response(HttpStatus.badRequest);
+      return Response(
+        HttpStatus.badRequest,
+        context: request.context,
+      );
     }
 
     if (extrema == null) {
@@ -286,6 +314,7 @@ class PublicApi {
         jsonEncode(
           ErrorMessageDto('No temperatures for lake $lakeUuid'),
         ),
+        context: request.context,
       );
     }
 
@@ -297,6 +326,7 @@ class PublicApi {
         body: jsonEncode(
           ErrorMessageDto(e.message),
         ),
+        context: request.context,
       );
     }
 
@@ -309,6 +339,7 @@ class PublicApi {
           formatRegion: formatRegion,
         ),
       ),
+      context: request.context,
     );
   }
 
@@ -332,6 +363,7 @@ class PublicApi {
         body: jsonEncode(
           ErrorMessageDto('Invalid UUID: $lakeId'),
         ),
+        context: request.context,
       );
     }
 
@@ -339,7 +371,10 @@ class PublicApi {
     try {
       time = _getTime(request);
     } on FormatException {
-      return Response(HttpStatus.badRequest);
+      return Response(
+        HttpStatus.badRequest,
+        context: request.context,
+      );
     }
 
     final upcomingLimit = parseParam(request, 'upcomingLimit', int.parse);
@@ -350,6 +385,7 @@ class PublicApi {
         body: jsonEncode(
           ErrorMessageDto('Invalid upcomingLimit: $upcomingLimit'),
         ),
+        context: request.context,
       );
     }
 
@@ -366,6 +402,7 @@ class PublicApi {
         body: jsonEncode(
           ErrorMessageDto(e.toString()),
         ),
+        context: request.context,
       );
     } on TimeException catch (e) {
       return Response(
@@ -373,6 +410,7 @@ class PublicApi {
         body: jsonEncode(
           ErrorMessageDto(e.toString()).toJson(),
         ),
+        context: request.context,
       );
     } on UnsupportedFeatureException catch (e) {
       return Response(
@@ -380,6 +418,7 @@ class PublicApi {
         body: jsonEncode(
           ErrorMessageDto(e.toString()),
         ),
+        context: request.context,
       );
     }
 
@@ -390,6 +429,7 @@ class PublicApi {
               data.map(TidalExtremumDataDto.fromData).toList(growable: false),
         ),
       ),
+      context: request.context,
     );
   }
 }
