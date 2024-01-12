@@ -4,7 +4,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends unzip && ap
 WORKDIR /apidocs
 
 # renovate: type=git-digest repo=https://github.com/woog-life/apispec
-ENV APISPEC_VERSION=4252525481ca07580f05299c2f5e0a0b94048248
+ENV APISPEC_VERSION=a714d82975952d2da3b64d1e35b1ca2fae362e2f
 
 RUN wget https://github.com/woog-life/apispec/archive/$APISPEC_VERSION.zip -O apispec.zip  \
     && unzip apispec.zip  \
