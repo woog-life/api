@@ -381,10 +381,10 @@ packages:
     dependency: "direct main"
     description:
       name: opentelemetry
-      sha256: "552295d37e766fc2e33da7dcda91185e9e7033115429e52a39037ab5199a1855"
+      sha256: "04b478120e40e8e9566794678abaa64df8000bcc8a495b747a5f68ece5a00b5e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.17.0"
+    version: "0.18.0"
   package_config:
     dependency: transitive
     description:
