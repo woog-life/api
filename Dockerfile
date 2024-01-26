@@ -25,7 +25,7 @@ COPY . .
 RUN dart run build_runner build --delete-conflicting-outputs
 RUN dart compile exe bin/main.dart -o app
 
-FROM swaggerapi/swagger-ui:v5.11.0@sha256:b02a61c633b74257d9e5141a4821451bd95f48a834acc23946c84bf81587f214 AS swagger
+FROM swaggerapi/swagger-ui:v5.11.1@sha256:73acfdb91323b377a319e1e6bd7934571fb70cf2066c5178bdde875ba6dd2036 AS swagger
 
 # We don't want the script to actually start nginx
 RUN head -n -1 /docker-entrypoint.sh > /tmp.sh && mv /tmp.sh /docker-entrypoint.sh && \
