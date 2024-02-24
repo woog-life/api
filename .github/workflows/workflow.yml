@@ -121,7 +121,7 @@ jobs:
           OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
           OTEL_EXPORTER_OTLP_HEADERS: ${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-      - uses: WyriHaximus/github-action-helm3@v3
+      - uses: WyriHaximus/github-action-helm3@v4
         with:
           exec: helm upgrade backend . --install --namespace=wooglife --atomic
           kubeconfig: '${{ secrets.KUBECONFIG_RAW }}'
